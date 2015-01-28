@@ -16,7 +16,10 @@ namespace HDoc
     {
         #region Fields
 
-        HAttribute _LastAttribute = null;
+        /// <summary>
+        /// Reference the last attribute of the list
+        /// </summary>
+        internal HAttribute lastAttribute = null;
 
         #endregion
 

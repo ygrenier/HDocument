@@ -31,14 +31,14 @@
   <Class Name="HDoc.HElement" Collapsed="true">
     <Position X="4.5" Y="4" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAEAAAAAAAAAAA=</HashCode>
       <FileName>HElement.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="HDoc.HAttribute" Collapsed="true">
     <Position X="0.5" Y="2.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAABAAAAAAAAQAAAAAAAAAAABgAAAAAAA=</HashCode>
       <FileName>HAttribute.cs</FileName>
     </TypeIdentifier>
   </Class>
