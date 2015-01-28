@@ -13,17 +13,25 @@ namespace HDoc.Tests
         [Fact]
         public void TestCreate()
         {
-            var attr = new HAttribute();
-            Assert.Null(attr.Name);
-            Assert.Null(attr.Value);
+            var attr = new HAttribute("name", "value");
+            Assert.Equal("name", attr.Name);
+            Assert.Equal("value", attr.Value);
+
+            attr = new HAttribute("name");
+            Assert.Equal("name", attr.Name);
+            Assert.Equal("", attr.Value);
+
+            Assert.Throws<ArgumentNullException>(() => new HAttribute("name", null));
+            Assert.Throws<ArgumentNullException>(() => new HAttribute(" ", null));
+            Assert.Throws<ArgumentNullException>(() => new HAttribute(null, null));
         }
 
         [Fact]
         public void TestValue()
         {
-            var attr = new HAttribute();
+            var attr = new HAttribute("name");
             
-            Assert.Null(attr.Value);
+            Assert.Equal("", attr.Value);
 
             String value = "test";
             attr.Value = value;
