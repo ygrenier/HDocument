@@ -1,0 +1,3 @@
+https://htmlagilitypack.codeplex.com/
+https://github.com/jquery/sizzle
+http://code.google.com/p/fizzler/

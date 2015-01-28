@@ -1,2 +1,4 @@
 # HDocument
-HTML library
+
+C# library for HTML DOM manipulations.
+
