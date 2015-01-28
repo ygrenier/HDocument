@@ -13,7 +13,8 @@ namespace HDoc.Tests
         public void TestCreateEmpty()
         {
             var hDoc = new HDocument();
-
+            Assert.Same(hDoc, hDoc.Document);
+            Assert.Null(hDoc.Parent);
         }
 
     }

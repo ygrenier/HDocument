@@ -32,6 +32,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Moq">
+      <HintPath>..\packages\Moq.4.2.1409.1722\lib\net40\Moq.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -50,7 +53,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="HAttributeTest.cs" />
     <Compile Include="HDocumentTest.cs" />
+    <Compile Include="HElementTest.cs" />
+    <Compile Include="HObjectTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
