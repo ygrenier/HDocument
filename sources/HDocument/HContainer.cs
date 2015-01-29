@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,6 +18,51 @@ namespace HDoc
         /// Content
         /// </summary>
         internal object content;
+
+        #region Content managemement
+        /*
+        public void Add(object content)
+        {
+            if (content == null) return;
+            HNode n = content as HNode;
+            if (n != null)
+            {
+                AddNode(n);
+                return;
+            }
+            string s = content as string;
+            if (s != null)
+            {
+                AddString(s);
+                return;
+            }
+            HAttribute a = content as HAttribute;
+            if (a != null)
+            {
+                AddAttribute(a);
+                return;
+            }
+            object[] o = content as object[];
+            if (o != null)
+            {
+                foreach (object obj in o) Add(obj);
+                return;
+            }
+            IEnumerable e = content as IEnumerable;
+            if (e != null)
+            {
+                foreach (object obj in e) Add(obj);
+                return;
+            }
+            AddString(content.ToString());
+        }
+
+        public void Add(params object[] content)
+        {
+            Add((object)content);
+        }
+        */
+        #endregion
 
         #region Properties
 

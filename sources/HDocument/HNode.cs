@@ -13,6 +13,79 @@ namespace HDoc
     {
         internal HNode nextNode;
 
+        #region Node management
+        /*
+        /// <summary>
+        /// Adds the specified content immediately before this node.
+        /// </summary>
+        /// <param name="content">
+        /// A parameter list of content objects.
+        /// </param>
+        /// <exception cref="InvalidOperationException">
+        /// Thrown if the parent is null.
+        /// </exception>        
+        public void AddBefore(params object[] content)
+        {
+            if (parent == null) throw new InvalidOperationException("No parent found.");
+
+        }
+
+        /// <summary>
+        /// Adds the specified content immediately after this node.
+        /// </summary>
+        /// <param name="content">
+        /// A parameter list of content objects.
+        /// </param>
+        /// <exception cref="InvalidOperationException">
+        /// Thrown if the parent is null.
+        /// </exception>
+        public void AddAfter(params object[] content)
+        {
+            if (parent == null) throw new InvalidOperationException("No parent found.");
+
+        }
+        */
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// Gets the next sibling node of this node.
+        /// </summary>
+        /// <remarks>
+        /// If this property does not have a parent, or if there is no next node,
+        /// then this property returns null.
+        /// </remarks>
+        public HNode NextNode
+        {
+            get { return parent == null || this == parent.content ? null : nextNode; }
+        }
+
+        /// <summary>
+        /// Gets the previous sibling node of this node.
+        /// </summary>
+        /// <remarks>
+        /// If this property does not have a parent, or if there is no previous node,
+        /// then this property returns null.
+        /// </remarks>
+        public HNode PreviousNode
+        {
+            get
+            {
+                if (parent == null) return null;
+                HNode n = ((HNode)parent.content).nextNode;
+                HNode p = null;
+                while (n != this)
+                {
+                    p = n;
+                    n = n.nextNode;
+                }
+                return p;
+            }
+        }
+
+        #endregion
+
     }
 
 }
