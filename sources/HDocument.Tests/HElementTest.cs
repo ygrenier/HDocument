@@ -24,6 +24,27 @@ namespace HDoc.Tests
 
         }
 
+        [Fact]
+        public void TestHasAttributes()
+        {
+            var elm = new HElement("test");
+            Assert.False(elm.HasAttributes);
+        }
+
+        [Fact]
+        public void TestFirstAttribute()
+        {
+            var elm = new HElement("test");
+            Assert.Null(elm.FirstAttribute);
+        }
+
+        [Fact]
+        public void TestLastAttribute()
+        {
+            var elm = new HElement("test");
+            Assert.Null(elm.LastAttribute);
+        }
+
     }
 
 }

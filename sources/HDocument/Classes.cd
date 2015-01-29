@@ -10,36 +10,43 @@
   <Class Name="HDoc.HNode" Collapsed="true">
     <Position X="4.5" Y="1.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>HNode.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="HDoc.HContainer" Collapsed="true">
     <Position X="4.5" Y="2.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>EAACAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAA=</HashCode>
       <FileName>HContainer.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="HDoc.HDocument" Collapsed="true">
-    <Position X="6.75" Y="2.75" Width="1.5" />
+    <Position X="3.5" Y="4" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>HDocument.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="HDoc.HElement" Collapsed="true">
-    <Position X="4.5" Y="4" Width="1.5" />
+    <Position X="5.5" Y="4" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAEAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAQEAAAADAAAAAAAAAAA=</HashCode>
       <FileName>HElement.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="HDoc.HAttribute" Collapsed="true">
     <Position X="0.5" Y="2.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAABAAAAAAAAQAAAAAAAAAAABgAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAABAAAAQABAQIAAAAAEAAAABgAAAAAAA=</HashCode>
       <FileName>HAttribute.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="HDoc.HText" Collapsed="true">
+    <Position X="2.5" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAgAAAAAAA=</HashCode>
+      <FileName>HText.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Font Name="Segoe UI" Size="9" />

@@ -37,12 +37,42 @@ namespace HDoc
 
         #endregion
 
+        #region Attributes management
+
+
+
+        #endregion
+
         #region Properties
 
         /// <summary>
         /// Tag name
         /// </summary>
         public String Name { get; private set; }
+
+        /// <summary>
+        /// Gets the first attribute
+        /// </summary>
+        public HAttribute FirstAttribute
+        {
+            get { return lastAttribute != null ? lastAttribute.nextAttribute : null; }
+        }
+
+        /// <summary>
+        /// Gets the last attribute
+        /// </summary>
+        public HAttribute LastAttribute
+        {
+            get { return lastAttribute; }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether the element as at least one attribute.
+        /// </summary>
+        public bool HasAttributes
+        {
+            get { return lastAttribute != null; }
+        }
 
         #endregion
 

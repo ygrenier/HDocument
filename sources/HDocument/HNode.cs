@@ -11,6 +11,7 @@ namespace HDoc
     /// </summary>
     public abstract class HNode : HObject
     {
+        internal HNode nextNode;
 
     }
 
