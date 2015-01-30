@@ -20,7 +20,11 @@ namespace HDoc
         internal object content;
 
         #region Content managemement
-        /*
+        
+        /// <summary>
+        /// Adding a content to the container.
+        /// </summary>
+        /// <param name="content">Content to add</param>
         public void Add(object content)
         {
             if (content == null) return;
@@ -57,18 +61,69 @@ namespace HDoc
             AddString(content.ToString());
         }
 
+        /// <summary>
+        /// Adding a list of content
+        /// </summary>
+        /// <param name="content">List of content</param>
         public void Add(params object[] content)
         {
             Add((object)content);
         }
-        */
 
         /// <summary>
-        /// Adding an attribute.
+        /// Internal adding a node.
         /// </summary>
-        /// <param name="attribute"></param>
+        void AddNode(HNode n)
+        {
+            throw new NotImplementedException();
+            //ValidateNode(n, this);
+            //if (n.parent != null)
+            //{
+            //    n = n.CloneNode();
+            //}
+            //else
+            //{
+            //    HNode p = this;
+            //    while (p.parent != null) p = p.parent;
+            //    if (n == p) n = n.CloneNode();
+            //}
+            //ConvertContentTextToNode();
+            //AppendNode(n);
+        }
+
+        /// <summary>
+        /// Internal adding a string.
+        /// </summary>
+        void AddString(String s)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Internal adding an attribute.
+        /// </summary>
         internal virtual void AddAttribute(HAttribute attribute)
         {
+        }
+
+        /// <summary>
+        /// If the current content is a string, convert it to a node.
+        /// </summary>
+        void ConvertContentTextToNode()
+        {
+            String s = content as String;
+            if (s != null && s.Length > 0)
+            {
+                HText n = new HText(s);
+                n.parent = this;
+                n.nextNode = n;
+                content = n;
+            }
+        }
+
+        void ValidateNode(HNode node, HContainer parent)
+        {
+            throw new NotImplementedException();
         }
 
         #endregion

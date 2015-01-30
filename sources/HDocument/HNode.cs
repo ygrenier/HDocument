@@ -13,6 +13,11 @@ namespace HDoc
     {
         internal HNode nextNode;
 
+        /// <summary>
+        /// Clone the node
+        /// </summary>
+        //internal abstract HNode CloneNode();
+
         #region Node management
         /*
         /// <summary>
