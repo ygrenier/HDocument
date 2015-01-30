@@ -31,6 +31,14 @@ namespace HDoc
         }
 
         /// <summary>
+        /// Clone the node.
+        /// </summary>
+        internal override HNode CloneNode()
+        {
+            return new HText(this);
+        }
+
+        /// <summary>
         /// Gets or sets the value of this node.
         /// </summary>
         public string Value {

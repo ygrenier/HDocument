@@ -20,7 +20,7 @@ namespace HDoc.Tests
             Assert.Equal(name, elm.Name);
 
             Assert.Throws<ArgumentNullException>(() => new HElement(" "));
-            Assert.Throws<ArgumentNullException>(() => new HElement(null));
+            Assert.Throws<ArgumentNullException>(() => new HElement((String)null));
 
         }
 

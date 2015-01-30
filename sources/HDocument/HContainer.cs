@@ -19,6 +19,31 @@ namespace HDoc
         /// </summary>
         internal object content;
 
+        internal HContainer()
+        {
+        }
+
+        internal HContainer(HContainer other)
+        {
+            if (other == null) throw new ArgumentNullException("other");
+            if (other.content is string)
+            {
+                this.content = other.content;
+            }
+            else
+            {
+                HNode n = (HNode)other.content;
+                if (n != null)
+                {
+                    do
+                    {
+                        n = n.nextNode;
+                        AppendNode(n.CloneNode());
+                    } while (n != other.content);
+                }
+            }
+        }
+
         #region Content managemement
         
         /// <summary>
@@ -89,6 +114,14 @@ namespace HDoc
             //}
             //ConvertContentTextToNode();
             //AppendNode(n);
+        }
+
+        /// <summary>
+        /// Add node in the list.
+        /// </summary>
+        void AppendNode(HNode n)
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>

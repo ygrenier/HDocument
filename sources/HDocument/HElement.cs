@@ -35,7 +35,29 @@ namespace HDoc
             this.Name = name;
         }
 
+        /// <summary>
+        /// Create a new element from an another.
+        /// </summary>
+        /// <param name="other">
+        /// Another element that will be copied to this element.
+        /// </param>
+        public HElement(HElement other) : base(other) {
+            this.Name = other.Name;
+            HAttribute a = other.lastAttribute;
+            if (a != null) {
+                do {
+                    a = a.nextAttribute;
+                    AddAttribute(new HAttribute(a));
+                } while (a != other.lastAttribute);
+            }
+        }
+
         #endregion
+
+        internal override HNode CloneNode()
+        {
+            return new HElement(this);
+        }
 
         #region Attributes management
 
