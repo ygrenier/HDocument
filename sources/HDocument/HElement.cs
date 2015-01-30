@@ -39,7 +39,90 @@ namespace HDoc
 
         #region Attributes management
 
+        /// <summary>
+        /// Returns the <see cref="HAttribute"/> associated with a name.
+        /// </summary>
+        /// <param name="name">
+        /// The name of the <see cref="HAttribute"/> to get.
+        /// </param>
+        /// <returns>
+        /// The <see cref="HAttribute"/> with the name passed in.  If there is no attribute
+        /// with this name then null is returned.
+        /// </returns>
+        public HAttribute Attribute(String name)
+        {
+            HAttribute a = lastAttribute;
+            if (name != null && a != null)
+            {
+                do
+                {
+                    a = a.nextAttribute;
+                    if (String.Equals(a.Name, name, StringComparison.OrdinalIgnoreCase)) return a;
+                } while (a != lastAttribute);
+            }
+            return null;
+        }
 
+        /// <summary>
+        /// Returns the attributes associated to this element.
+        /// </summary>
+        /// <returns>An enumerable containing all attributes.</returns>
+        public IEnumerable<HAttribute> Attributes()
+        {
+            return GetAttributes(null);
+        }
+
+        /// <summary>
+        /// Returns the attributes associated to this element, with a name filter.
+        /// </summary>
+        /// <param name="name">Name to filter</param>
+        /// <returns>An enumerable containing the attributes matching the name.</returns>
+        public IEnumerable<HAttribute> Attributes(String name)
+        {
+            return name != null ? GetAttributes(name) : Enumerable.Empty<HAttribute>();
+        }
+
+        /// <summary>
+        /// Adding an attribute
+        /// </summary>
+        internal override void AddAttribute(HAttribute attribute)
+        {
+            if (Attribute(attribute.Name) != null)
+                throw new InvalidOperationException(String.Format("The attribute '{0}' already defined", attribute.Name));
+            // Attribute already affected in a parent
+            if (attribute.parent != null) attribute = new HAttribute(attribute);
+            // Insert attribute
+            attribute.parent = this;
+            if (lastAttribute == null)
+            {
+                attribute.nextAttribute = attribute;
+            }
+            else
+            {
+                attribute.nextAttribute = lastAttribute.nextAttribute;
+                lastAttribute.nextAttribute = attribute;
+            }
+            lastAttribute = attribute;
+        }
+
+        /// <summary>
+        /// Enumerate attributes with an optional name filter.
+        /// </summary>
+        /// <param name="name">Name filtered</param>
+        /// <returns>Enumerate the attributes. If <paramref name="name"/> is null, all attributes are returned.</returns>
+        IEnumerable<HAttribute> GetAttributes(String name)
+        {
+            HAttribute a = lastAttribute;
+            if (a != null)
+            {
+                do
+                {
+                    a = a.nextAttribute;
+                    if (name == null || String.Equals(a.Name, name, StringComparison.OrdinalIgnoreCase))
+                        yield return a;
+                } while (a.parent == this && a != lastAttribute);
+            }
+        }
 
         #endregion
 

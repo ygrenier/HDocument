@@ -62,6 +62,15 @@ namespace HDoc
             Add((object)content);
         }
         */
+
+        /// <summary>
+        /// Adding an attribute.
+        /// </summary>
+        /// <param name="attribute"></param>
+        internal virtual void AddAttribute(HAttribute attribute)
+        {
+        }
+
         #endregion
 
         #region Properties
