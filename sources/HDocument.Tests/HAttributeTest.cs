@@ -83,6 +83,21 @@ namespace HDoc.Tests
 
             Assert.Null(attr.NextAttribute);
 
+            var elm = new HElement("parent");
+            elm.Add(attr);
+            Assert.Null(attr.NextAttribute);
+
+            var attr2 = new HAttribute("attr1", "val1");
+            elm.Add(attr2);
+            Assert.Same(attr2, attr.NextAttribute);
+            Assert.Null(attr2.NextAttribute);
+
+            var attr3 = new HAttribute("attr2", "val2");
+            elm.Add(attr3);
+            Assert.Same(attr2, attr.NextAttribute);
+            Assert.Same(attr3, attr2.NextAttribute);
+            Assert.Null(attr3.NextAttribute);
+
         }
 
         [Fact]
@@ -91,6 +106,21 @@ namespace HDoc.Tests
             var attr = new HAttribute("name", "value");
 
             Assert.Null(attr.PreviousAttribute);
+
+            var elm = new HElement("parent");
+            elm.Add(attr);
+            Assert.Null(attr.PreviousAttribute);
+
+            var attr2 = new HAttribute("attr1", "val1");
+            elm.Add(attr2);
+            Assert.Null(attr.PreviousAttribute);
+            Assert.Same(attr, attr2.PreviousAttribute);
+
+            var attr3 = new HAttribute("attr2", "val2");
+            elm.Add(attr3);
+            Assert.Null(attr.PreviousAttribute);
+            Assert.Same(attr, attr2.PreviousAttribute);
+            Assert.Same(attr2, attr3.PreviousAttribute);
 
         }
 
