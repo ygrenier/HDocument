@@ -36,6 +36,23 @@ namespace HDoc
         }
 
         /// <summary>
+        /// Create an new element with a content
+        /// </summary>
+        public HElement(String name, object content)
+            : this(name)
+        {
+            Add(content);
+        }
+
+        /// <summary>
+        /// Create an new element with a multiple content
+        /// </summary>
+        public HElement(String name, params object[] content)
+            : this(name, (object)content)
+        {
+        }
+
+        /// <summary>
         /// Create a new element from an another.
         /// </summary>
         /// <param name="other">

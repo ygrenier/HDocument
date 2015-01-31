@@ -43,7 +43,6 @@
     <Compile Include="HContainer.cs" />
     <Compile Include="HDocument.cs" />
     <Compile Include="HElement.cs" />
-    <Compile Include="Helpers.cs" />
     <Compile Include="HNode.cs" />
     <Compile Include="HObject.cs" />
     <Compile Include="HText.cs" />

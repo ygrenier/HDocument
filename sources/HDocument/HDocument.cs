@@ -19,12 +19,19 @@ namespace HDoc
         }
 
         /// <summary>
+        /// Create a new HTML document with a content
+        /// </summary>
+        public HDocument(params object[] content):this()
+        {
+            Add((object)content);
+        }
+
+        /// <summary>
         /// Create a new HTML document from another.
         /// </summary>
         public HDocument(HDocument other)
             : base(other)
         {
-            throw new NotImplementedException();
         }
 
         /// <summary>

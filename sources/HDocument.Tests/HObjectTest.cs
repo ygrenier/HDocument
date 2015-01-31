@@ -16,20 +16,31 @@ namespace HDoc.Tests
         [Fact]
         public void TestParent()
         {
-            var oMock = new Mock<HObject>();
-            var obj = oMock.Object;
+            HObject obj = new HText("test");
 
             Assert.Null(obj.Parent);
+
+            HElement p = new HElement("parent", obj);
+            Assert.Same(p, obj.Parent);
+
         }
 
         [Fact]
         public void TestDocument()
         {
-            var oMock = new Mock<HObject>();
-            var obj = oMock.Object;
+            HObject n = new HText("test");
+            Assert.Null(n.Document);
 
-            Assert.Null(obj.Document);
+            HObject p = new HElement("parent", n);
+            Assert.Null(n.Document);
+            Assert.Null(p.Document);
+
+            HDocument doc = new HDocument(p);
+            Assert.Same(doc, n.Document);
+            Assert.Same(doc, p.Document);
+            Assert.Same(doc, doc.Document);
         }
+
 
     }
 

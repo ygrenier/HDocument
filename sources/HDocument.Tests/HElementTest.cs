@@ -25,18 +25,66 @@ namespace HDoc.Tests
         }
 
         [Fact]
+        public void TestCreateWithContent()
+        {
+            String name = "test";
+            var elm = new HElement(name, null);
+            Assert.Equal(0, elm.Nodes().Count());
+
+            elm = new HElement(name, "a");
+            Assert.Equal(1, elm.Nodes().Count());
+
+        }
+
+        [Fact]
+        public void TestCreateWithContents()
+        {
+            String name = "test";
+            var elm = new HElement(name, null, null);
+            Assert.Equal(0, elm.Nodes().Count());
+
+            elm = new HElement(name, "a", "b");
+            Assert.Equal(1, elm.Nodes().Count());
+
+            elm = new HElement(name, new HText("a"), new HText("b"));
+            Assert.Equal(2, elm.Nodes().Count());
+
+        }
+
+        [Fact]
         public void TestCreateFromOther()
         {
-            var elm = new HElement("test");
+            var elm = new HElement("test", "content");
             elm.Add(
                 new HAttribute("attr1", "val1"),
                 new HAttribute("attr3", "val3")
                 );
+            Assert.Equal(1, elm.Nodes().Count());
 
             var newElm = new HElement(elm);
             Assert.Equal(2, elm.Attributes().Count());
             Assert.Equal(0, elm.Attributes("Attr2").Count());
+            Assert.Equal(1, elm.Nodes().Count());
+        }
 
+        [Fact]
+        public void TestClone()
+        {
+            var parent = new HElement("parent");
+
+            var elm = new HElement("test", "content");
+            elm.Add(
+                new HAttribute("attr1", "val1"),
+                new HAttribute("attr3", "val3")
+                );
+            Assert.Equal(1, elm.Nodes().Count());
+            parent.Add(elm);
+
+            var newElm = new HElement("test", elm);
+            var c = newElm.Elements().First();
+            Assert.Equal(2, c.Attributes().Count());
+            Assert.Equal(0, c.Attributes("Attr2").Count());
+            Assert.Equal(1, c.Nodes().Count());
         }
 
         [Fact]

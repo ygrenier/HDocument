@@ -25,7 +25,6 @@ namespace HDoc
 
         internal HContainer(HContainer other)
         {
-            if (other == null) throw new ArgumentNullException("other");
             if (other.content is string)
             {
                 this.content = other.content;
@@ -208,6 +207,58 @@ namespace HDoc
 
         internal virtual void ValidateString(string s)
         {
+        }
+
+        /// <summary>
+        /// Enumerate all child elements
+        /// </summary>
+        IEnumerable<HElement> GetElements(String name)
+        {
+            HNode n = content as HNode;
+            if (n != null)
+            {
+                do
+                {
+                    n = n.nextNode;
+                    HElement e = n as HElement;
+                    if (e != null && (name == null || String.Equals(e.Name, name, StringComparison.OrdinalIgnoreCase))) 
+                        yield return e;
+                } while (n.parent == this && n != content);
+            }
+        }
+
+        /// <summary>
+        /// Returns the elements contained in this container.
+        /// </summary>
+        public IEnumerable<HElement> Elements()
+        {
+            return GetElements(null);
+        }
+
+        /// <summary>
+        /// Returns the elements contained in this container, with a name filter
+        /// </summary>
+        /// <param name="name">Name to filter</param>
+        /// <returns>An enumerable containing the attributes matching the name.</returns>
+        public IEnumerable<HElement> Elements(String name)
+        {
+            return name != null ? GetElements(name) : Enumerable.Empty<HElement>();
+        }
+
+        /// <summary>
+        /// Returns the nodes contained in this element.
+        /// </summary>
+        public IEnumerable<HNode> Nodes()
+        {
+            HNode n = LastNode;
+            if (n != null)
+            {
+                do
+                {
+                    n = n.nextNode;
+                    yield return n;
+                } while (n.parent == this && n != content);
+            }
         }
 
         #endregion
