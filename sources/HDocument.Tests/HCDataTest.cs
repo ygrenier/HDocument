@@ -45,9 +45,6 @@ namespace HDoc.Tests
 
             Assert.IsType<HCData>(otherParent.FirstNode);
             Assert.NotSame(otherParent.FirstNode, parent.FirstNode);
-
-
-
         }
 
     }

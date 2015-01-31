@@ -43,5 +43,24 @@ namespace HDoc.Tests
             Assert.Throws<ArgumentNullException>(() => hTxt.Value = null);
         }
 
+        [Fact]
+        public void TestClone()
+        {
+            HText txt = new HText("Test");
+
+            HContainer parent = new HElement("test");
+
+            parent.Add(txt);
+            Assert.Same(txt, parent.FirstNode);
+            Assert.Same(txt, parent.LastNode);
+
+            HContainer otherParent = new HElement("test");
+            // Do clone
+            otherParent.Add(txt);
+
+            Assert.IsType<HText>(otherParent.FirstNode);
+            Assert.NotSame(otherParent.FirstNode, parent.FirstNode);
+        }
+
     }
 }
