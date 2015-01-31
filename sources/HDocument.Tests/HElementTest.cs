@@ -181,6 +181,16 @@ namespace HDoc.Tests
             Assert.Equal("val3", la.Value);
         }
 
+        [Fact]
+        public void TestCantAddDocumentInElement()
+        {
+            var elm = new HElement("test");
+            var doc = new HDocument();
+
+            var ex = Assert.Throws<ArgumentException>(() => elm.Add(doc));
+            Assert.Equal("Can't add a document in a element.", ex.Message);
+        }
+
     }
 
 }
