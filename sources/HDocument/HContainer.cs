@@ -212,7 +212,7 @@ namespace HDoc
         /// <summary>
         /// Enumerate all child elements
         /// </summary>
-        IEnumerable<HElement> GetElements(String name)
+        protected IEnumerable<HElement> GetElements(String name)
         {
             HNode n = content as HNode;
             if (n != null)

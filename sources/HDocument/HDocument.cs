@@ -41,6 +41,33 @@ namespace HDoc
         {
             return new HDocument(this);
         }
+
+        /// <summary>
+        /// Find the node of a type
+        /// </summary>
+        /// <remarks>
+        /// This is just an helper more fast than an GetElements().FirstOrDefault().
+        /// </remarks>
+        T FindFirstNode<T>() where T : HNode
+        {
+            HNode n = content as HNode;
+            if (n != null)
+            {
+                do
+                {
+                    n = n.nextNode;
+                    T e = n as T;
+                    if (e != null) return e;
+                } while (n != content);
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Gets the root element of the XML Tree for this document.
+        /// </summary>
+        public HElement Root { get { return  FindFirstNode<HElement>(); } }
+
     }
 
 }

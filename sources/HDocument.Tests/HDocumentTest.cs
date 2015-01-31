@@ -42,5 +42,24 @@ namespace HDoc.Tests
 
         }
 
+        [Fact]
+        public void TestRoot()
+        {
+            var hDoc = new HDocument();
+
+            Assert.Null(hDoc.Root);
+
+            hDoc.Add("  ");
+            Assert.Null(hDoc.Root);
+
+            hDoc.Add(new HText("  "));
+            Assert.Null(hDoc.Root);
+
+            var root = new HElement("root");
+            hDoc.Add(root);
+            Assert.Same(root, hDoc.Root);
+
+        }
+
     }
 }
