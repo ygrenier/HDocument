@@ -63,6 +63,34 @@ namespace HDoc
             return null;
         }
 
+        internal override void ValidateNode(HNode node, HNode previous)
+        {
+            // Can't accept CData
+            if(node is HCData)
+                throw new ArgumentException("Can't add CData in a document");
+            if(node is HDocument)
+                throw new ArgumentException("Can't add a document in a document");
+
+            // If node is a text, validate the string
+            if (node is HText)
+                ValidateString(((HText)node).Value);
+            else if (node is HElement)
+            {
+                // If root is defined, then we can't add a new element
+                if (Root != null)
+                    throw new ArgumentException("Root is already defined.");
+            }
+        }
+
+        /// <summary>
+        /// Can't accept a string non whitespace
+        /// </summary>
+        internal override void ValidateString(string s)
+        {
+            if (!String.IsNullOrWhiteSpace(s))
+                throw new ArgumentException("Can't add non whitespace text in a document.");
+        }
+
         /// <summary>
         /// Gets the root element of the XML Tree for this document.
         /// </summary>
