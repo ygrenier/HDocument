@@ -61,6 +61,7 @@
     <Compile Include="HElementTest.cs" />
     <Compile Include="HNodeTest.cs" />
     <Compile Include="HObjectTest.cs" />
+    <Compile Include="HCommentTest.cs" />
     <Compile Include="HTextTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

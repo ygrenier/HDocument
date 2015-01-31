@@ -8,30 +8,30 @@
     </TypeIdentifier>
   </Class>
   <Class Name="HDoc.HNode" Collapsed="true">
-    <Position X="4.5" Y="1.5" Width="1.5" />
+    <Position X="5.5" Y="1.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAYAAAAEBAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>HNode.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="HDoc.HContainer" Collapsed="true">
-    <Position X="4.5" Y="2.75" Width="1.5" />
+    <Position X="5.5" Y="2.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>EAACAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>EEIiEAAAIAAAAAAAIAAQBAAAAAABCAAAAABAAAAIAAA=</HashCode>
       <FileName>HContainer.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="HDoc.HDocument" Collapsed="true">
-    <Position X="3.5" Y="4" Width="1.5" />
+    <Position X="4.5" Y="4" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAEAAQAAAAACIAAAAABAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>HDocument.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="HDoc.HElement" Collapsed="true">
-    <Position X="5.5" Y="4" Width="1.5" />
+    <Position X="6.5" Y="4" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAQEAAAADAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAACAAIAAAAABAQQAREAAAADAABAAAAAAAA=</HashCode>
       <FileName>HElement.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -45,8 +45,22 @@
   <Class Name="HDoc.HText" Collapsed="true">
     <Position X="2.5" Y="2.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAgAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAIAAAAAAAAAAAAAACAAAAAgAAAAAAA=</HashCode>
       <FileName>HText.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="HDoc.HCData" Collapsed="true">
+    <Position X="2.5" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>HCData.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="HDoc.HComment" Collapsed="true">
+    <Position X="8.5" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAIAAAAAAAAAAAAAACAAAAAgAAAAAAA=</HashCode>
+      <FileName>HComment.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Font Name="Segoe UI" Size="9" />
