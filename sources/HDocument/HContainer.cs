@@ -100,20 +100,24 @@ namespace HDoc
         /// </summary>
         void AddNode(HNode n)
         {
-            throw new NotImplementedException();
-            //ValidateNode(n, this);
-            //if (n.parent != null)
-            //{
-            //    n = n.CloneNode();
-            //}
-            //else
-            //{
-            //    HNode p = this;
-            //    while (p.parent != null) p = p.parent;
-            //    if (n == p) n = n.CloneNode();
-            //}
-            //ConvertContentTextToNode();
-            //AppendNode(n);
+            // Validate the node
+            ValidateNode(n, this);
+            // If the node have a parent we clone it
+            if (n.Parent != null)
+            {
+                n = n.CloneNode();
+            }
+            else
+            {
+                // If n is the parent, then we clone it
+                HNode p = this;
+                while (p.parent != null) p = p.Parent;
+                if (n == p) n = n.CloneNode();
+            }
+            // Because we adding a node, we check the content is a node
+            ConvertContentTextToNode();
+            // Add the node to the list
+            AppendNode(n);
         }
 
         /// <summary>
@@ -121,7 +125,20 @@ namespace HDoc
         /// </summary>
         void AppendNode(HNode n)
         {
-            throw new NotImplementedException();
+            // Set the parent
+            n.parent = this;
+            if (content == null)
+            {
+                n.nextNode = n;
+            }
+            else
+            {
+                // Insert the node to the list
+                HNode x = (HNode)content;
+                n.nextNode = x.nextNode;
+                x.nextNode = n;
+            }
+            content = n;
         }
 
         /// <summary>
@@ -129,7 +146,34 @@ namespace HDoc
         /// </summary>
         void AddString(String s)
         {
-            throw new NotImplementedException();
+            // Valid the string
+            ValidateString(s);
+            // If no content the we affect the texte
+            if (content == null)
+            {
+                content = s;
+            }
+            else if (s.Length > 0)
+            {
+                // If the content is a string, we concat them
+                if (content is string)
+                {
+                    content = (string)content + s;
+                }
+                else
+                {
+                    // If the content is an HText node the we adding the string to the node
+                    HText tn = content as HText;
+                    if (tn != null && !(tn is HCData))
+                    {
+                        tn.value += s;
+                    }
+                    else
+                    {
+                        AppendNode(new HText(s));
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -154,9 +198,16 @@ namespace HDoc
             }
         }
 
-        void ValidateNode(HNode node, HContainer parent)
+        /// <remarks>
+        /// Validate insertion of the given node. previous is the node after which insertion
+        /// will occur. previous == null means at beginning, previous == this means at end.
+        /// </remarks>
+        internal virtual void ValidateNode(HNode node, HNode previous)
         {
-            throw new NotImplementedException();
+        }
+
+        internal virtual void ValidateString(string s)
+        {
         }
 
         #endregion

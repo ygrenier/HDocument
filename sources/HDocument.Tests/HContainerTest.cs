@@ -29,9 +29,19 @@ namespace HDoc.Tests
         [Fact]
         public void TestAddString()
         {
-            HContainer container = new HDocument();
+            HContainer container = new HElement("test");
 
-            Assert.Throws<NotImplementedException>(() => container.Add("String"));
+            Assert.Null(container.FirstNode);
+            container.Add("String 1");
+
+            Assert.IsType<HText>(container.FirstNode);
+            Assert.Equal("String 1", ((HText)container.FirstNode).Value);
+
+            container.Add(" - String 2");
+
+            Assert.IsType<HText>(container.FirstNode);
+            Assert.Equal("String 1 - String 2", ((HText)container.FirstNode).Value);
+
         }
 
         [Fact]
