@@ -39,6 +39,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="HAttribute.cs" />
+    <Compile Include="HCData.cs" />
     <Compile Include="HContainer.cs" />
     <Compile Include="HDocument.cs" />
     <Compile Include="HElement.cs" />

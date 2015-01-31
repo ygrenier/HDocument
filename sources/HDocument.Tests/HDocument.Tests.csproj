@@ -55,6 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="HAttributeTest.cs" />
+    <Compile Include="HCDataTest.cs" />
     <Compile Include="HContainerTest.cs" />
     <Compile Include="HDocumentTest.cs" />
     <Compile Include="HElementTest.cs" />
