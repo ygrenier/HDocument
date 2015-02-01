@@ -58,6 +58,7 @@
     <Compile Include="HCDataTest.cs" />
     <Compile Include="HContainerTest.cs" />
     <Compile Include="HDocumentTest.cs" />
+    <Compile Include="HDocumentTypeTest.cs" />
     <Compile Include="HElementTest.cs" />
     <Compile Include="HNodeTest.cs" />
     <Compile Include="HObjectTest.cs" />
