@@ -45,6 +45,7 @@
     <Compile Include="HDocument.cs" />
     <Compile Include="HDocumentType.cs" />
     <Compile Include="HElement.cs" />
+    <Compile Include="HEntity.cs" />
     <Compile Include="HNode.cs" />
     <Compile Include="HObject.cs" />
     <Compile Include="HText.cs" />
