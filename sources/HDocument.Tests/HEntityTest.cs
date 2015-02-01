@@ -110,5 +110,30 @@ namespace HDoc.Tests
 
         }
 
+        [Fact]
+        public void TestHtmlEncode()
+        {
+            Assert.Equal(null, HEntity.HtmlEncode(null));
+            Assert.Equal("", HEntity.HtmlEncode(""));
+            Assert.Equal(" \t ", HEntity.HtmlEncode(" \t "));
+
+            Assert.Equal("test", HEntity.HtmlEncode("test"));
+
+            // named entities
+            Assert.Equal("&amp;", HEntity.HtmlEncode("&"));
+            Assert.Equal("&amp;test", HEntity.HtmlEncode("&test"));
+            Assert.Equal("test&amp;", HEntity.HtmlEncode("test\u0026"));
+            Assert.Equal("te&amp;st", HEntity.HtmlEncode("te&st"));
+
+            // Numeric entities
+            Assert.Equal("&#x0260;", HEntity.HtmlEncode("\u0260"));
+
+            // Multiple chars
+            Assert.Equal("&mstpos;Test", HEntity.HtmlEncode("\u223ETest"));
+            Assert.Equal("&acE;Test", HEntity.HtmlEncode("\u223E\u0333Test"));
+            Assert.Equal("&mstpos;&amp;Test", HEntity.HtmlEncode("\u223E\u0026Test"));
+
+        }
+
     }
 }

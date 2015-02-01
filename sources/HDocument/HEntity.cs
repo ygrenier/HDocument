@@ -2410,6 +2410,57 @@ namespace HDoc
             return result.ToString();
         }
 
+        /// <summary>
+        /// Encode all chars to entites when required (char &gt; 127).
+        /// </summary>
+        public static String HtmlEncode(String value)
+        {
+            // If nothing to encode returns
+            if (String.IsNullOrEmpty(value)) return value;
+            // Prepare result
+            StringBuilder result = new StringBuilder();
+            // Parse
+            int pos = 0, valLen = value.Length;
+            int sPos = pos;
+            while (pos < valLen)
+            {
+                Char c = value[pos];
+                if (c > 127 || c == '&' || c == '<' || c == '>' || c == '"')
+                {
+                    if (sPos < pos)
+                        result.Append(value.Substring(sPos, pos - sPos));
+                    // Search from index
+                    EntityIndex index;
+                    HEntity entity = null;
+                    if (EntityIndexes.TryGetValue(c, out index))
+                    {
+                        int ci = pos + 1;
+                        while (index != null && index.Entities != null)
+                            index = index.Entities.FirstOrDefault(ei => ei.Index == value[ci++]);
+                        if (index != null && index.Entity != null)
+                        {
+                            pos = ci - 1;
+                            entity = index.Entity;
+                        }
+                    }
+                    if (entity == null)
+                        EntitySingleIndex.TryGetValue(c, out entity);
+                    // If the entity is found use name
+                    if (entity != null)
+                        result.Append("&").Append(entity.Name).Append(";");
+                    else
+                        result.Append("&#x").Append(((int)c).ToString("x4")).Append(";");
+
+                    sPos = pos + 1;
+                }
+                pos++;
+            }
+            if (sPos < pos)
+                result.Append(value.Substring(sPos, pos - sPos));
+            // Returns result
+            return result.ToString();
+        }
+
         #endregion
 
         /// <summary>
