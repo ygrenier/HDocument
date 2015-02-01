@@ -77,5 +77,38 @@ namespace HDoc.Tests
             }
         }
 
+        [Fact]
+        public void TestHtmlDecode()
+        {
+            Assert.Equal(null, HEntity.HtmlDecode(null));
+            Assert.Equal("", HEntity.HtmlDecode(""));
+            Assert.Equal(" \t ", HEntity.HtmlDecode(" \t "));
+
+            Assert.Equal("test", HEntity.HtmlDecode("test"));
+
+            // named entities
+            Assert.Equal("&", HEntity.HtmlDecode("&amp;"));
+            Assert.Equal("&test", HEntity.HtmlDecode("&amp;test"));
+            Assert.Equal("test&", HEntity.HtmlDecode("test&amp;"));
+            Assert.Equal("te&st", HEntity.HtmlDecode("te&amp;st"));
+
+            // Unknown entity
+            Assert.Equal("&test;", HEntity.HtmlDecode("&test;"));
+
+            // Numeric entities
+            Assert.Equal("&", HEntity.HtmlDecode("&#X26;"));
+            Assert.Equal("&test", HEntity.HtmlDecode("&#x26;test"));
+            Assert.Equal("test&", HEntity.HtmlDecode("test&#38;"));
+            Assert.Equal("te&st", HEntity.HtmlDecode("te&#38;st"));
+
+            // Invalid numeric
+            Assert.Equal("&#X2Z6;", HEntity.HtmlDecode("&#X2Z6;"));
+            Assert.Equal("&#3d8;test", HEntity.HtmlDecode("&#3d8;test"));
+
+            // Non closed entities
+            Assert.Equal("test&amp test&test", HEntity.HtmlDecode("test&amp test&amp;test"));
+
+        }
+
     }
 }

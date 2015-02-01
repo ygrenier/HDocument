@@ -2237,6 +2237,8 @@ namespace HDoc
             this.Characters = characters;
         }
 
+        #region Entities management
+
         /// <summary>
         /// List all registered entities
         /// </summary>
@@ -2308,6 +2310,107 @@ namespace HDoc
             // Returns the entity in the index
             return idx == null ? null : idx.Entity;
         }
+
+        /// <summary>
+        /// Decode all entities in a text.
+        /// </summary>
+        public static String HtmlDecode(String value)
+        {
+            // If nothing to decode returns
+            if (String.IsNullOrEmpty(value)) return value;
+            // Prepare result
+            StringBuilder result = new StringBuilder();
+            // Parse
+            int pos = 0, valLen = value.Length;
+            // 0: Search entity
+            // 1: In entity
+            int state = 0;
+            int sPos = pos;
+            while (pos < valLen)
+            {
+                var c = value[pos];
+                switch (state)
+                {
+                    // Search entity
+                    case 0:
+                        if (c == '&')
+                        {
+                            if (sPos < pos)
+                                result.Append(value.Substring(sPos, pos - sPos));
+                            sPos = pos;
+                            state = 1;
+                        }
+                        break;
+                    // In entity
+                    case 1:
+                        switch (c)
+                        {
+                            // End of entity
+                            case ';':
+                                // Name if entity
+                                String name = value.Substring(sPos + 1, pos - sPos - 1);
+                                // Numeric entity
+                                if (name.StartsWith("#"))
+                                {
+                                    try
+                                    {
+                                        string codeStr = name.Substring(1).Trim().ToLower();
+                                        int fromBase;
+                                        if (codeStr.StartsWith("x"))
+                                        {
+                                            fromBase = 16;
+                                            codeStr = codeStr.Substring(1);
+                                        }
+                                        else
+                                        {
+                                            fromBase = 10;
+                                        }
+                                        int code = Convert.ToInt32(codeStr, fromBase);
+                                        result.Append(Convert.ToChar(code));
+                                    }
+                                    catch
+                                    {
+                                        result.Append("&").Append(name).Append(";");
+                                    }
+                                }
+                                else
+                                {
+                                    var ent = FindEntityByName(name);
+                                    if (ent != null)
+                                        result.Append(ent.ToString());
+                                    else
+                                        result.Append("&").Append(name).Append(";");
+                                }
+                                sPos = pos + 1;
+                                state = 0;
+                                break;
+
+                            // New entity
+                            case '&':
+                                // Current entity is not closed
+                                result.Append(value.Substring(sPos, pos - sPos));
+                                sPos = pos;
+                                break;
+
+                            //// Another char
+                            //default:
+                            //    break;
+                        }
+                        break;
+                }
+                // Next char
+                pos++;
+            }
+            // Add the rest
+            if (sPos < pos)
+            {
+                result.Append(value.Substring(sPos, pos - sPos));
+            }
+            // Returns the result
+            return result.ToString();
+        }
+
+        #endregion
 
         /// <summary>
         /// Convert to string
