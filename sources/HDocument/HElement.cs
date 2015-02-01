@@ -168,12 +168,14 @@ namespace HDoc
         #region Content management
 
         /// <summary>
-        /// Can't accept a document
+        /// Can't accept a document or document type nodes
         /// </summary>
         internal override void ValidateNode(HNode node, HNode previous)
         {
-            if (node is HDocument) 
+            if (node is HDocument)
                 throw new ArgumentException("Can't add a document in a element.");
+            if (node is HDocumentType)
+                throw new ArgumentException("Can't add a document type in a element.");
         }
 
         #endregion
