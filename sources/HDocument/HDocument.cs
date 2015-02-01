@@ -66,14 +66,25 @@ namespace HDoc
         internal override void ValidateNode(HNode node, HNode previous)
         {
             // Can't accept CData
-            if(node is HCData)
+            if (node is HCData)
                 throw new ArgumentException("Can't add CData in a document");
-            if(node is HDocument)
+            if (node is HDocument)
                 throw new ArgumentException("Can't add a document in a document");
 
             // If node is a text, validate the string
             if (node is HText)
                 ValidateString(((HText)node).Value);
+            else if (node is HDocumentType)
+            {
+                // If the document type, we can't add an another
+                if (DocumentType != null)
+                    throw new ArgumentException("Document type is alreay defined.");
+
+                // We can't add a document type after the root
+                if (Root != null)
+                    throw new ArgumentException("Can't add a document type after the root node.");
+
+            }
             else if (node is HElement)
             {
                 // If root is defined, then we can't add a new element
@@ -90,6 +101,11 @@ namespace HDoc
             if (!String.IsNullOrWhiteSpace(s))
                 throw new ArgumentException("Can't add non whitespace text in a document.");
         }
+
+        /// <summary>
+        /// Get the document type node for this document.
+        /// </summary>
+        public HDocumentType DocumentType { get { return FindFirstNode<HDocumentType>(); } }
 
         /// <summary>
         /// Gets the root element of the XML Tree for this document.
