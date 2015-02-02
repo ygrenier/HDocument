@@ -16,6 +16,7 @@ namespace HDoc.Tests
             Assert.Same(hDoc, hDoc.Document);
             Assert.Same(Encoding.GetEncoding("iso-8859-1"), hDoc.Encoding);
             Assert.Null(hDoc.Parent);
+            Assert.Null(hDoc.XmlDeclaration);
             Assert.Null(hDoc.DocumentType);
             Assert.Null(hDoc.Root);
             Assert.Equal(0, hDoc.Nodes().Count());
@@ -84,6 +85,43 @@ namespace HDoc.Tests
             var dt = new HDocumentType();
             hDoc.Add(dt);
             Assert.Same(dt, hDoc.DocumentType);
+
+        }
+
+        [Fact]
+        public void TestXmlDeclaration()
+        {
+            var hDoc = new HDocument();
+
+            Assert.Null(hDoc.XmlDeclaration);
+
+            hDoc.Add("  ");
+            Assert.Null(hDoc.XmlDeclaration);
+
+            hDoc.Add(new HText("  "));
+            Assert.Null(hDoc.DocumentType);
+
+            var xd = new HXmlDeclaration();
+            hDoc.Add(xd);
+            Assert.Same(xd, hDoc.XmlDeclaration);
+
+            // Can't add a second xml declaration
+            var ae = Assert.Throws<ArgumentException>(() => hDoc.Add(new HXmlDeclaration()));
+            Assert.Equal("Xml declaration is alreay defined.", ae.Message);
+
+            // Can't add a xml declaration after the document type
+            hDoc = new HDocument(
+                new HDocumentType()
+                );
+            ae = Assert.Throws<ArgumentException>(() => hDoc.Add(new HXmlDeclaration()));
+            Assert.Equal("Can't add a xml declaration after the document type.", ae.Message);
+
+            // Can't add a xml declaration after root
+            hDoc = new HDocument(
+                new HElement("root")
+                );
+            ae = Assert.Throws<ArgumentException>(() => hDoc.Add(new HXmlDeclaration()));
+            Assert.Equal("Can't add a xml declaration after the root node.", ae.Message);
 
         }
 

@@ -78,9 +78,23 @@ namespace HDoc
             // If node is a text, validate the string
             if (node is HText)
                 ValidateString(((HText)node).Value);
+            else if (node is HXmlDeclaration)
+            {
+                // If the xml declaration is defined, we can't add an another
+                if (XmlDeclaration != null)
+                    throw new ArgumentException("Xml declaration is alreay defined.");
+
+                // We can't add a xml declaration after the document type
+                if (DocumentType != null)
+                    throw new ArgumentException("Can't add a xml declaration after the document type.");
+
+                // We can't add a xml declaration after the root
+                if (Root != null)
+                    throw new ArgumentException("Can't add a xml declaration after the root node.");
+            }
             else if (node is HDocumentType)
             {
-                // If the document type, we can't add an another
+                // If the document type is defined, we can't add an another
                 if (DocumentType != null)
                     throw new ArgumentException("Document type is alreay defined.");
 
@@ -110,6 +124,11 @@ namespace HDoc
         /// Encoding of the document
         /// </summary>
         public Encoding Encoding { get; set; }
+
+        /// <summary>
+        /// Get the XML declaration node for this document.
+        /// </summary>
+        public HXmlDeclaration XmlDeclaration { get { return FindFirstNode<HXmlDeclaration>(); } }
 
         /// <summary>
         /// Get the document type node for this document.
