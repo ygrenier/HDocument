@@ -32,7 +32,7 @@ namespace HDoc
         public void AddBefore(params object[] content)
         {
             if (parent == null) throw new InvalidOperationException("No parent found.");
-            throw new NotImplementedException();
+            parent.Insert(this, content);
         }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace HDoc
         public void AddAfter(params object[] content)
         {
             if (parent == null) throw new InvalidOperationException("No parent found.");
-            throw new NotImplementedException();
+            parent.Insert(this.NextNode, content);
         }
         
         #endregion

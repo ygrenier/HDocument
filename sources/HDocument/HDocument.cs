@@ -68,6 +68,7 @@ namespace HDoc
 
         internal override void ValidateNode(HNode node, HNode previous)
         {
+            base.ValidateNode(node, previous);
             // Can't accept CData
             if (node is HCData)
                 throw new ArgumentException("Can't add CData in a document");

@@ -44,5 +44,63 @@ namespace HDoc.Tests
 
         }
 
+        [Fact]
+        public void TestAddBefore()
+        {
+            HElement parent = new HElement("parent");
+
+            HNode n1 = new HElement("test-1");
+            parent.Add(n1);
+            Assert.Equal(1, parent.Nodes().Count());
+
+            HNode n2 = new HElement("test-2");
+            n1.AddBefore(n2);
+            Assert.Equal(2, parent.Nodes().Count());
+            n1.AddBefore("1");
+            Assert.Equal(3, parent.Nodes().Count());
+            n2.AddBefore("2");
+            Assert.Equal(4, parent.Nodes().Count());
+
+            var nodes = parent.Nodes().ToArray();
+            Assert.Equal(4, nodes.Length);
+            Assert.IsType<HText>(nodes[0]);
+            Assert.IsType<HElement>(nodes[1]);
+            Assert.IsType<HText>(nodes[2]);
+            Assert.IsType<HElement>(nodes[3]);
+
+            n1 = new HElement("test-3");
+            var ioe = Assert.Throws<InvalidOperationException>(() => n1.AddBefore(null));
+            Assert.Equal("No parent found.", ioe.Message);
+        }
+
+        [Fact]
+        public void TestAddAfter()
+        {
+            HElement parent = new HElement("parent");
+
+            HNode n1 = new HElement("test-1");
+            parent.Add(n1);
+            Assert.Equal(1, parent.Nodes().Count());
+
+            HNode n2 = new HElement("test-2");
+            n1.AddAfter(n2);
+            Assert.Equal(2, parent.Nodes().Count());
+            n1.AddAfter("1");
+            Assert.Equal(3, parent.Nodes().Count());
+            n2.AddAfter("2");
+            Assert.Equal(4, parent.Nodes().Count());
+
+            var nodes = parent.Nodes().ToArray();
+            Assert.Equal(4, nodes.Length);
+            Assert.IsType<HElement>(nodes[0]);
+            Assert.IsType<HText>(nodes[1]);
+            Assert.IsType<HElement>(nodes[2]);
+            Assert.IsType<HText>(nodes[3]);
+
+            n1 = new HElement("test-3");
+            var ioe = Assert.Throws<InvalidOperationException>(() => n1.AddAfter(null));
+            Assert.Equal("No parent found.", ioe.Message);
+        }
+
     }
 }

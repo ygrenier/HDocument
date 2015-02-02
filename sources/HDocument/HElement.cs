@@ -172,6 +172,7 @@ namespace HDoc
         /// </summary>
         internal override void ValidateNode(HNode node, HNode previous)
         {
+            base.ValidateNode(node, previous);
             if (node is HDocument)
                 throw new ArgumentException("Can't add a document in a element.");
             if (node is HDocumentType)
