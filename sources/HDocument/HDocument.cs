@@ -16,12 +16,14 @@ namespace HDoc
         /// </summary>
         public HDocument()
         {
+            Encoding = Encoding.GetEncoding("iso-8859-1");
         }
 
         /// <summary>
         /// Create a new HTML document with a content
         /// </summary>
-        public HDocument(params object[] content):this()
+        public HDocument(params object[] content)
+            : this()
         {
             Add((object)content);
         }
@@ -32,6 +34,7 @@ namespace HDoc
         public HDocument(HDocument other)
             : base(other)
         {
+            this.Encoding = other.Encoding;
         }
 
         /// <summary>
@@ -101,6 +104,11 @@ namespace HDoc
             if (!String.IsNullOrWhiteSpace(s))
                 throw new ArgumentException("Can't add non whitespace text in a document.");
         }
+
+        /// <summary>
+        /// Encoding of the document
+        /// </summary>
+        public Encoding Encoding { get; set; }
 
         /// <summary>
         /// Get the document type node for this document.

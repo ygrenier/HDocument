@@ -14,6 +14,7 @@ namespace HDoc.Tests
         {
             var hDoc = new HDocument();
             Assert.Same(hDoc, hDoc.Document);
+            Assert.Same(Encoding.GetEncoding("iso-8859-1"), hDoc.Encoding);
             Assert.Null(hDoc.Parent);
             Assert.Null(hDoc.DocumentType);
             Assert.Null(hDoc.Root);
@@ -25,6 +26,7 @@ namespace HDoc.Tests
         {
             var hDoc = new HDocument(new HElement("root"));
             Assert.Same(hDoc, hDoc.Document);
+            Assert.Same(Encoding.GetEncoding("iso-8859-1"), hDoc.Encoding);
             Assert.Null(hDoc.Parent);
             Assert.Equal(1, hDoc.Nodes().Count());
             Assert.NotNull(hDoc.Root);
@@ -34,6 +36,7 @@ namespace HDoc.Tests
         public void TestCreateFromOther()
         {
             var hDoc = new HDocument("    ");
+            hDoc.Encoding = Encoding.ASCII;
             Assert.Same(hDoc, hDoc.Document);
             Assert.Null(hDoc.Parent);
             Assert.Equal(1, hDoc.Nodes().Count());
@@ -42,6 +45,7 @@ namespace HDoc.Tests
             Assert.Same(nDoc, nDoc.Document);
             Assert.Null(nDoc.Parent);
             Assert.Equal(1, nDoc.Nodes().Count());
+            Assert.Same(Encoding.ASCII, hDoc.Encoding);
 
         }
 
