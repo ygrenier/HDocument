@@ -106,6 +106,7 @@ namespace HDoc
                 SerializeAttribute(attr.Name, attr.Value, writer);
             if (element.HasNodes)
             {
+                writer.Write(">");
                 SerializeContainer(element, writer);
                 writer.Write("</{0}>", element.Name);
             }
@@ -155,12 +156,10 @@ namespace HDoc
             if (doctype.FPI != null)
             {
                 writer.Write("\"{0}\" ", doctype.FPI);
-                writer.Write(" ");
             }
             if (doctype.Uri != null)
             {
                 writer.Write("\"{0}\" ", doctype.Uri);
-                writer.Write(" ");
             }
             writer.Write(">\r\n");
         }
@@ -170,8 +169,10 @@ namespace HDoc
         /// </summary>
         protected virtual void SerializeAttribute(String name, String value, TextWriter writer)
         {
-            if (String.IsNullOrWhiteSpace(name)) return;
-            writer.Write(" {0}=\"{1}\"", name.Trim(), HEntity.HtmlEncode(value));
+            if (!String.IsNullOrWhiteSpace(name))
+            {
+                writer.Write(" {0}=\"{1}\"", name.Trim(), HEntity.HtmlEncode(value));
+            }
         }
 
     }
