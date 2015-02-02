@@ -95,6 +95,45 @@ namespace HDoc
         }
 
         /// <summary>
+        /// Insert a content after the <param name="previous" /> node.
+        /// </summary>
+        internal void Insert(HNode previous, object content)
+        {
+            if (content == null) return;
+            HNode n = content as HNode;
+            if (n != null)
+            {
+                InsertNode(previous, n);
+                return;
+            }
+            string s = content as string;
+            if (s != null)
+            {
+                InsertString(previous, s);
+                return;
+            }
+            HAttribute a = content as HAttribute;
+            if (a != null)
+            {
+                AddAttribute(a);
+                return;
+            }
+            object[] o = content as object[];
+            if (o != null)
+            {
+                foreach (object obj in o) Add(obj);
+                return;
+            }
+            IEnumerable e = content as IEnumerable;
+            if (e != null)
+            {
+                foreach (object obj in e) Add(obj);
+                return;
+            }
+            InsertString(previous, content.ToString());
+        }
+
+        /// <summary>
         /// Internal adding a node.
         /// </summary>
         void AddNode(HNode n)
@@ -117,27 +156,6 @@ namespace HDoc
             ConvertContentTextToNode();
             // Add the node to the list
             AppendNode(n);
-        }
-
-        /// <summary>
-        /// Add node in the list.
-        /// </summary>
-        void AppendNode(HNode n)
-        {
-            // Set the parent
-            n.parent = this;
-            if (content == null)
-            {
-                n.nextNode = n;
-            }
-            else
-            {
-                // Insert the node to the list
-                HNode x = (HNode)content;
-                n.nextNode = x.nextNode;
-                x.nextNode = n;
-            }
-            content = n;
         }
 
         /// <summary>
@@ -172,6 +190,93 @@ namespace HDoc
                         AppendNode(new HText(s));
                     }
                 }
+            }
+        }
+
+        /// <summary>
+        /// Add node in the list.
+        /// </summary>
+        void AppendNode(HNode n)
+        {
+            InsertNode((HNode)content, n);
+        }
+
+        /// <summary>
+        /// Internal insertion of string.
+        /// </summary>
+        void InsertString(HNode previous, String s)
+        {
+            // Valid the string
+            ValidateString(s);
+            // If no content the we affect the texte
+            if (content == null)
+            {
+                content = s;
+            }
+            else if (s.Length > 0)
+            {
+                if (previous == content)
+                {
+                    // If the content is a string, we concat them
+                    if (content is string)
+                    {
+                        content = (string)content + s;
+                    }
+                    else
+                    {
+                        // If the content is an HText node the we adding the string to the node
+                        HText tn = content as HText;
+                        if (tn != null && !(tn is HCData))
+                        {
+                            tn.value += s;
+                        }
+                        else
+                        {
+                            InsertNode(previous, new HText(s));
+                        }
+                    }
+
+                }
+                else
+                {
+                    InsertNode(previous, new HText(s));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Insert <paramref name="node"/> after the <paramref name="previous"/> node.
+        /// </summary>
+        /// <remarks>
+        /// If previous is null then insert the node at the beginning of the list.
+        /// If previous is current content, then the node is added at the end.
+        /// </remarks>
+        void InsertNode(HNode previous, HNode node)
+        {
+            // Validate the node
+            ValidateNode(node, this);
+            // Set the parent
+            node.parent = this;
+            // Content empty ?
+            if (content == null)
+            {
+                node.nextNode = node;
+                content = node;
+            }
+            else if (previous == null)
+            {
+                // Insert at the beginning of the list
+                node.nextNode = ((HNode)content).nextNode;
+                ((HNode)content).nextNode = node;
+            }
+            else
+            {
+                // Insert the node to the list
+                node.nextNode = previous.nextNode;
+                previous.nextNode = node;
+                // Change the list ?
+                if (previous == content)
+                    content = node;
             }
         }
 

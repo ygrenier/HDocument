@@ -19,7 +19,7 @@ namespace HDoc
         internal abstract HNode CloneNode();
 
         #region Node management
-        /*
+        
         /// <summary>
         /// Adds the specified content immediately before this node.
         /// </summary>
@@ -32,7 +32,7 @@ namespace HDoc
         public void AddBefore(params object[] content)
         {
             if (parent == null) throw new InvalidOperationException("No parent found.");
-
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -47,9 +47,9 @@ namespace HDoc
         public void AddAfter(params object[] content)
         {
             if (parent == null) throw new InvalidOperationException("No parent found.");
-
+            throw new NotImplementedException();
         }
-        */
+        
         #endregion
 
         #region Properties
