@@ -52,37 +52,7 @@ namespace HDoc
         public void Add(object content)
         {
             if (content == null) return;
-            HNode n = content as HNode;
-            if (n != null)
-            {
-                AddNode(n);
-                return;
-            }
-            string s = content as string;
-            if (s != null)
-            {
-                AddString(s);
-                return;
-            }
-            HAttribute a = content as HAttribute;
-            if (a != null)
-            {
-                AddAttribute(a);
-                return;
-            }
-            object[] o = content as object[];
-            if (o != null)
-            {
-                foreach (object obj in o) Add(obj);
-                return;
-            }
-            IEnumerable e = content as IEnumerable;
-            if (e != null)
-            {
-                foreach (object obj in e) Add(obj);
-                return;
-            }
-            AddString(content.ToString());
+            Insert(null, content);
         }
 
         /// <summary>
@@ -95,55 +65,51 @@ namespace HDoc
         }
 
         /// <summary>
-        /// Internal adding a node.
+        /// Insert a content before the <param name="insert" /> node.
         /// </summary>
-        void AddNode(HNode n)
+        internal void Insert(HNode insert, object content)
         {
-            // Validate the node
-            ValidateNode(n, this);
-            // If the node have a parent we clone it
-            if (n.Parent != null)
+            if (content == null) return;
+            HNode n = content as HNode;
+            if (n != null)
             {
-                n = n.CloneNode();
+                InsertNode(insert, n);
+                return;
             }
-            else
+            string s = content as string;
+            if (s != null)
             {
-                // If n is the parent, then we clone it
-                HNode p = this;
-                while (p.parent != null) p = p.Parent;
-                if (n == p) n = n.CloneNode();
+                InsertString(insert, s);
+                return;
             }
-            // Because we adding a node, we check the content is a node
-            ConvertContentTextToNode();
-            // Add the node to the list
-            AppendNode(n);
+            HAttribute a = content as HAttribute;
+            if (a != null)
+            {
+                AddAttribute(a);
+                return;
+            }
+            IEnumerable e = content as IEnumerable;
+            if (e != null)
+            {
+                foreach (object obj in e)
+                    Insert(insert, obj);
+                return;
+            }
+            InsertString(insert, content.ToString());
         }
 
         /// <summary>
-        /// Add node in the list.
+        /// Add node at the end of the list.
         /// </summary>
         void AppendNode(HNode n)
         {
-            // Set the parent
-            n.parent = this;
-            if (content == null)
-            {
-                n.nextNode = n;
-            }
-            else
-            {
-                // Insert the node to the list
-                HNode x = (HNode)content;
-                n.nextNode = x.nextNode;
-                x.nextNode = n;
-            }
-            content = n;
+            InsertNode(null, n);
         }
 
         /// <summary>
-        /// Internal adding a string.
+        /// Internal insertion of string.
         /// </summary>
-        void AddString(String s)
+        void InsertString(HNode before, String s)
         {
             // Valid the string
             ValidateString(s);
@@ -154,24 +120,82 @@ namespace HDoc
             }
             else if (s.Length > 0)
             {
-                // If the content is a string, we concat them
-                if (content is string)
+                if (before == null)
                 {
-                    content = (string)content + s;
-                }
-                else
-                {
-                    // If the content is an HText node the we adding the string to the node
-                    HText tn = content as HText;
-                    if (tn != null && !(tn is HCData))
+                    // If the content is a string, we concat them
+                    if (content is string)
                     {
-                        tn.value += s;
+                        content = (string)content + s;
                     }
                     else
                     {
-                        AppendNode(new HText(s));
+                        // If the content is an HText node the we adding the string to the node
+                        HText tn = content as HText;
+                        if (tn != null && !(tn is HCData))
+                        {
+                            tn.value += s;
+                        }
+                        else
+                        {
+                            AppendNode(new HText(s));
+                        }
                     }
                 }
+                else
+                {
+                    InsertNode(before, new HText(s));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Insert <paramref name="node"/> before the <paramref name="before"/> node.
+        /// </summary>
+        /// <remarks>
+        /// If previous is null then insert the node at the beginning of the list.
+        /// If previous is current content, then the node is added at the end.
+        /// </remarks>
+        void InsertNode(HNode before, HNode node)
+        {
+            // Validate the node
+            ValidateNode(node, this);
+            // If the node have a parent we clone it
+            if (node.Parent != null)
+            {
+                node = node.CloneNode();
+            }
+            else
+            {
+                // If node is the parent of this container, then we clone it
+                HNode p = this;
+                while (p.parent != null) p = p.Parent;
+                if (node == p) node = node.CloneNode();
+            }
+            // Set the parent
+            node.parent = this;
+            // Content empty ?
+            if (content == null)
+            {
+                node.nextNode = node;
+                content = node;
+            }
+            else if (before == null)
+            {
+                ConvertContentTextToNode();
+                // Add at the end of the list
+                node.nextNode = ((HNode)content).nextNode;
+                ((HNode)content).nextNode = node;
+                content = node;
+            }
+            else
+            {
+                // Search the 'previous' before node
+                var previousBefore = before;
+                while (previousBefore.nextNode != before)
+                    previousBefore = previousBefore.nextNode;
+                // Insert the node to the list
+                node.nextNode = before;
+                previousBefore.nextNode = node;
             }
         }
 
