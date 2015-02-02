@@ -118,16 +118,23 @@ namespace HDoc
                 AddAttribute(a);
                 return;
             }
-            object[] o = content as object[];
-            if (o != null)
-            {
-                foreach (object obj in o) Add(obj);
-                return;
-            }
             IEnumerable e = content as IEnumerable;
             if (e != null)
             {
-                foreach (object obj in e) Add(obj);
+                var p = previous;
+                foreach (object obj in e)
+                {
+                    Insert(p, obj);
+                    if (p == null)
+                    {
+                        p = (HNode)this.content;
+                        if (p != null) p = p.nextNode;
+                    }
+                    else
+                    {
+                        p = p.nextNode;
+                    }
+                }
                 return;
             }
             InsertString(previous, content.ToString());
