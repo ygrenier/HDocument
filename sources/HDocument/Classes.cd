@@ -10,21 +10,21 @@
   <Class Name="HDoc.HNode" Collapsed="true">
     <Position X="7.5" Y="1.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAYAAAAEBAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AACAAAAAAAAAAAYAAAAEBAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>HNode.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="HDoc.HContainer" Collapsed="true">
     <Position X="7.5" Y="2.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>EEIiEAAAIAAAAAAAIAAQBAAAAAABCAAAAABAAAAIAAA=</HashCode>
+      <HashCode>EEIiEEAAIAAAAAAAAAAQBAAAAAABCAAABABBAAAAAAA=</HashCode>
       <FileName>HContainer.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="HDoc.HDocument" Collapsed="true">
     <Position X="6.5" Y="4" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAEAAQBAAAACIAAAAABAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAEAAQBAAAACIAAAAABAAAgAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>HDocument.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -43,14 +43,14 @@
     </TypeIdentifier>
   </Class>
   <Class Name="HDoc.HText" Collapsed="true">
-    <Position X="2.5" Y="2.75" Width="1.5" />
+    <Position X="12.5" Y="4" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAIAAAAAAAAAAAAAACAAAAAgAAAAAAA=</HashCode>
       <FileName>HText.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="HDoc.HCData" Collapsed="true">
-    <Position X="2.5" Y="4" Width="1.5" />
+    <Position X="12.5" Y="5.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>HCData.cs</FileName>
@@ -71,10 +71,17 @@
     </TypeIdentifier>
   </Class>
   <Class Name="HDoc.HEntity" Collapsed="true">
-    <Position X="0.5" Y="4" Width="1.5" />
+    <Position X="10.5" Y="6.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAgAAAAEAYAEAAAAAAQAAAEIIAAAAQAAAAgACQA=</HashCode>
+      <HashCode>AAAAAAgAAAAEAYQEAAAAAAQAAAEIIAAAAQAAAAgACQA=</HashCode>
       <FileName>HEntity.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="HDoc.HXmlDeclaration" Collapsed="true">
+    <Position X="2.5" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAAAAAAAAAAAAAIAAAAAAAAAgAAAAAAAAAAIAAAAAAA=</HashCode>
+      <FileName>HXmlDeclaration.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Enum Name="HDoc.StandardDoctype" Collapsed="true">
