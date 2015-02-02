@@ -65,6 +65,7 @@
     <Compile Include="HObjectTest.cs" />
     <Compile Include="HCommentTest.cs" />
     <Compile Include="HTextTest.cs" />
+    <Compile Include="HXmlDeclarationTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

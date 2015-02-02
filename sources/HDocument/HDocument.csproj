@@ -49,6 +49,7 @@
     <Compile Include="HNode.cs" />
     <Compile Include="HObject.cs" />
     <Compile Include="HText.cs" />
+    <Compile Include="HXmlDeclaration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
