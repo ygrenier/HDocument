@@ -12,6 +12,13 @@ namespace HDoc
     /// </summary>
     public class HSerializer
     {
+        /// <summary>
+        /// List of void elements
+        /// </summary>
+        protected static String[] VoidElements = new String[] { 
+            "area", "base", "br", "col", "embed", "hr", "img", "input", 
+            "keygen", "link", "meta", "param", "source", "track", "wbr" 
+        };
 
         /// <summary>
         /// Serialise an HTML document
@@ -97,6 +104,14 @@ namespace HDoc
         }
 
         /// <summary>
+        /// Check if a tag is a void element
+        /// </summary>
+        protected virtual bool IsVoidElement(string p)
+        {
+            return VoidElements.Any(ve => String.Equals(ve, p, StringComparison.OrdinalIgnoreCase));
+        }
+
+        /// <summary>
         /// Serialize an element
         /// </summary>
         protected virtual void SerializeElement(HElement element, TextWriter writer)
@@ -104,7 +119,7 @@ namespace HDoc
             writer.Write("<{0}", element.Name);
             foreach (var attr in element.Attributes())
                 SerializeAttribute(attr.Name, attr.Value, writer);
-            if (element.HasNodes)
+            if (element.HasNodes || !IsVoidElement(element.Name))
             {
                 writer.Write(">");
                 SerializeContainer(element, writer);

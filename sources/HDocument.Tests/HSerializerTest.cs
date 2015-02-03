@@ -67,5 +67,29 @@ namespace HDoc.Tests
             Assert.Throws<ArgumentNullException>(() => serializer.Serialize(doc, null));
 
         }
+
+        [Fact]
+        public void TestXmlDeclaration()
+        {
+            var doc = new HDocument(
+                new HXmlDeclaration(),
+                new HDocumentType(StandardDoctype.XHtml10Transitional),
+                new HElement("html")
+                );
+
+            StringBuilder html = new StringBuilder();
+            var writer = new StringWriter(html);
+            var serializer = new HSerializer();
+            serializer.Serialize(doc, writer);
+
+            var expected = new StringBuilder();
+            expected.AppendLine("<?xml version=\"1.0\" encoding=\"utf-8\" ?>");
+            expected.AppendLine("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\" >");
+            expected.Append("<html>");
+            expected.Append("</html>");
+            Assert.Equal(expected.ToString(), html.ToString());
+
+        }
+
     }
 }
