@@ -326,6 +326,16 @@ namespace HDoc
             }
         }
 
+        /// <summary>
+        /// Indicates if contains one or more nodes
+        /// </summary>
+        public bool HasNodes { get { return content != null; } }
+
+        /// <summary>
+        /// Indicates if contains one or more elements
+        /// </summary>
+        public bool HasElements { get { return GetElements(null).Any(); } }
+
         #endregion
 
     }

@@ -233,10 +233,12 @@ namespace HDoc.Tests
         {
             
             HContainer container = new HElement("Test");
+            Assert.False(container.HasNodes);
             HNode[] nodes = container.Nodes().ToArray();
             Assert.Equal(0, nodes.Length);
 
             container.Add("Content 1");
+            Assert.True(container.HasNodes);
             container.Add(new HElement("test"));
             container.Add("Content 2");
             container.Add(new HElement("element"));
@@ -258,11 +260,14 @@ namespace HDoc.Tests
         {
 
             HContainer container = new HElement("Test");
+            Assert.False(container.HasElements);
             HElement[] elements = container.Elements().ToArray();
             Assert.Equal(0, elements.Length);
 
             container.Add("Content 1");
+            Assert.False(container.HasElements);
             container.Add(new HElement("test"));
+            Assert.True(container.HasElements);
             container.Add("Content 2");
             container.Add(new HElement("element"));
             container.Add("Content 3");
