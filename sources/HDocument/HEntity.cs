@@ -2435,7 +2435,7 @@ namespace HDoc
                     if (EntityIndexes.TryGetValue(c, out index))
                     {
                         int ci = pos + 1;
-                        while (index != null && index.Entities != null)
+                        while (index != null && index.Entities != null && ci < valLen)
                             index = index.Entities.FirstOrDefault(ei => ei.Index == value[ci++]);
                         if (index != null && index.Entity != null)
                         {
