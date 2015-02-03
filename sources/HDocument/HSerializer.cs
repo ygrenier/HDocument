@@ -157,24 +157,24 @@ namespace HDoc
         /// </summary>
         protected virtual void SerializeDocumentType(HDocumentType doctype, TextWriter writer)
         {
-            writer.Write("<!DOCTYPE ");
+            writer.Write("<!DOCTYPE");
             if (doctype.RootElement != null)
             {
-                writer.Write(doctype.RootElement);
                 writer.Write(" ");
+                writer.Write(doctype.RootElement);
             }
             if (doctype.KindDoctype != null || doctype.FPI != null || doctype.Uri != null)
             {
-                writer.Write(doctype.KindDoctype ?? "PUBLIC");
                 writer.Write(" ");
+                writer.Write(doctype.KindDoctype ?? "PUBLIC");
             }
             if (doctype.FPI != null)
             {
-                writer.Write("\"{0}\" ", doctype.FPI);
+                writer.Write(" \"{0}\"", doctype.FPI);
             }
             if (doctype.Uri != null)
             {
-                writer.Write("\"{0}\" ", doctype.Uri);
+                writer.Write(" \"{0}\"", doctype.Uri);
             }
             writer.Write(">\r\n");
         }

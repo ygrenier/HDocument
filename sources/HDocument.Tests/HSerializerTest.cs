@@ -10,6 +10,7 @@ namespace HDoc.Tests
 {
     public class HSerializerTest
     {
+
         [Fact]
         public void TestSerialize()
         {
@@ -17,13 +18,9 @@ namespace HDoc.Tests
             var writer = new StringWriter(html);
 
             var doc = new HDocument(
-                new HXmlDeclaration(),
-                new HDocumentType(StandardDoctype.XHtml10Transitional),
-                new HComment("This is the root node"),
+                new HDocumentType(),
                 new HElement(
                     "html",
-                    "\r\n",
-                    new HComment("Start the header"),
                     new HElement(
                         "header",
                         new HElement("title", "Title of the document")
@@ -45,11 +42,8 @@ namespace HDoc.Tests
             serializer.Serialize(doc, writer);
 
             var expected = new StringBuilder();
-            expected.AppendLine("<?xml version=\"1.0\" encoding=\"utf-8\" ?>");
-            expected.AppendLine("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\" >");
-            expected.Append("<!--This is the root node-->");
-            expected.Append("<html>\r\n");
-            expected.Append("<!--Start the header-->");
+            expected.AppendLine("<!DOCTYPE html>");
+            expected.Append("<html>");
             expected.Append("<header>");
             expected.Append("<title>Title of the document</title>");
             expected.Append("</header>");
@@ -68,12 +62,13 @@ namespace HDoc.Tests
 
         }
 
+        #region XmlDeclaration
+
         [Fact]
         public void TestXmlDeclaration()
         {
             var doc = new HDocument(
                 new HXmlDeclaration(),
-                new HDocumentType(StandardDoctype.XHtml10Transitional),
                 new HElement("html")
                 );
 
@@ -84,12 +79,128 @@ namespace HDoc.Tests
 
             var expected = new StringBuilder();
             expected.AppendLine("<?xml version=\"1.0\" encoding=\"utf-8\" ?>");
-            expected.AppendLine("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\" >");
-            expected.Append("<html>");
-            expected.Append("</html>");
+            expected.Append("<html></html>");
             Assert.Equal(expected.ToString(), html.ToString());
 
         }
+
+        [Fact]
+        public void TestXmlDeclaration_EmptyDeclaration()
+        {
+            var doc = new HDocument(
+                new HXmlDeclaration(null, null, null),
+                new HElement("html")
+                );
+
+            StringBuilder html = new StringBuilder();
+            var writer = new StringWriter(html);
+            var serializer = new HSerializer();
+            serializer.Serialize(doc, writer);
+
+            var expected = new StringBuilder();
+            expected.AppendLine("<?xml ?>");
+            expected.Append("<html></html>");
+            Assert.Equal(expected.ToString(), html.ToString());
+
+        }
+
+        [Fact]
+        public void TestXmlDeclaration_Full()
+        {
+            var doc = new HDocument(
+                new HXmlDeclaration("version", "encoding", "standalone"),
+                new HElement("html")
+                );
+
+            StringBuilder html = new StringBuilder();
+            var writer = new StringWriter(html);
+            var serializer = new HSerializer();
+            serializer.Serialize(doc, writer);
+
+            var expected = new StringBuilder();
+            expected.AppendLine("<?xml version=\"version\" encoding=\"encoding\" standalone=\"standalone\" ?>");
+            expected.Append("<html></html>");
+            Assert.Equal(expected.ToString(), html.ToString());
+
+        }
+
+        #endregion
+
+        #region Doctype
+
+        [Fact]
+        public void TestDocumentType()
+        {
+            StringBuilder html = new StringBuilder();
+            var writer = new StringWriter(html);
+
+            var doc = new HDocument(
+                new HDocumentType(),
+                new HElement("html")
+                );
+
+            var serializer = new HSerializer();
+            serializer.Serialize(doc, writer);
+
+            var expected = new StringBuilder();
+            expected.AppendLine("<!DOCTYPE html>");
+            expected.Append("<html></html>");
+            Assert.Equal(expected.ToString(), html.ToString());
+
+        }
+
+        [Fact]
+        public void TestDocumentType_Full()
+        {
+            StringBuilder html = new StringBuilder();
+            var writer = new StringWriter(html);
+
+            var doc = new HDocument(
+                new HDocumentType(StandardDoctype.XHtml10Transitional),
+                new HElement("html")
+                );
+
+            var serializer = new HSerializer();
+            serializer.Serialize(doc, writer);
+
+            var expected = new StringBuilder();
+            expected.AppendLine("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">");
+            expected.Append("<html></html>");
+            Assert.Equal(expected.ToString(), html.ToString());
+
+        }
+
+        #endregion
+
+        #region Comments
+
+        [Fact]
+        public void TestComments()
+        {
+            StringBuilder html = new StringBuilder();
+            var writer = new StringWriter(html);
+
+            var doc = new HDocument(
+                new HComment("First comment before doctype"),
+                new HDocumentType(),
+                new HComment("First second comments before <html>"),
+                new HElement(
+                    "html",
+                    new HComment("Another comments \n with multiple lines")
+                    )
+                );
+
+            var serializer = new HSerializer();
+            serializer.Serialize(doc, writer);
+
+            var expected = new StringBuilder();
+            expected.AppendLine("<!DOCTYPE html>");
+            expected.Append("<html></html>");
+            Assert.Equal(expected.ToString(), html.ToString());
+
+        }
+
+        #endregion
 
     }
 }
