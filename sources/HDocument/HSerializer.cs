@@ -80,9 +80,9 @@ namespace HDoc
         /// </summary>
         protected virtual void SerializeComment(HComment comment, TextWriter writer)
         {
-            writer.Write("<!--");
+            writer.Write("<!-- ");
             writer.Write(HEntity.HtmlEncode(comment.Value));
-            writer.Write("-->");
+            writer.Write(" -->");
         }
 
         /// <summary>

@@ -194,8 +194,12 @@ namespace HDoc.Tests
             serializer.Serialize(doc, writer);
 
             var expected = new StringBuilder();
+            expected.Append("<!-- First comment before doctype -->");
             expected.AppendLine("<!DOCTYPE html>");
-            expected.Append("<html></html>");
+            expected.Append("<!-- First second comments before &lt;html&gt; -->");
+            expected.Append("<html>");
+            expected.Append("<!-- Another comments \n with multiple lines -->");
+            expected.Append("</html>");
             Assert.Equal(expected.ToString(), html.ToString());
 
         }
