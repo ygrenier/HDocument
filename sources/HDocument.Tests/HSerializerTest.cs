@@ -62,6 +62,53 @@ namespace HDoc.Tests
 
         }
 
+        [Fact]
+        public void TestSerialize_DirectToString()
+        {
+            var doc = new HDocument(
+                new HDocumentType(),
+                new HElement(
+                    "html",
+                    new HElement(
+                        "header",
+                        new HElement("title", "Title of the document")
+                        ),
+                        new HElement(
+                            "body",
+                            new HElement(
+                                "div",
+                                new HAttribute("class", "container"),
+                                "This is the content of the container.",
+                                new HElement("br"),
+                                "\r\nTexte avec des lettres échappées : &é~\"'èçàêëù!µ."
+                                )
+                            )
+                    )
+                );
+
+            var serializer = new HSerializer();
+            String html = serializer.Serialize(doc);
+
+            var expected = new StringBuilder();
+            expected.AppendLine("<!DOCTYPE html>");
+            expected.Append("<html>");
+            expected.Append("<header>");
+            expected.Append("<title>Title of the document</title>");
+            expected.Append("</header>");
+            expected.Append("<body>");
+            expected.Append("<div class=\"container\">");
+            expected.Append("This is the content of the container.");
+            expected.Append("<br />\r\n");
+            expected.Append("Texte avec des lettres &eacute;chapp&eacute;es : &amp;&eacute;~&quot;'&egrave;&ccedil;&agrave;&ecirc;&euml;&ugrave;!&micro;.");
+            expected.Append("</div>");
+            expected.Append("</body>");
+            expected.Append("</html>");
+            Assert.Equal(expected.ToString(), html.ToString());
+
+            Assert.Throws<ArgumentNullException>(() => serializer.Serialize(null));
+
+        }
+
         #region XmlDeclaration
 
         [Fact]
