@@ -91,7 +91,7 @@ namespace HDoc
         protected virtual void SerializeCData(HCData cdata, TextWriter writer)
         {
             writer.Write("<![CDATA[");
-            writer.Write(HEntity.HtmlEncode(cdata.Value));
+            writer.Write(cdata.Value);
             writer.Write("]]>");
         }
 

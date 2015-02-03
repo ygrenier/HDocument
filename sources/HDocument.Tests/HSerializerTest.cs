@@ -206,5 +206,65 @@ namespace HDoc.Tests
 
         #endregion
 
+        #region CData
+
+        [Fact]
+        public void TestCData()
+        {
+            StringBuilder html = new StringBuilder();
+            var writer = new StringWriter(html);
+
+            var doc = new HDocument(
+                new HDocumentType(),
+                new HElement(
+                    "html",
+                    new HCData("A content <CDATA> \n with multiple lines and é accented")
+                    )
+                );
+
+            var serializer = new HSerializer();
+            serializer.Serialize(doc, writer);
+
+            var expected = new StringBuilder();
+            expected.AppendLine("<!DOCTYPE html>");
+            expected.Append("<html>");
+            expected.Append("<![CDATA[A content <CDATA> \n with multiple lines and é accented]]>");
+            expected.Append("</html>");
+            Assert.Equal(expected.ToString(), html.ToString());
+
+        }
+
+        #endregion
+
+        #region Text
+
+        [Fact]
+        public void TestText()
+        {
+            StringBuilder html = new StringBuilder();
+            var writer = new StringWriter(html);
+
+            var doc = new HDocument(
+                new HDocumentType(),
+                new HElement(
+                    "html",
+                    new HText("A content <text> \n with multiple lines and é accented")
+                    )
+                );
+
+            var serializer = new HSerializer();
+            serializer.Serialize(doc, writer);
+
+            var expected = new StringBuilder();
+            expected.AppendLine("<!DOCTYPE html>");
+            expected.Append("<html>");
+            expected.Append("A content &lt;text&gt; \n with multiple lines and &eacute; accented");
+            expected.Append("</html>");
+            Assert.Equal(expected.ToString(), html.ToString());
+
+        }
+
+        #endregion
+
     }
 }
