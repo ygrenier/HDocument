@@ -135,5 +135,18 @@ namespace HDoc.Tests
 
         }
 
+        /// <summary>
+        /// Check bug detected when a html tag is at the end of the value, a IndexOutOfRangeException raised.
+        /// </summary>
+        [Fact]
+        public void TestBugHtmlEncodeElementAtTheEnd()
+        {
+
+            Assert.Equal("Test &lt;html&gt;", HEntity.HtmlEncode("Test <html>"));
+
+            // The bug was fired because '>' is a start char for a multiple chars.
+
+        }
+
     }
 }
