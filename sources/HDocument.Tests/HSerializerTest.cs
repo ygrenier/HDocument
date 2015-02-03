@@ -266,5 +266,66 @@ namespace HDoc.Tests
 
         #endregion
 
+        #region Raw Text
+
+        [Fact]
+        public void TestRawText()
+        {
+            StringBuilder html = new StringBuilder();
+            var writer = new StringWriter(html);
+
+            var doc = new HDocument(
+                new HDocumentType(),
+                new HElement(
+                    "html",
+                    new HElement("script", "A content <text> \n with multiple lines and é accented"),
+                    new HElement("div", "A content <text> \n with multiple lines and é accented")
+                    )
+                );
+
+            var serializer = new HSerializer();
+            serializer.Serialize(doc, writer);
+
+            var expected = new StringBuilder();
+            expected.AppendLine("<!DOCTYPE html>");
+            expected.Append("<html>");
+            expected.Append("<script>A content <text> \n with multiple lines and é accented</script>");
+            expected.Append("<div>A content &lt;text&gt; \n with multiple lines and &eacute; accented</div>");
+            expected.Append("</html>");
+            Assert.Equal(expected.ToString(), html.ToString());
+
+        }
+
+        #endregion
+
+        #region Escapable Raw Text
+
+        [Fact]
+        public void TestEscapableRawText()
+        {
+            var doc = new HDocument(
+                new HDocumentType(),
+                new HElement(
+                    "html",
+                    new HElement("textarea", "A content <text> \n with multiple lines and é accented"),
+                    new HElement("div", "A content <text> \n with multiple lines and é accented")
+                    )
+                );
+
+            var serializer = new HSerializer();
+            String html = serializer.Serialize(doc);
+
+            var expected = new StringBuilder();
+            expected.AppendLine("<!DOCTYPE html>");
+            expected.Append("<html>");
+            expected.Append("<textarea>A content &lt;text&gt; \n with multiple lines and &eacute; accented</textarea>");
+            expected.Append("<div>A content &lt;text&gt; \n with multiple lines and &eacute; accented</div>");
+            expected.Append("</html>");
+            Assert.Equal(expected.ToString(), html);
+
+        }
+
+        #endregion
+
     }
 }

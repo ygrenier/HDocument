@@ -21,6 +21,20 @@ namespace HDoc
         };
 
         /// <summary>
+        /// List of raw text elements
+        /// </summary>
+        protected static String[] RawTextElements = new String[]{
+            "script", "style"
+        };
+
+        /// <summary>
+        /// List of escapable raw text elements
+        /// </summary>
+        protected static String[] EscapableRawTextElements = new String[]{
+            "textarea", "title"
+        };
+
+        /// <summary>
         /// Serialise an HTML document
         /// </summary>
         public void Serialize(HDocument html, TextWriter writer)
@@ -28,6 +42,15 @@ namespace HDoc
             if (html == null) throw new ArgumentNullException("html");
             if (writer == null) throw new ArgumentNullException("writer");
             SerializeNode(html, writer);
+        }
+
+        /// <summary>
+        /// Direct serialization of a HTML document to string
+        /// </summary>
+        public String Serialize(HDocument html)
+        {
+            if (html == null) throw new ArgumentNullException("html");
+            return SerializeNode(html);
         }
 
         /// <summary>
@@ -49,11 +72,18 @@ namespace HDoc
                 SerializeText((HText)node, writer);
             else if (node is HElement)
                 SerializeElement((HElement)node, writer);
-            else if (node is HContainer)
-                SerializeContainer((HContainer)node, writer);
-            else
-                // Default use ToString()
-                writer.Write(node.ToString());
+        }
+
+        /// <summary>
+        /// Serialize a node
+        /// </summary>
+        protected String SerializeNode(HNode node)
+        {
+            if (node == null) throw new ArgumentNullException("node");
+            StringBuilder html = new StringBuilder();
+            using (var writer = new StringWriter(html))
+                SerializeNode(node, writer);
+            return html.ToString();
         }
 
         /// <summary>
@@ -106,9 +136,25 @@ namespace HDoc
         /// <summary>
         /// Check if a tag is a void element
         /// </summary>
-        protected virtual bool IsVoidElement(string p)
+        protected virtual bool IsVoidElement(string tag)
         {
-            return VoidElements.Any(ve => String.Equals(ve, p, StringComparison.OrdinalIgnoreCase));
+            return VoidElements.Any(ve => String.Equals(ve, tag, StringComparison.OrdinalIgnoreCase));
+        }
+
+        /// <summary>
+        /// Check if a tag is a raw text element
+        /// </summary>
+        protected virtual bool IsRawElement(String tag)
+        {
+            return RawTextElements.Any(ve => String.Equals(ve, tag, StringComparison.OrdinalIgnoreCase));
+        }
+
+        /// <summary>
+        /// Check if a tag is an escapable raw text element
+        /// </summary>
+        protected virtual bool IsEscapableRawElement(String tag)
+        {
+            return EscapableRawTextElements.Any(ve => String.Equals(ve, tag, StringComparison.OrdinalIgnoreCase));
         }
 
         /// <summary>
@@ -122,13 +168,42 @@ namespace HDoc
             if (element.HasNodes || !IsVoidElement(element.Name))
             {
                 writer.Write(">");
-                SerializeContainer(element, writer);
+                if (IsRawElement(element.Name))
+                {
+                    SerializeRawText(element.Nodes(), writer);
+                }
+                else if (IsEscapableRawElement(element.Name))
+                {
+                    SerializeEscapableRawText(element.Nodes(), writer);
+                }
+                else
+                {
+                    SerializeContainer(element, writer);
+                }
                 writer.Write("</{0}>", element.Name);
             }
             else
             {
                 writer.Write(" />");
             }
+        }
+
+        /// <summary>
+        /// Serialize a raw text content
+        /// </summary>
+        protected virtual void SerializeRawText(IEnumerable<HNode> content, TextWriter writer)
+        {
+            foreach (var node in content.OfType<HText>())
+                writer.Write(node.Value);
+        }
+
+        /// <summary>
+        /// Serialize an escapable text content
+        /// </summary>
+        protected virtual void SerializeEscapableRawText(IEnumerable<HNode> content, TextWriter writer)
+        {
+            foreach (var node in content.OfType<HText>())
+                writer.Write(HEntity.HtmlEncode(node.Value));
         }
 
         /// <summary>
