@@ -102,5 +102,30 @@ namespace HDoc.Tests
             Assert.Equal("No parent found.", ioe.Message);
         }
 
+        [Fact]
+        public void TestRemove()
+        {
+            var node = new HText("node");
+
+            // Create parent
+            var elm = new HElement("test", node);
+            Assert.Same(node, elm.FirstNode);
+            Assert.Same(node, elm.LastNode);
+            Assert.Same(elm, node.Parent);
+            Assert.Equal(1, elm.Nodes().Count());
+
+            // Remove attribute
+            node.Remove();
+            Assert.Null(elm.FirstNode);
+            Assert.Null(elm.LastNode);
+            Assert.Null(node.Parent);
+            Assert.Equal(0, elm.Nodes().Count());
+
+            // Fail to remove a detached node
+            var ioe = Assert.Throws<InvalidOperationException>(() => node.Remove());
+            Assert.Equal("No parent found.", ioe.Message);
+        }
+
+
     }
 }

@@ -60,9 +60,25 @@ namespace HDoc.Tests
         [Fact]
         public void TestRemove()
         {
-            var attr = new HAttribute("name");
+            var attr1 = new HAttribute("attr1", "value1");
 
-            Assert.Throws<NotImplementedException>(() => attr.Remove());
+            // Create parent
+            var elm = new HElement("test", attr1);
+            Assert.Same(attr1, elm.FirstAttribute);
+            Assert.Same(attr1, elm.LastAttribute);
+            Assert.Same(elm, attr1.Parent);
+            Assert.Equal(1, elm.Attributes().Count());
+
+            // Remove attribute
+            attr1.Remove();
+            Assert.Null(elm.FirstAttribute);
+            Assert.Null(elm.LastAttribute);
+            Assert.Null(attr1.Parent);
+            Assert.Equal(0, elm.Attributes().Count());
+
+            // Fail to remove a detached attribute
+            var ioe = Assert.Throws<InvalidOperationException>(() => attr1.Remove());
+            Assert.Equal("No parent found.", ioe.Message);
         }
 
         [Fact]

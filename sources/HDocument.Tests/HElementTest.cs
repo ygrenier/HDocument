@@ -201,6 +201,279 @@ namespace HDoc.Tests
             Assert.Equal("Can't add a document type in a element.", ex.Message);
         }
 
+        [Fact]
+        public void TestRemoveAttribute()
+        {
+            var attr1 = new HAttribute("attr1", "value1");
+            var attr2 = new HAttribute("attr2", "value2");
+            var attr3 = new HAttribute("attr3", "value3");
+            var attr4 = new HAttribute("attr4", "value4");
+
+            // Create parent
+            var elm = new HElement("test", attr1, attr2, attr3, attr4);
+            Assert.Same(attr1, elm.FirstAttribute);
+            Assert.Same(attr4, elm.LastAttribute);
+
+            Assert.Same(elm, attr1.Parent);
+            Assert.Null(attr1.PreviousAttribute);
+            Assert.Same(attr2, attr1.NextAttribute);
+
+            Assert.Same(elm, attr2.Parent);
+            Assert.Same(attr1, attr2.PreviousAttribute);
+            Assert.Same(attr3, attr2.NextAttribute);
+
+            Assert.Same(elm, attr3.Parent);
+            Assert.Same(attr2, attr3.PreviousAttribute);
+            Assert.Same(attr4, attr3.NextAttribute);
+
+            Assert.Same(elm, attr4.Parent);
+            Assert.Same(attr3, attr4.PreviousAttribute);
+            Assert.Null(attr4.NextAttribute);
+
+            // Remove attr2
+            attr2.Remove();
+            Assert.Same(attr1, elm.FirstAttribute);
+            Assert.Same(attr4, elm.LastAttribute);
+
+            Assert.Same(elm, attr1.Parent);
+            Assert.Null(attr1.PreviousAttribute);
+            Assert.Same(attr3, attr1.NextAttribute);
+
+            Assert.Null(attr2.Parent);
+            Assert.Null(attr2.PreviousAttribute);
+            Assert.Null(attr2.NextAttribute);
+
+            Assert.Same(elm, attr3.Parent);
+            Assert.Same(attr1, attr3.PreviousAttribute);
+            Assert.Same(attr4, attr3.NextAttribute);
+
+            Assert.Same(elm, attr4.Parent);
+            Assert.Same(attr3, attr4.PreviousAttribute);
+            Assert.Null(attr4.NextAttribute);
+
+            var attrs = elm.Attributes().ToArray();
+            Assert.Equal(new HAttribute[] { attr1, attr3, attr4 }, attrs);
+
+            // Remove attr4
+            attr4.Remove();
+            Assert.Same(attr1, elm.FirstAttribute);
+            Assert.Same(attr3, elm.LastAttribute);
+
+            Assert.Same(elm, attr1.Parent);
+            Assert.Null(attr1.PreviousAttribute);
+            Assert.Same(attr3, attr1.NextAttribute);
+
+            Assert.Same(elm, attr3.Parent);
+            Assert.Same(attr1, attr3.PreviousAttribute);
+            Assert.Null(attr3.NextAttribute);
+
+            Assert.Null(attr4.Parent);
+            Assert.Null(attr4.PreviousAttribute);
+            Assert.Null(attr4.NextAttribute);
+
+            attrs = elm.Attributes().ToArray();
+            Assert.Equal(new HAttribute[] { attr1, attr3}, attrs);
+
+            // Remove attr1
+            attr1.Remove();
+            Assert.Same(attr3, elm.FirstAttribute);
+            Assert.Same(attr3, elm.LastAttribute);
+
+            Assert.Null(attr1.Parent);
+            Assert.Null(attr1.PreviousAttribute);
+            Assert.Null(attr1.NextAttribute);
+
+            Assert.Same(elm, attr3.Parent);
+            Assert.Null(attr3.PreviousAttribute);
+            Assert.Null(attr3.NextAttribute);
+
+            attrs = elm.Attributes().ToArray();
+            Assert.Equal(new HAttribute[] { attr3 }, attrs);
+
+            // Remove attr3
+            attr3.Remove();
+            Assert.Null(elm.FirstAttribute);
+            Assert.Null(elm.LastAttribute);
+
+            Assert.Null(attr3.Parent);
+            Assert.Null(attr3.PreviousAttribute);
+            Assert.Null(attr3.NextAttribute);
+
+            attrs = elm.Attributes().ToArray();
+            Assert.Equal(new HAttribute[] { }, attrs);
+
+            // Fail to remove a detached attribute
+            var ioe = Assert.Throws<InvalidOperationException>(() => attr1.Remove());
+            Assert.Equal("No parent found.", ioe.Message);
+
+        }
+
+        [Fact]
+        public void TestRemoveAttributes()
+        {
+            var attr1 = new HAttribute("attr1", "value1");
+            var attr2 = new HAttribute("attr2", "value2");
+            var attr3 = new HAttribute("attr3", "value3");
+            var attr4 = new HAttribute("attr4", "value4");
+
+            // Create parent
+            var elm = new HElement("test", attr1, attr2, attr3, attr4);
+            Assert.Same(attr1, elm.FirstAttribute);
+            Assert.Same(attr4, elm.LastAttribute);
+
+            Assert.Same(elm, attr1.Parent);
+            Assert.Null(attr1.PreviousAttribute);
+            Assert.Same(attr2, attr1.NextAttribute);
+
+            Assert.Same(elm, attr2.Parent);
+            Assert.Same(attr1, attr2.PreviousAttribute);
+            Assert.Same(attr3, attr2.NextAttribute);
+
+            Assert.Same(elm, attr3.Parent);
+            Assert.Same(attr2, attr3.PreviousAttribute);
+            Assert.Same(attr4, attr3.NextAttribute);
+
+            Assert.Same(elm, attr4.Parent);
+            Assert.Same(attr3, attr4.PreviousAttribute);
+            Assert.Null(attr4.NextAttribute);
+
+            // Remove all attributes
+            elm.RemoveAttributes();
+
+            Assert.Null(elm.FirstAttribute);
+            Assert.Null(elm.LastAttribute);
+
+            Assert.Null(attr1.Parent);
+            Assert.Null(attr1.PreviousAttribute);
+            Assert.Null(attr1.NextAttribute);
+
+            Assert.Null(attr2.Parent);
+            Assert.Null(attr2.PreviousAttribute);
+            Assert.Null(attr2.NextAttribute);
+
+            Assert.Null(attr3.Parent);
+            Assert.Null(attr3.PreviousAttribute);
+            Assert.Null(attr3.NextAttribute);
+
+            Assert.Null(attr4.Parent);
+            Assert.Null(attr4.PreviousAttribute);
+            Assert.Null(attr4.NextAttribute);
+
+            Assert.Equal(0, elm.Attributes().Count());
+
+            // Check no exception
+            elm.RemoveAttributes();
+            Assert.Equal(0, elm.Attributes().Count());
+
+        }
+
+        [Fact]
+        public void TestRemoveNode()
+        {
+            HNode node1 = new HText("node 1");
+            HNode node2 = new HElement("node2", "value2");
+            HNode node3 = new HText("node 3");
+            HNode node4 = new HElement("node4", "value4");
+
+            // Create parent
+            var elm = new HElement("test", node1, node2, node3, node4);
+            Assert.Same(node1, elm.FirstNode);
+            Assert.Same(node4, elm.LastNode);
+
+            Assert.Same(elm, node1.Parent);
+            Assert.Null(node1.PreviousNode);
+            Assert.Same(node2, node1.NextNode);
+
+            Assert.Same(elm, node2.Parent);
+            Assert.Same(node1, node2.PreviousNode);
+            Assert.Same(node3, node2.NextNode);
+
+            Assert.Same(elm, node3.Parent);
+            Assert.Same(node2, node3.PreviousNode);
+            Assert.Same(node4, node3.NextNode);
+
+            Assert.Same(elm, node4.Parent);
+            Assert.Same(node3, node4.PreviousNode);
+            Assert.Null(node4.NextNode);
+
+            // Remove node2
+            node2.Remove();
+            Assert.Same(node1, elm.FirstNode);
+            Assert.Same(node4, elm.LastNode);
+
+            Assert.Same(elm, node1.Parent);
+            Assert.Null(node1.PreviousNode);
+            Assert.Same(node3, node1.NextNode);
+
+            Assert.Null(node2.Parent);
+            Assert.Null(node2.PreviousNode);
+            Assert.Null(node2.NextNode);
+
+            Assert.Same(elm, node3.Parent);
+            Assert.Same(node1, node3.PreviousNode);
+            Assert.Same(node4, node3.NextNode);
+
+            Assert.Same(elm, node4.Parent);
+            Assert.Same(node3, node4.PreviousNode);
+            Assert.Null(node4.NextNode);
+
+            var attrs = elm.Nodes().ToArray();
+            Assert.Equal(new HNode[] { node1, node3, node4 }, attrs);
+
+            // Remove node4
+            node4.Remove();
+            Assert.Same(node1, elm.FirstNode);
+            Assert.Same(node3, elm.LastNode);
+
+            Assert.Same(elm, node1.Parent);
+            Assert.Null(node1.PreviousNode);
+            Assert.Same(node3, node1.NextNode);
+
+            Assert.Same(elm, node3.Parent);
+            Assert.Same(node1, node3.PreviousNode);
+            Assert.Null(node3.NextNode);
+
+            Assert.Null(node4.Parent);
+            Assert.Null(node4.PreviousNode);
+            Assert.Null(node4.NextNode);
+
+            attrs = elm.Nodes().ToArray();
+            Assert.Equal(new HNode[] { node1, node3 }, attrs);
+
+            // Remove node1
+            node1.Remove();
+            Assert.Same(node3, elm.FirstNode);
+            Assert.Same(node3, elm.LastNode);
+
+            Assert.Null(node1.Parent);
+            Assert.Null(node1.PreviousNode);
+            Assert.Null(node1.NextNode);
+
+            Assert.Same(elm, node3.Parent);
+            Assert.Null(node3.PreviousNode);
+            Assert.Null(node3.NextNode);
+
+            attrs = elm.Nodes().ToArray();
+            Assert.Equal(new HNode[] { node3 }, attrs);
+
+            // Remove node3
+            node3.Remove();
+            Assert.Null(elm.FirstNode);
+            Assert.Null(elm.LastNode);
+
+            Assert.Null(node3.Parent);
+            Assert.Null(node3.PreviousNode);
+            Assert.Null(node3.NextNode);
+
+            attrs = elm.Nodes().ToArray();
+            Assert.Equal(new HNode[] { }, attrs);
+
+            // Fail to remove a detached attribute
+            var ioe = Assert.Throws<InvalidOperationException>(() => node1.Remove());
+            Assert.Equal("No parent found.", ioe.Message);
+
+        }
+
     }
 
 }

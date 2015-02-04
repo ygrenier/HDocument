@@ -145,6 +145,32 @@ namespace HDoc
         }
 
         /// <summary>
+        /// Removing an attribute
+        /// </summary>
+        internal void RemoveAttribute(HAttribute attribute)
+        {
+            // If attribute is alone, reset the list
+            if (attribute.nextAttribute == attribute)
+            {
+                this.lastAttribute = null;
+            }
+            else
+            {
+                // Find previous attribute
+                var prev = attribute.nextAttribute;
+                while (prev.nextAttribute != attribute) prev = prev.nextAttribute;
+                // Clean the list
+                prev.nextAttribute = attribute.nextAttribute;
+                // If attribute is the last, then prev become the last
+                if (this.lastAttribute == attribute)
+                    this.lastAttribute = prev;
+            }
+            // Detach attribute
+            attribute.parent = null;
+            attribute.nextAttribute = null;
+        }
+
+        /// <summary>
         /// Enumerate attributes with an optional name filter.
         /// </summary>
         /// <param name="name">Name filtered</param>
@@ -161,6 +187,22 @@ namespace HDoc
                         yield return a;
                 } while (a.parent == this && a != lastAttribute);
             }
+        }
+
+        /// <summary>
+        /// Remove all attributes
+        /// </summary>
+        public void RemoveAttributes()
+        {
+            var attr = this.lastAttribute;
+            while (attr != null)
+            {
+                attr.parent = null;
+                var n = attr.nextAttribute;
+                attr.nextAttribute = null;
+                attr = n;
+            }
+            this.lastAttribute = null;
         }
 
         #endregion
