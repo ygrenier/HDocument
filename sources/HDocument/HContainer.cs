@@ -233,6 +233,25 @@ namespace HDoc
         }
 
         /// <summary>
+        /// Remove all nodes
+        /// </summary>
+        public void RemoveNodes()
+        {
+            if (this.content is HNode)
+            {
+                HNode node = (HNode)this.content;
+                while (node != null)
+                {
+                    node.parent = null;
+                    var n = node.nextNode;
+                    node.nextNode = null;
+                    node = n;
+                }
+            }
+            this.content = null;
+        }
+
+        /// <summary>
         /// If the current content is a string, convert it to a node.
         /// </summary>
         void ConvertContentTextToNode()

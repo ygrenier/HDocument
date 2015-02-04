@@ -296,5 +296,70 @@ namespace HDoc.Tests
 
         }
 
+        [Fact]
+        public void TestRemoveAttributes()
+        {
+            HNode node1 = new HText("node 1");
+            HNode node2 = new HElement("node2", "value2");
+            HNode node3 = new HText("node 3");
+            HNode node4 = new HElement("node4", "value4");
+
+            // Create parent
+            var elm = new HElement("test", node1, node2, node3, node4);
+            Assert.Same(node1, elm.FirstNode);
+            Assert.Same(node4, elm.LastNode);
+
+            Assert.Same(elm, node1.Parent);
+            Assert.Null(node1.PreviousNode);
+            Assert.Same(node2, node1.NextNode);
+
+            Assert.Same(elm, node2.Parent);
+            Assert.Same(node1, node2.PreviousNode);
+            Assert.Same(node3, node2.NextNode);
+
+            Assert.Same(elm, node3.Parent);
+            Assert.Same(node2, node3.PreviousNode);
+            Assert.Same(node4, node3.NextNode);
+
+            Assert.Same(elm, node4.Parent);
+            Assert.Same(node3, node4.PreviousNode);
+            Assert.Null(node4.NextNode);
+
+            // Remove all nodes
+            elm.RemoveNodes();
+
+            Assert.Null(elm.FirstNode);
+            Assert.Null(elm.LastNode);
+
+            Assert.Null(node1.Parent);
+            Assert.Null(node1.PreviousNode);
+            Assert.Null(node1.NextNode);
+                        
+            Assert.Null(node2.Parent);
+            Assert.Null(node2.PreviousNode);
+            Assert.Null(node2.NextNode);
+                        
+            Assert.Null(node3.Parent);
+            Assert.Null(node3.PreviousNode);
+            Assert.Null(node3.NextNode);
+                        
+            Assert.Null(node4.Parent);
+            Assert.Null(node4.PreviousNode);
+            Assert.Null(node4.NextNode);
+
+            Assert.Equal(0, elm.Nodes().Count());
+
+            // Create new element with string content
+            elm = new HElement("test", "content");
+            elm.RemoveNodes();
+            Assert.Null(elm.FirstNode);
+            Assert.Null(elm.LastNode);
+            Assert.Equal(0, elm.Nodes().Count());
+
+            // Check no exception
+            elm.RemoveNodes();
+            Assert.Equal(0, elm.Nodes().Count());
+        }
+
     }
 }
