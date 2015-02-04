@@ -297,6 +297,61 @@ namespace HDoc
         }
 
         /// <summary>
+        /// Enumerate deeper child nodes
+        /// </summary>
+        protected IEnumerable<HNode> GetDescendantNodes(bool self)
+        {
+            if (self) yield return this;
+            HNode n = this;
+            while (true)
+            {
+                HContainer c = n as HContainer;
+                HNode first;
+                if (c != null && (first = c.FirstNode) != null)
+                {
+                    n = first;
+                }
+                else
+                {
+                    while (n != null && n != this && n == n.parent.content) n = n.parent;
+                    if (n == null || n == this) break;
+                    n = n.nextNode;
+                }
+                yield return n;
+            }
+        }
+
+        /// <summary>
+        /// Enumerate deeper child elements
+        /// </summary>
+        protected IEnumerable<HElement> GetDescendants(String name, bool self)
+        {
+            if (self)
+            {
+                HElement e = (HElement)this;
+                if (name == null || String.Equals(e.Name, name, StringComparison.OrdinalIgnoreCase)) yield return e;
+            }
+            HNode n = this;
+            HContainer c = this;
+            while (true)
+            {
+                if (c != null && c.content is HNode)
+                {
+                    n = ((HNode)c.content).nextNode;
+                }
+                else
+                {
+                    while (n != this && n == n.parent.content) n = n.parent;
+                    if (n == this) break;
+                    n = n.nextNode;
+                }
+                HElement e = n as HElement;
+                if (e != null && (name == null || String.Equals(e.Name, name, StringComparison.OrdinalIgnoreCase))) yield return e;
+                c = e;
+            }
+        }
+
+        /// <summary>
         /// Returns the elements contained in this container.
         /// </summary>
         public IEnumerable<HElement> Elements()
@@ -328,6 +383,30 @@ namespace HDoc
                     yield return n;
                 } while (n.parent == this && n != content);
             }
+        }
+
+        /// <summary>
+        /// Returns deeper descendants list nodes.
+        /// </summary>
+        public IEnumerable<HNode> DescendantNodes()
+        {
+            return GetDescendantNodes(false);
+        }
+
+        /// <summary>
+        /// Returns deeper descendants list elements.
+        /// </summary>
+        public IEnumerable<HElement> Descendants()
+        {
+            return GetDescendants(null, false);
+        }
+
+        /// <summary>
+        /// Returns deeper descendants list elements, filtered by tag
+        /// </summary>
+        public IEnumerable<HElement> Descendants(String name)
+        {
+            return name != null ? GetDescendants(name, false) : Enumerable.Empty<HElement>();
         }
 
         #endregion
