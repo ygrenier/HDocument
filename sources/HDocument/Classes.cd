@@ -3,7 +3,7 @@
   <Class Name="HDoc.HObject" Collapsed="true">
     <Position X="0.5" Y="1.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAABAAAAAQAAAAAAAAAACAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAgAAAABAAAAAQAAAAAAAAAACAAAAAAAIAAA=</HashCode>
       <FileName>HObject.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -17,21 +17,21 @@
   <Class Name="HDoc.HContainer" Collapsed="true">
     <Position X="7.5" Y="2.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>EEIiEEAAIAAAAAAAAAAQBAAAAAABCAAABABBAAAAAAA=</HashCode>
+      <HashCode>MEIiMEAAIAAAAAEAAAAQhIAAAAABCAAAJABBAAQAAAA=</HashCode>
       <FileName>HContainer.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="HDoc.HDocument" Collapsed="true">
     <Position X="6.5" Y="4" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAEAAQBAAAACIAAAAABAAAgAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAEAAQBAAAACIAAACABAAAgAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>HDocument.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="HDoc.HElement" Collapsed="true">
     <Position X="8.5" Y="4" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAACAAIAAAAABAQQAREAAAADAABAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAACAAIAAAAABAQQARGAAQADIABAAAAAAAA=</HashCode>
       <FileName>HElement.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -82,6 +82,13 @@
     <TypeIdentifier>
       <HashCode>IAAAAAAAAAAAAAIAAAAAAAAAgAAAAAAAAAAIAAAAAAA=</HashCode>
       <FileName>HXmlDeclaration.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="HDoc.HSerializer" Collapsed="true">
+    <Position X="0.5" Y="6" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AATAABIAEAAAAECAAFAAAAIgACACAAEAAAAYAAAAQAA=</HashCode>
+      <FileName>HSerializer.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Enum Name="HDoc.StandardDoctype" Collapsed="true">

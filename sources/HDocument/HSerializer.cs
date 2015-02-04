@@ -12,6 +12,9 @@ namespace HDoc
     /// </summary>
     public class HSerializer
     {
+
+        #region Helpers
+
         /// <summary>
         /// List of void elements
         /// </summary>
@@ -33,6 +36,34 @@ namespace HDoc
         protected static String[] EscapableRawTextElements = new String[]{
             "textarea", "title"
         };
+
+        /// <summary>
+        /// Check if a tag is a void element
+        /// </summary>
+        protected virtual bool IsVoidElement(string tag)
+        {
+            return VoidElements.Any(ve => String.Equals(ve, tag, StringComparison.OrdinalIgnoreCase));
+        }
+
+        /// <summary>
+        /// Check if a tag is a raw text element
+        /// </summary>
+        protected virtual bool IsRawElement(String tag)
+        {
+            return RawTextElements.Any(ve => String.Equals(ve, tag, StringComparison.OrdinalIgnoreCase));
+        }
+
+        /// <summary>
+        /// Check if a tag is an escapable raw text element
+        /// </summary>
+        protected virtual bool IsEscapableRawElement(String tag)
+        {
+            return EscapableRawTextElements.Any(ve => String.Equals(ve, tag, StringComparison.OrdinalIgnoreCase));
+        }
+
+        #endregion
+
+        #region Serialization
 
         /// <summary>
         /// Serialise an HTML document
@@ -131,30 +162,6 @@ namespace HDoc
         protected virtual void SerializeText(HText text, TextWriter writer)
         {
             writer.Write(HEntity.HtmlEncode(text.Value));
-        }
-
-        /// <summary>
-        /// Check if a tag is a void element
-        /// </summary>
-        protected virtual bool IsVoidElement(string tag)
-        {
-            return VoidElements.Any(ve => String.Equals(ve, tag, StringComparison.OrdinalIgnoreCase));
-        }
-
-        /// <summary>
-        /// Check if a tag is a raw text element
-        /// </summary>
-        protected virtual bool IsRawElement(String tag)
-        {
-            return RawTextElements.Any(ve => String.Equals(ve, tag, StringComparison.OrdinalIgnoreCase));
-        }
-
-        /// <summary>
-        /// Check if a tag is an escapable raw text element
-        /// </summary>
-        protected virtual bool IsEscapableRawElement(String tag)
-        {
-            return EscapableRawTextElements.Any(ve => String.Equals(ve, tag, StringComparison.OrdinalIgnoreCase));
         }
 
         /// <summary>
@@ -264,6 +271,37 @@ namespace HDoc
                 writer.Write(" {0}=\"{1}\"", name.Trim(), HEntity.HtmlEncode(value));
             }
         }
+
+        #endregion
+
+        #region Deserialization
+
+        /// <summary>
+        /// Deserialize a HTML document
+        /// </summary>
+        public HDocument DeserializeDocument(TextReader reader)
+        {
+            if (reader == null) throw new ArgumentNullException("reader");
+            // Create result
+            HDocument result = new HDocument();
+            // Load nodes in the document
+            result.Add(Deserialize(reader));
+            // Check encoding
+            if (result.Encoding != null && reader is StreamReader)
+                result.Encoding = ((StreamReader)reader).CurrentEncoding;
+            return result;
+        }
+
+        /// <summary>
+        /// Deserialize as a list of nodes
+        /// </summary>
+        public IEnumerable<HNode> Deserialize(TextReader reader)
+        {
+            if (reader == null) throw new ArgumentNullException("reader");
+            throw new NotImplementedException();
+        }
+
+        #endregion
 
     }
 
