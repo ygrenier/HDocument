@@ -60,9 +60,8 @@ namespace HDoc
         /// </exception>
         public void Remove()
         {
-            //if (parent == null) throw new InvalidOperationException(Res.GetString(Res.InvalidOperation_MissingParent));
-            //((HElement)parent).RemoveAttribute(this);
-            throw new NotImplementedException();
+            if (parent == null) throw new InvalidOperationException("No parent found.");
+            ((HElement)parent).RemoveAttribute(this);
         }
 
         #endregion
