@@ -21,6 +21,41 @@ namespace HDoc
 
         #endregion
 
+        #region Methods
+
+        /// <summary>
+        /// Enumerate all parents
+        /// </summary>
+        protected IEnumerable<HElement> GetParents(String name)
+        {
+            HContainer p = parent;
+            while (p != null)
+            {
+                HElement e = p as HElement;
+                if (e != null && (name == null || String.Equals(e.Name, name, StringComparison.OrdinalIgnoreCase)))
+                    yield return e;
+                p = p.parent;
+            }
+        }
+
+        /// <summary>
+        /// Returns the parent elements
+        /// </summary>
+        public IEnumerable<HElement> Parents()
+        {
+            return GetParents(null);
+        }
+
+        /// <summary>
+        /// Returns the parent element, with a name filter
+        /// </summary>
+        public IEnumerable<HElement> Parents(String name)
+        {
+            return GetParents(name);
+        }
+
+        #endregion
+
         #region Properties
 
         /// <summary>
