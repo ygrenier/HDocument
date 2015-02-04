@@ -49,7 +49,16 @@ namespace HDoc
             if (parent == null) throw new InvalidOperationException("No parent found.");
             parent.Insert(this.NextNode, content);
         }
-        
+
+        /// <summary>
+        /// Remove this node from his parent.
+        /// </summary>
+        public void Remove()
+        {
+            if (parent == null) throw new InvalidOperationException("No parent found.");
+            parent.RemoveNode(this);
+        }
+
         #endregion
 
         #region Properties

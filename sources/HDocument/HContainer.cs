@@ -207,6 +207,32 @@ namespace HDoc
         }
 
         /// <summary>
+        /// Internal remove a node.
+        /// </summary>
+        internal void RemoveNode(HNode node)
+        {
+            // If node is alone, reset the list
+            if (node.nextNode == node)
+            {
+                this.content = null;
+            }
+            else
+            {
+                // Find previous node
+                var prev = node.nextNode;
+                while (prev.nextNode != node) prev = prev.nextNode;
+                // Clean the list
+                prev.nextNode = node.nextNode;
+                // If the node is the last, then prev become the last
+                if (this.content == node)
+                    this.content = prev;
+            }
+            // Detach node
+            node.parent = null;
+            node.nextNode = null;
+        }
+
+        /// <summary>
         /// If the current content is a string, convert it to a node.
         /// </summary>
         void ConvertContentTextToNode()
