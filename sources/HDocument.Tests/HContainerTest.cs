@@ -361,5 +361,121 @@ namespace HDoc.Tests
             Assert.Equal(0, elm.Nodes().Count());
         }
 
+        [Fact]
+        public void TestDescendantNodes()
+        {
+            var t1 = new HText("text 1");
+
+            var doc = new HDocument(
+                new HElement(
+                    "html",
+                    new HElement(
+                        "body",
+                        new HElement(
+                            "div",
+                            new HAttribute("id", "div1"),
+                            new HElement(
+                                "p",
+                                new HAttribute("id", "p1"),
+                                new HElement(
+                                    "div",
+                                    new HAttribute("id", "div3"),
+                                    new HElement(
+                                        "p",
+                                        new HAttribute("id", "p2"),
+                                        new HText("text 1"),
+                                        new HText("text 2")
+                                        )
+                                    )
+                                )
+                            ),
+                        new HElement(
+                            "div",
+                            new HAttribute("id", "div2"),
+                            new HElement(
+                                "p",
+                                new HText("text 3")
+                                )
+                            )
+                        )
+                    )
+                );
+
+            // Get all document nodes
+            Assert.Equal(new String[] { 
+                "<html>", "<body>", "<div>", "<p>", "<div>", "<p>", "HText", "HText", "<div>", "<p>", "HText" 
+            }, doc.DescendantNodes().Select(n => {
+                if (n is HElement)
+                    return String.Format("<{0}>", ((HElement)n).Name);
+                else
+                    return n.GetType().Name;
+            }).ToArray());
+
+        }
+
+        [Fact]
+        public void TestDescendants()
+        {
+            var t1 = new HText("text 1");
+
+            var doc = new HDocument(
+                new HElement(
+                    "html",
+                    new HElement(
+                        "body",
+                        new HElement(
+                            "div",
+                            new HAttribute("id", "div1"),
+                            new HElement(
+                                "p",
+                                new HAttribute("id", "p1"),
+                                new HElement(
+                                    "div",
+                                    new HAttribute("id", "div3"),
+                                    new HElement(
+                                        "p",
+                                        new HAttribute("id", "p2"),
+                                        new HText("text 1"),
+                                        new HText("text 2")
+                                        )
+                                    )
+                                )
+                            ),
+                        new HElement(
+                            "div",
+                            new HAttribute("id", "div2"),
+                            new HElement(
+                                "p",
+                                new HText("text 3")
+                                )
+                            )
+                        )
+                    )
+                );
+
+            // Get all document elements
+            Assert.Equal(new String[] { 
+                "<html>", "<body>", "<div@div1>", "<p@p1>", "<div@div3>", "<p@p2>", "<div@div2>", "<p>"
+            }, doc.Descendants().Select(n => {
+                var attr = n.Attribute("id");
+                if (attr != null)
+                    return String.Format("<{0}@{1}>", ((HElement)n).Name, attr.Value);
+                else
+                    return String.Format("<{0}>", ((HElement)n).Name);
+            }).ToArray());
+
+            // Get document div
+            Assert.Equal(new String[] { 
+                "<div@div1>", "<div@div3>", "<div@div2>"
+            }, doc.Descendants("Div").Select(n => {
+                var attr = n.Attribute("id");
+                if (attr != null)
+                    return String.Format("<{0}@{1}>", ((HElement)n).Name, attr.Value);
+                else
+                    return String.Format("<{0}>", ((HElement)n).Name);
+            }).ToArray());
+
+        }
+
     }
 }
