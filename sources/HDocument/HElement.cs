@@ -189,6 +189,22 @@ namespace HDoc
             }
         }
 
+        /// <summary>
+        /// Remove all attributes
+        /// </summary>
+        public void RemoveAttributes()
+        {
+            var attr = this.lastAttribute;
+            while (attr != null)
+            {
+                attr.parent = null;
+                var n = attr.nextAttribute;
+                attr.nextAttribute = null;
+                attr = n;
+            }
+            this.lastAttribute = null;
+        }
+
         #endregion
 
         #region Content management
