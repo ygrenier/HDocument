@@ -205,6 +205,15 @@ namespace HDoc
             this.lastAttribute = null;
         }
 
+        /// <summary>
+        /// Remove all nodes and attributes
+        /// </summary>
+        public void RemoveAll()
+        {
+            RemoveAttributes();
+            RemoveNodes();
+        }
+
         #endregion
 
         #region Content management

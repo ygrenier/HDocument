@@ -297,7 +297,7 @@ namespace HDoc.Tests
         }
 
         [Fact]
-        public void TestRemoveAttributes()
+        public void TestRemoveNodes()
         {
             HNode node1 = new HText("node 1");
             HNode node2 = new HElement("node2", "value2");

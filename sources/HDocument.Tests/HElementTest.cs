@@ -474,6 +474,35 @@ namespace HDoc.Tests
 
         }
 
+        [Fact]
+        public void TestRemoveAll()
+        {
+            HNode node1 = new HText("node 1");
+            HNode node2 = new HElement("node2", "value2");
+            HNode node3 = new HText("node 3");
+            HNode node4 = new HElement("node4", "value4");
+
+            var attr1 = new HAttribute("attr1", "value1");
+            var attr2 = new HAttribute("attr2", "value2");
+            var attr3 = new HAttribute("attr3", "value3");
+            var attr4 = new HAttribute("attr4", "value4");
+
+            // Create parent
+            var elm = new HElement("test", attr1, node1, attr2, node2, node3, node4, attr3, attr4);
+            Assert.Equal(4, elm.Attributes().Count());
+            Assert.Equal(4, elm.Nodes().Count());
+
+            // Remove all 
+            elm.RemoveAll();
+            Assert.Equal(0, elm.Attributes().Count());
+            Assert.Equal(0, elm.Nodes().Count());
+
+            // Check no exception
+            elm.RemoveAll();
+            Assert.Equal(0, elm.Attributes().Count());
+            Assert.Equal(0, elm.Nodes().Count());
+        }
+
     }
 
 }
