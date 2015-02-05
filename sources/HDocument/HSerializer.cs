@@ -298,6 +298,8 @@ namespace HDoc
         public IEnumerable<HNode> Deserialize(TextReader reader)
         {
             if (reader == null) throw new ArgumentNullException("reader");
+            // Create the parser
+            var parser = new HParser(reader);
             throw new NotImplementedException();
         }
 

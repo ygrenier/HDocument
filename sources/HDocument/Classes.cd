@@ -1,98 +1,105 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="HDoc.HObject" Collapsed="true">
-    <Position X="0.5" Y="1.5" Width="1.5" />
+    <Position X="0.5" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAgAAAABAAAAAQAAAAAAAAAACAAAAAAAIAAA=</HashCode>
       <FileName>HObject.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="HDoc.HNode" Collapsed="true">
-    <Position X="7.5" Y="1.5" Width="1.5" />
+    <Position X="7.5" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AACAAAAAAAAAAAYAAAAEBAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>HNode.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="HDoc.HContainer" Collapsed="true">
-    <Position X="7.5" Y="2.75" Width="1.5" />
+    <Position X="7.5" Y="1.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>MEIiMEAAIAAAAAEAAAAQhIAAAAABCAAAJABBAAQAAAA=</HashCode>
       <FileName>HContainer.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="HDoc.HDocument" Collapsed="true">
-    <Position X="6.5" Y="4" Width="1.5" />
+    <Position X="6.5" Y="3" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAEAAQBAAAACIAAACABAAAgAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>HDocument.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="HDoc.HElement" Collapsed="true">
-    <Position X="8.5" Y="4" Width="1.5" />
+    <Position X="8.5" Y="3" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAACAAIAAAAABAQQARGAAQADIABAAAAAAAA=</HashCode>
       <FileName>HElement.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="HDoc.HAttribute" Collapsed="true">
-    <Position X="0.5" Y="2.75" Width="1.5" />
+    <Position X="0.5" Y="1.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAABAAAAQABAQIAAAAAEAAAABgAAAAAAA=</HashCode>
       <FileName>HAttribute.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="HDoc.HText" Collapsed="true">
-    <Position X="12.5" Y="4" Width="1.5" />
+    <Position X="12.5" Y="3" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAIAAAAAAAAAAAAAACAAAAAgAAAAAAA=</HashCode>
       <FileName>HText.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="HDoc.HCData" Collapsed="true">
-    <Position X="12.5" Y="5.25" Width="1.5" />
+    <Position X="12.5" Y="4.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>HCData.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="HDoc.HComment" Collapsed="true">
-    <Position X="10.5" Y="4" Width="1.5" />
+    <Position X="10.5" Y="3" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAIAAAAAAAAAAAAAACAAAAAgAAAAAAA=</HashCode>
       <FileName>HComment.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="HDoc.HDocumentType" Collapsed="true">
-    <Position X="4.5" Y="4" Width="1.5" />
+    <Position X="4.5" Y="3" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAEAAAAAAAAAAAIAAAAAAAAQAwQgBAAACAAAAAAAACA=</HashCode>
       <FileName>HDocumentType.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="HDoc.HEntity" Collapsed="true">
-    <Position X="10.5" Y="6.25" Width="1.5" />
+    <Position X="10.5" Y="5.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAgAAAAEAYQEAAAAAAQAAAEIIAAAAQAAAAgACQA=</HashCode>
       <FileName>HEntity.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="HDoc.HXmlDeclaration" Collapsed="true">
-    <Position X="2.5" Y="4" Width="1.5" />
+    <Position X="2.5" Y="3" Width="1.5" />
     <TypeIdentifier>
       <HashCode>IAAAAAAAAAAAAAIAAAAAAAAAgAAAAAAAAAAIAAAAAAA=</HashCode>
       <FileName>HXmlDeclaration.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="HDoc.HSerializer" Collapsed="true">
-    <Position X="0.5" Y="6" Width="1.5" />
+    <Position X="0.5" Y="4.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AATAABIAEAAAAECAAFAAAAIgACACAAEAAAAYAAAAQAA=</HashCode>
+      <HashCode>AATAABIAEAAAAECAAFAAAAIgACRCAAEAAAAYAAAAQAA=</HashCode>
       <FileName>HSerializer.cs</FileName>
     </TypeIdentifier>
   </Class>
+  <Class Name="HDoc.HParser" Collapsed="true">
+    <Position X="0.5" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAA=</HashCode>
+      <FileName>HParser.cs</FileName>
+    </TypeIdentifier>
+  </Class>
   <Enum Name="HDoc.StandardDoctype" Collapsed="true">
-    <Position X="4.5" Y="5" Width="1.5" />
+    <Position X="4.5" Y="4" Width="1.5" />
     <TypeIdentifier>
       <HashCode>CAAAAAQAIQAQAAAAIAAAAAAgIAAAEAIAAAABAIAAAAA=</HashCode>
       <FileName>HDocumentType.cs</FileName>
