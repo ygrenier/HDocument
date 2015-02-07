@@ -64,6 +64,7 @@
     <Compile Include="HNodeTest.cs" />
     <Compile Include="HObjectTest.cs" />
     <Compile Include="HCommentTest.cs" />
+    <Compile Include="HParserTest.cs" />
     <Compile Include="HSerializerTest.cs" />
     <Compile Include="HTextTest.cs" />
     <Compile Include="HXmlDeclarationTest.cs" />
