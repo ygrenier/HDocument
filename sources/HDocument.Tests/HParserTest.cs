@@ -334,6 +334,7 @@ namespace HDoc.Tests
 
             pres = parser.Parse();
             Assert.IsType<HParser.ParsedAttribute>(pres);
+            Assert.Equal(HParser.ParsedTokenType.Attribute, pres.TokenType);
             pAttr = (HParser.ParsedAttribute)pres;
             Assert.Equal("attr2", pAttr.Name);
             Assert.Equal("value2", pAttr.Value);

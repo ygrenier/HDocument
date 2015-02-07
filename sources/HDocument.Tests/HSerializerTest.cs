@@ -11,6 +11,8 @@ namespace HDoc.Tests
     public class HSerializerTest
     {
 
+        #region Serialization
+
         [Fact]
         public void TestSerialize()
         {
@@ -370,6 +372,117 @@ namespace HDoc.Tests
             expected.Append("</html>");
             Assert.Equal(expected.ToString(), html);
 
+        }
+
+        #endregion
+
+        #endregion
+
+        #region Deserialization
+
+        [Fact]
+        public void TestDeserializeDocument()
+        {
+            var serializer = new HSerializer();
+
+            var hdoc = serializer.DeserializeDocument(new StringReader("<html><body><h1>Document</h1><p>Content &amp; more.</p></body></html>"));
+
+            Assert.Same(Encoding.UTF8, hdoc.Encoding);
+
+            // Document with one root
+            Assert.Equal(1, hdoc.Nodes().Count());
+            Assert.Equal("html", hdoc.Root.Name);
+
+            // Root with one body
+            Assert.Equal(1, hdoc.Root.Nodes().Count());
+            HElement body = hdoc.Root.FirstNode as HElement;
+            Assert.NotNull(body);
+            Assert.Equal("body", body.Name);
+
+            // Body contains two elements
+            Assert.Equal(2, body.Nodes().Count());
+            var elms = body.Elements().ToArray();
+            Assert.Equal(2, elms.Length);
+
+            // First h1
+            Assert.Equal("h1", elms[0].Name);
+            Assert.Equal(1, elms[0].Nodes().Count());
+            Assert.IsType<HText>(elms[0].FirstNode);
+            Assert.Equal("Document", ((HText)elms[0].FirstNode).Value);
+
+            // Second p
+            Assert.Equal("p", elms[1].Name);
+            Assert.Equal(1, elms[1].Nodes().Count());
+            Assert.IsType<HText>(elms[1].FirstNode);
+            Assert.Equal("Content & more.", ((HText)elms[1].FirstNode).Value);
+
+            // Test from stream
+            using (var ms = new MemoryStream(Encoding.ASCII.GetBytes("<html><body><h1>Document</h1><p>Content &amp; more.</p></body></html>")))
+            {
+                hdoc = serializer.DeserializeDocument(new StreamReader(ms, Encoding.ASCII));
+                Assert.Same(Encoding.ASCII, hdoc.Encoding);
+                Assert.Equal(6, hdoc.DescendantNodes().Count());
+            }
+
+            Assert.Throws<ArgumentNullException>(() => serializer.DeserializeDocument(null));
+
+        }
+
+        [Fact]
+        public void TestDeserialize()
+        {
+            var serializer = new HSerializer();
+
+            StringBuilder html = new StringBuilder();
+            html.Append("<p class=first>Start<div>Begin<span>Content</span>End</div>Stop</p>");
+            html.Append("Title : <h1 class=\"next\">Document</h1>");
+            html.Append("Content : <p class='last'>Content &amp; more.</p>The end !");
+
+            var nodes = serializer.Deserialize(new StringReader(html.ToString()));
+
+            var gEnum = nodes.GetEnumerator();
+
+            // p
+            Assert.True(gEnum.MoveNext());
+            Assert.IsType<HElement>(gEnum.Current);
+            var elm = (HElement)gEnum.Current;
+            Assert.Equal("p", elm.Name);
+            Assert.Equal(1, elm.Attributes().Count());
+            Assert.Equal(7, elm.DescendantNodes().Count());
+
+            // Text
+            Assert.True(gEnum.MoveNext());
+            Assert.IsType<HText>(gEnum.Current);
+            Assert.Equal("Title : ", ((HText)gEnum.Current).Value);
+
+            // h1
+            Assert.True(gEnum.MoveNext());
+            Assert.IsType<HElement>(gEnum.Current);
+            elm = (HElement)gEnum.Current;
+            Assert.Equal("h1", elm.Name);
+            Assert.Equal(1, elm.Attributes().Count());
+            Assert.Equal(1, elm.DescendantNodes().Count());
+
+            // Text
+            Assert.True(gEnum.MoveNext());
+            Assert.IsType<HText>(gEnum.Current);
+            Assert.Equal("Content : ", ((HText)gEnum.Current).Value);
+
+            // p
+            Assert.True(gEnum.MoveNext());
+            Assert.IsType<HElement>(gEnum.Current);
+            elm = (HElement)gEnum.Current;
+            Assert.Equal("p", elm.Name);
+            Assert.Equal(1, elm.Attributes().Count());
+            Assert.Equal(1, elm.DescendantNodes().Count());
+
+            // Text
+            Assert.True(gEnum.MoveNext());
+            Assert.IsType<HText>(gEnum.Current);
+            Assert.Equal("The end !", ((HText)gEnum.Current).Value);
+
+            // End
+            Assert.False(gEnum.MoveNext());
         }
 
         #endregion

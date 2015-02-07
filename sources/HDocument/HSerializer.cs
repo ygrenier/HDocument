@@ -284,11 +284,17 @@ namespace HDoc
             if (reader == null) throw new ArgumentNullException("reader");
             // Create result
             HDocument result = new HDocument();
+            result.Encoding = null;
             // Load nodes in the document
             result.Add(Deserialize(reader));
             // Check encoding
-            if (result.Encoding != null && reader is StreamReader)
-                result.Encoding = ((StreamReader)reader).CurrentEncoding;
+            if (result.Encoding == null)
+            {
+                if (reader is StreamReader)
+                    result.Encoding = ((StreamReader)reader).CurrentEncoding;
+                else
+                    result.Encoding = Encoding.UTF8;
+            }
             return result;
         }
 
@@ -300,7 +306,124 @@ namespace HDoc
             if (reader == null) throw new ArgumentNullException("reader");
             // Create the parser
             var parser = new HParser(reader);
-            throw new NotImplementedException();
+            var token = parser.Parse();
+            Stack<HElement> opened = new Stack<HElement>();
+            HXmlDeclaration currentXDecl = null;
+            String tag;
+            while (token != null)
+            {
+                switch (token.TokenType)
+                {
+                    case HParser.ParsedTokenType.Text:
+                        var htxt = new HText(HEntity.HtmlDecode(((HParser.ParsedText)token).Text));
+                        if (opened.Count > 0)
+                            opened.Peek().Add(htxt);
+                        else
+                            yield return htxt;
+                        break;
+                    case HParser.ParsedTokenType.CData:
+                        var hcd = new HCData(((HParser.ParsedCData)token).Text);
+                        if (opened.Count > 0)
+                            opened.Peek().Add(hcd);
+                        else
+                            yield return hcd;
+                        break;
+                    case HParser.ParsedTokenType.Comment:
+                        var hcom = new HComment(HEntity.HtmlDecode(((HParser.ParsedComment)token).Text));
+                        if (opened.Count > 0)
+                            opened.Peek().Add(hcom);
+                        else
+                            yield return hcom;
+                        break;
+                    case HParser.ParsedTokenType.OpenTag:
+                        opened.Push(new HElement(((HParser.ParsedTag)token).TagName));
+                        break;
+                    case HParser.ParsedTokenType.AutoClosedTag:
+                        System.Diagnostics.Debug.Assert(opened.Count > 0, "Opened tags are empty when receiving AutoClosedTag.");
+                        System.Diagnostics.Debug.Assert(opened.Peek().Name == ((HParser.ParsedTag)token).TagName, "AutoClosedTag and opened element are not same tag name.");
+                        var actag = opened.Pop();
+                        if (opened.Count > 0)
+                            opened.Peek().Add(actag);
+                        else
+                            yield return actag;
+                        break;
+                    case HParser.ParsedTokenType.CloseTag:
+                        System.Diagnostics.Debug.Assert(opened.Count > 0, "Opened tags are empty when receiving CloseTag.");
+                        System.Diagnostics.Debug.Assert(opened.Peek().Name == ((HParser.ParsedTag)token).TagName, "CloseTag and opened element are not same tag name.");
+                        break;
+                    case HParser.ParsedTokenType.EndTag:
+                        tag = ((HParser.ParsedTag)token).TagName;
+                        HElement helm;
+                        // Close all elements that not matching the tag
+                        while (opened.Count > 0 && !String.Equals(opened.Peek().Name, tag, StringComparison.OrdinalIgnoreCase))
+                        {
+                            helm = opened.Pop();
+                            if (opened.Count > 0)
+                                opened.Peek().Add(helm);
+                            else
+                                yield return helm;
+                        }
+                        // If we are opened tag, then close it because we find our element
+                        if (opened.Count > 0)
+                        {
+                            helm = opened.Pop();
+                            if (opened.Count > 0)
+                                opened.Peek().Add(helm);
+                            else
+                                yield return helm;
+                        }
+                        break;
+                    case HParser.ParsedTokenType.OpenProcessInstruction:
+                        if (currentXDecl != null)
+                        {
+                            while ((token = parser.Parse()) != null && token.TokenType != HParser.ParsedTokenType.CloseProcessInstruction)
+                                ;
+                            throw new ParseError("XML declaration already opened.");
+                        }
+                        tag = ((HParser.ParsedTag)token).TagName;
+                        if (!String.Equals("xml", tag, StringComparison.OrdinalIgnoreCase))
+                        {
+                            while ((token = parser.Parse()) != null && token.TokenType != HParser.ParsedTokenType.CloseProcessInstruction)
+                                ;
+                            throw new ParseError(String.Format("Unexpected '{0}' process instruction.", tag));
+                        }
+                        currentXDecl = new HXmlDeclaration(null, null, null);
+                        break;
+                    case HParser.ParsedTokenType.CloseProcessInstruction:
+                        if (currentXDecl == null)
+                            throw new ParseError("No XML declaration opened.");
+                        if (opened.Count > 0)
+                            opened.Peek().Add(currentXDecl);
+                        else
+                            yield return currentXDecl;
+                        currentXDecl = null;
+                        break;
+                    case HParser.ParsedTokenType.Attribute:
+                        var attr = (HParser.ParsedAttribute)token;
+                        // Xml declaration ?
+                        if (currentXDecl != null)
+                        {
+                            if (String.Equals("version", attr.Name, StringComparison.OrdinalIgnoreCase))
+                                currentXDecl.Version = attr.Value;
+                            else if (String.Equals("encoding", attr.Name, StringComparison.OrdinalIgnoreCase))
+                                currentXDecl.Encoding = attr.Value;
+                            else if (String.Equals("standalone", attr.Name, StringComparison.OrdinalIgnoreCase))
+                                currentXDecl.Standalone = attr.Value;
+                            else
+                                throw new ParseError(String.Format("Invalid XML declaration attribute : ''", attr.Name));
+                        }
+                        System.Diagnostics.Debug.Assert(opened.Count > 0, "No element opened for the attribtue.");
+                        opened.Peek().Add(new HAttribute(attr.Name, attr.Value));
+                        break;
+                    //default:
+                    //    break;
+                }
+                // Next token
+                token = parser.Parse();
+            }
+            // Close all opened elements
+            while (opened.Count > 0)
+                yield return opened.Pop();
         }
 
         #endregion
