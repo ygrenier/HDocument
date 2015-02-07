@@ -42,14 +42,9 @@ namespace HDoc
         }
 
         /// <summary>
-        /// Parse result
+        /// Type of token
         /// </summary>
-        public class ParsedResult { }
-
-        /// <summary>
-        /// Type of the content parsed
-        /// </summary>
-        public enum ParsedContentType
+        public enum ParsedTokenType
         {
             /// <summary>
             /// Normal text
@@ -63,28 +58,6 @@ namespace HDoc
             /// Comments
             /// </summary>
             Comment,
-        }
-
-        /// <summary>
-        /// A parsed content
-        /// </summary>
-        public class ParsedContent : ParsedResult
-        {
-            /// <summary>
-            /// Text content
-            /// </summary>
-            public String Text { get; internal set; }
-            /// <summary>
-            /// Type of content
-            /// </summary>
-            public ParsedContentType ContentType { get; internal set; }
-        }
-
-        /// <summary>
-        /// Type of the tag parsed
-        /// </summary>
-        public enum ParsedTagType
-        {
             /// <summary>
             /// Open tag : &lt;tag ... 
             /// </summary>
@@ -108,14 +81,77 @@ namespace HDoc
             /// <summary>
             /// Close Process instruction : ... ?&gt; 
             /// </summary>
-            CloseProcessInstruction
+            CloseProcessInstruction,
+            /// <summary>
+            /// Attribute
+            /// </summary>
+            Attribute
+        }
+
+        /// <summary>
+        /// Parsed token
+        /// </summary>
+        public abstract class ParsedToken 
+        {
+            /// <summary>
+            /// Type of the token
+            /// </summary>
+            public abstract ParsedTokenType TokenType { get; }
+        }
+
+        /// <summary>
+        /// A parsed content
+        /// </summary>
+        public abstract class ParsedContent : ParsedToken
+        {
+            /// <summary>
+            /// Text content
+            /// </summary>
+            public String Text { get; internal set; }
+        }
+
+        /// <summary>
+        /// A parsed text
+        /// </summary>
+        public class ParsedText : ParsedContent
+        {
+            /// <summary>
+            /// Token type
+            /// </summary>
+            public override ParsedTokenType TokenType { get { return ParsedTokenType.Text; } }
+        }
+
+        /// <summary>
+        /// A parsed CData
+        /// </summary>
+        public class ParsedCData : ParsedContent
+        {
+            /// <summary>
+            /// Token type
+            /// </summary>
+            public override ParsedTokenType TokenType { get { return ParsedTokenType.CData; } }
+        }
+
+        /// <summary>
+        /// A parsed comment
+        /// </summary>
+        public class ParsedComment : ParsedContent
+        {
+            /// <summary>
+            /// Token type
+            /// </summary>
+            public override ParsedTokenType TokenType { get { return ParsedTokenType.Comment; } }
         }
 
         /// <summary>
         /// A parsed attribute information
         /// </summary>
-        public class ParsedAttribute : ParsedResult
+        public class ParsedAttribute : ParsedToken
         {
+            /// <summary>
+            /// Token type
+            /// </summary>
+            public override ParsedTokenType TokenType { get { return ParsedTokenType.Attribute; } }
             /// <summary>
             /// Name of the attribute
             /// </summary>
@@ -139,17 +175,45 @@ namespace HDoc
         /// <summary>
         /// A parsed tag information
         /// </summary>
-        public class ParsedTag : ParsedResult
+        public class ParsedTag : ParsedToken
         {
+            ParsedTokenType _TokenType;
+
+            internal static ParsedTag OpenTag(String tag)
+            {
+                return new ParsedTag() { TagName = tag, _TokenType = ParsedTokenType.OpenTag };
+            }
+            internal static ParsedTag AutoClosedTag(String tag)
+            {
+                return new ParsedTag() { TagName = tag, _TokenType = ParsedTokenType.AutoClosedTag };
+            }
+            internal static ParsedTag CloseTag(String tag)
+            {
+                return new ParsedTag() { TagName = tag, _TokenType = ParsedTokenType.CloseTag };
+            }
+            internal static ParsedTag EndTag(String tag)
+            {
+                return new ParsedTag() { TagName = tag, _TokenType = ParsedTokenType.EndTag };
+            }
+            internal static ParsedTag OpenProcessInstruction(String tag)
+            {
+                return new ParsedTag() { TagName = tag, _TokenType = ParsedTokenType.OpenProcessInstruction };
+            }
+            internal static ParsedTag CloseProcessInstruction(String tag)
+            {
+                return new ParsedTag() { TagName = tag, _TokenType = ParsedTokenType.CloseProcessInstruction };
+            }
+
             /// <summary>
             /// Tag name
             /// </summary>
-            public String TagName { get; internal set; }
+            public String TagName { get; set; }
 
             /// <summary>
-            /// Type of parsed tag
+            /// Token type
             /// </summary>
-            public ParsedTagType TagType { get; internal set; }
+            public override ParsedTokenType TokenType { get { return _TokenType; } }
+
         }
 
         #endregion
@@ -237,16 +301,15 @@ namespace HDoc
             if (c >= 0)
                 SaveChar((Char)c);
             // Returns parse result
-            return new ParsedContent() {
-                Text = GetCurrentRead(true),
-                ContentType = ParsedContentType.Text
+            return new ParsedText() {
+                Text = GetCurrentRead(true)
             };
         }
 
         /// <summary>
         /// Parse a comment
         /// </summary>
-        protected ParsedResult ParseComment()
+        protected ParsedToken ParseComment()
         {
             // We are in comment
             _State = ParseState.Comment;
@@ -274,8 +337,7 @@ namespace HDoc
             _State = ParseState.Content;
             // Returns comment
             String comment = GetCurrentRead(true);
-            return new ParsedContent() {
-                ContentType = ParsedContentType.Comment,
+            return new ParsedComment() {
                 Text = comment.Substring(4, comment.Length - 7).Trim()
             };
         }
@@ -283,7 +345,7 @@ namespace HDoc
         /// <summary>
         /// Parse a start tag
         /// </summary>
-        protected ParsedResult ParseStartTag()
+        protected ParsedToken ParseStartTag()
         {
             int c = ReadChar();
             // Comments ?
@@ -322,10 +384,7 @@ namespace HDoc
             // If EndTag
             if (_State == ParseState.EndTag)
             {
-                _CurrentTag = new ParsedTag() {
-                    TagName = GetCurrentRead(true),
-                    TagType = ParsedTagType.EndTag
-                };
+                _CurrentTag = ParsedTag.EndTag(GetCurrentRead(true));
 
                 // Pass whitespace
                 while (c >= 0 && Char.IsWhiteSpace((Char)c)) c = ReadChar(false);
@@ -349,10 +408,7 @@ namespace HDoc
             }
             // Create the tag
             if (c >= 0) SaveChar((Char)c);
-            _CurrentTag = new ParsedTag() {
-                TagName = GetCurrentRead(true),
-                TagType = _State == ParseState.Tag ? ParsedTagType.OpenTag : ParsedTagType.OpenProcessInstruction
-            };
+            _CurrentTag = _State == ParseState.Tag ? ParsedTag.OpenTag(GetCurrentRead(true)) : ParsedTag.OpenProcessInstruction(GetCurrentRead(true));
             return _CurrentTag;
         }
 
@@ -364,7 +420,7 @@ namespace HDoc
         /// <summary>
         /// Parse in tag
         /// </summary>
-        protected ParsedResult ParseInTag()
+        protected ParsedToken ParseInTag()
         {
             _CurrentRead = null;
             // Whitespaces
@@ -398,10 +454,7 @@ namespace HDoc
                     throw new ParseError("Invalid auto closed tag, '/' need to be follow by '>'.");
                 }
                 // Returns autoclosed
-                var result = new ParsedTag() {
-                    TagName = _CurrentTag.TagName,
-                    TagType = ParsedTagType.AutoClosedTag
-                };
+                var result = ParsedTag.AutoClosedTag(_CurrentTag.TagName);
                 _CurrentTag = null;
                 _CurrentRead = null;
                 _State = ParseState.Content;
@@ -413,10 +466,7 @@ namespace HDoc
                 c = ReadChar(false);
                 if (c != '>') throw new ParseError("Invalid char after '?'. End of process instruction expected.");
                 // Returns processinstruction
-                var result = new ParsedTag() {
-                    TagName = _CurrentTag.TagName,
-                    TagType = ParsedTagType.CloseProcessInstruction
-                };
+                var result = ParsedTag.CloseProcessInstruction(_CurrentTag.TagName);
                 _CurrentTag = null;
                 _CurrentRead = null;
                 _State = ParseState.Content;
@@ -427,10 +477,7 @@ namespace HDoc
                 if (_State == ParseState.ProcessInstruction)
                     throw new ParseError("A process instruction need to be closed with '?>'.");
                 // Returns close
-                var result = new ParsedTag() {
-                    TagName = _CurrentTag.TagName,
-                    TagType = ParsedTagType.CloseTag
-                };
+                var result = ParsedTag.CloseTag(_CurrentTag.TagName);
                 _CurrentTag = null;
                 _CurrentRead = null;
                 _State = ParseState.Content;
@@ -504,7 +551,7 @@ namespace HDoc
         /// <summary>
         /// Parse the next element
         /// </summary>
-        public ParsedResult Parse()
+        public ParsedToken Parse()
         {
             int c;
             // If end of stream when stop here
@@ -513,7 +560,7 @@ namespace HDoc
             if (_CurrentTag != null)
             {
                 // End tag : error while end tag parsing, reset parser
-                if (_CurrentTag.TagType == ParsedTagType.EndTag)
+                if (_CurrentTag.TokenType == ParsedTokenType.EndTag)
                 {
                     _CurrentRead = null;
                     _State = ParseState.Content;
@@ -538,22 +585,19 @@ namespace HDoc
                     // Returns a non closed comment
                     case ParseState.Comment:
                         String comment = GetCurrentRead(true);
-                        LastParsed = new ParsedContent() {
-                            ContentType = ParsedContentType.Comment,
+                        LastParsed = new ParsedComment() {
                             Text = comment.Substring(4).TrimStart()
                         };
                         break;
                     // Returns a text
                     case ParseState.Content:
-                        LastParsed = new ParsedContent() {
-                            ContentType = ParsedContentType.Text,
+                        LastParsed = new ParsedText() {
                             Text = GetCurrentRead(true)
                         };
                         break;
                     // Returns a text
                     case ParseState.Tag:
-                        LastParsed = new ParsedContent() {
-                            ContentType = ParsedContentType.Text,
+                        LastParsed = new ParsedText() {
                             Text = GetCurrentRead(true)
                         };
                         break;
@@ -623,7 +667,7 @@ namespace HDoc
         /// Null while the parsing is not started, and when then parsing is finished. 
         /// See <see cref="EOF"/> for the end of stream is reached.
         /// </remarks>
-        public ParsedResult LastParsed { get; private set; }
+        public ParsedToken LastParsed { get; private set; }
 
         /// <summary>
         /// End of the stream

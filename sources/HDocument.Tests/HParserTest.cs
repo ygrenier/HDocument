@@ -31,8 +31,8 @@ namespace HDoc.Tests
 
             var pres = parser.Parse();
             Assert.Same(pres, parser.LastParsed);
-            Assert.IsType<HParser.ParsedContent>(pres);
-            Assert.Equal(HParser.ParsedContentType.Text, ((HParser.ParsedContent)pres).ContentType);
+            Assert.IsType<HParser.ParsedText>(pres);
+            Assert.Equal(HParser.ParsedTokenType.Text, pres.TokenType);
             Assert.Equal("Content", ((HParser.ParsedContent)pres).Text);
 
             pres = parser.Parse();
@@ -48,18 +48,18 @@ namespace HDoc.Tests
 
             var pres = parser.Parse();
             Assert.Same(pres, parser.LastParsed);
-            Assert.IsType<HParser.ParsedContent>(pres);
-            Assert.Equal(HParser.ParsedContentType.Text, ((HParser.ParsedContent)pres).ContentType);
+            Assert.IsType<HParser.ParsedText>(pres);
+            Assert.Equal(HParser.ParsedTokenType.Text, pres.TokenType);
             Assert.Equal("Start", ((HParser.ParsedContent)pres).Text);
 
             pres = parser.Parse();
-            Assert.IsType<HParser.ParsedContent>(pres);
-            Assert.Equal(HParser.ParsedContentType.Comment, ((HParser.ParsedContent)pres).ContentType);
+            Assert.IsType<HParser.ParsedComment>(pres);
+            Assert.Equal(HParser.ParsedTokenType.Comment, pres.TokenType);
             Assert.Equal("Comments", ((HParser.ParsedContent)pres).Text);
 
             pres = parser.Parse();
-            Assert.IsType<HParser.ParsedContent>(pres);
-            Assert.Equal(HParser.ParsedContentType.Text, ((HParser.ParsedContent)pres).ContentType);
+            Assert.IsType<HParser.ParsedText>(pres);
+            Assert.Equal(HParser.ParsedTokenType.Text, pres.TokenType);
             Assert.Equal("End", ((HParser.ParsedContent)pres).Text);
 
             pres = parser.Parse();
@@ -72,8 +72,8 @@ namespace HDoc.Tests
 
             pres = parser.Parse();  // Pass Start text
             pres = parser.Parse();
-            Assert.IsType<HParser.ParsedContent>(pres);
-            Assert.Equal(HParser.ParsedContentType.Comment, ((HParser.ParsedContent)pres).ContentType);
+            Assert.IsType<HParser.ParsedComment>(pres);
+            Assert.Equal(HParser.ParsedTokenType.Comment, pres.TokenType);
             Assert.Equal("Comments with -- as text and false -> end -", ((HParser.ParsedContent)pres).Text);
 
             pres = parser.Parse();
@@ -91,8 +91,8 @@ namespace HDoc.Tests
             Assert.Equal("End of file unexpected, comment not closed.", pex.Message);
             // The next parse returns the comment non closed
             pres = parser.Parse();
-            Assert.IsType<HParser.ParsedContent>(pres);
-            Assert.Equal(HParser.ParsedContentType.Comment, ((HParser.ParsedContent)pres).ContentType);
+            Assert.IsType<HParser.ParsedComment>(pres);
+            Assert.Equal(HParser.ParsedTokenType.Comment, pres.TokenType);
             Assert.Equal("Comments non closed ->End", ((HParser.ParsedContent)pres).Text);
 
             pres = parser.Parse();
@@ -111,13 +111,13 @@ namespace HDoc.Tests
 
             // The next parse returns false start comment as text
             pres = parser.Parse();
-            Assert.IsType<HParser.ParsedContent>(pres);
-            Assert.Equal(HParser.ParsedContentType.Text, ((HParser.ParsedContent)pres).ContentType);
+            Assert.IsType<HParser.ParsedText>(pres);
+            Assert.Equal(HParser.ParsedTokenType.Text, pres.TokenType);
             Assert.Equal("<!- ", ((HParser.ParsedContent)pres).Text);
 
             pres = parser.Parse();
-            Assert.IsType<HParser.ParsedContent>(pres);
-            Assert.Equal(HParser.ParsedContentType.Text, ((HParser.ParsedContent)pres).ContentType);
+            Assert.IsType<HParser.ParsedText>(pres);
+            Assert.Equal(HParser.ParsedTokenType.Text, pres.TokenType);
             Assert.Equal("Invalid stat comment -->End", ((HParser.ParsedContent)pres).Text);
 
             pres = parser.Parse();
@@ -135,12 +135,12 @@ namespace HDoc.Tests
 
             var pres = parser.Parse();
             Assert.IsType<HParser.ParsedTag>(pres);
-            Assert.Equal(HParser.ParsedTagType.OpenTag, ((HParser.ParsedTag)pres).TagType);
+            Assert.Equal(HParser.ParsedTokenType.OpenTag, pres.TokenType);
             Assert.Equal("div", ((HParser.ParsedTag)pres).TagName);
 
             pres = parser.Parse();
             Assert.IsType<HParser.ParsedTag>(pres);
-            Assert.Equal(HParser.ParsedTagType.CloseTag, ((HParser.ParsedTag)pres).TagType);
+            Assert.Equal(HParser.ParsedTokenType.CloseTag, pres.TokenType);
 
             pres = parser.Parse();
             Assert.Null(pres);
@@ -152,12 +152,12 @@ namespace HDoc.Tests
 
             pres = parser.Parse();
             Assert.IsType<HParser.ParsedTag>(pres);
-            Assert.Equal(HParser.ParsedTagType.OpenTag, ((HParser.ParsedTag)pres).TagType);
+            Assert.Equal(HParser.ParsedTokenType.OpenTag, pres.TokenType);
             Assert.Equal("div", ((HParser.ParsedTag)pres).TagName);
 
             pres = parser.Parse();
             Assert.IsType<HParser.ParsedTag>(pres);
-            Assert.Equal(HParser.ParsedTagType.CloseTag, ((HParser.ParsedTag)pres).TagType);
+            Assert.Equal(HParser.ParsedTokenType.CloseTag, pres.TokenType);
             Assert.Equal("div", ((HParser.ParsedTag)pres).TagName);
 
             pres = parser.Parse();
@@ -170,12 +170,12 @@ namespace HDoc.Tests
 
             pres = parser.Parse();
             Assert.IsType<HParser.ParsedTag>(pres);
-            Assert.Equal(HParser.ParsedTagType.OpenTag, ((HParser.ParsedTag)pres).TagType);
+            Assert.Equal(HParser.ParsedTokenType.OpenTag, pres.TokenType);
             Assert.Equal("div", ((HParser.ParsedTag)pres).TagName);
 
             pres = parser.Parse();
             Assert.IsType<HParser.ParsedTag>(pres);
-            Assert.Equal(HParser.ParsedTagType.AutoClosedTag, ((HParser.ParsedTag)pres).TagType);
+            Assert.Equal(HParser.ParsedTokenType.AutoClosedTag, pres.TokenType);
             Assert.Equal("div", ((HParser.ParsedTag)pres).TagName);
 
             pres = parser.Parse();
@@ -188,12 +188,12 @@ namespace HDoc.Tests
 
             pres = parser.Parse();
             Assert.IsType<HParser.ParsedTag>(pres);
-            Assert.Equal(HParser.ParsedTagType.OpenTag, ((HParser.ParsedTag)pres).TagType);
+            Assert.Equal(HParser.ParsedTokenType.OpenTag, pres.TokenType);
             Assert.Equal("div", ((HParser.ParsedTag)pres).TagName);
 
             pres = parser.Parse();
             Assert.IsType<HParser.ParsedTag>(pres);
-            Assert.Equal(HParser.ParsedTagType.AutoClosedTag, ((HParser.ParsedTag)pres).TagType);
+            Assert.Equal(HParser.ParsedTokenType.AutoClosedTag, pres.TokenType);
             Assert.Equal("div", ((HParser.ParsedTag)pres).TagName);
 
             pres = parser.Parse();
@@ -208,8 +208,8 @@ namespace HDoc.Tests
             Assert.Equal("Invalid tag name. Need to start with an alphanumeric", pex.Message);
 
             pres = parser.Parse();
-            Assert.IsType<HParser.ParsedContent>(pres);
-            Assert.Equal(HParser.ParsedContentType.Text, ((HParser.ParsedContent)pres).ContentType);
+            Assert.IsType<HParser.ParsedText>(pres);
+            Assert.Equal(HParser.ParsedTokenType.Text, pres.TokenType);
             Assert.Equal("<  >", ((HParser.ParsedContent)pres).Text);
 
             pres = parser.Parse();
@@ -222,7 +222,7 @@ namespace HDoc.Tests
 
             pres = parser.Parse();
             Assert.IsType<HParser.ParsedTag>(pres);
-            Assert.Equal(HParser.ParsedTagType.OpenTag, ((HParser.ParsedTag)pres).TagType);
+            Assert.Equal(HParser.ParsedTokenType.OpenTag, pres.TokenType);
             Assert.Equal("div", ((HParser.ParsedTag)pres).TagName);
 
             pex = Assert.Throws<ParseError>(() => parser.Parse());
@@ -238,7 +238,7 @@ namespace HDoc.Tests
 
             pres = parser.Parse();
             Assert.IsType<HParser.ParsedTag>(pres);
-            Assert.Equal(HParser.ParsedTagType.OpenTag, ((HParser.ParsedTag)pres).TagType);
+            Assert.Equal(HParser.ParsedTokenType.OpenTag, pres.TokenType);
             Assert.Equal("div", ((HParser.ParsedTag)pres).TagName);
 
             pex = Assert.Throws<ParseError>(() => parser.Parse());
@@ -254,7 +254,7 @@ namespace HDoc.Tests
 
             pres = parser.Parse();
             Assert.IsType<HParser.ParsedTag>(pres);
-            Assert.Equal(HParser.ParsedTagType.OpenTag, ((HParser.ParsedTag)pres).TagType);
+            Assert.Equal(HParser.ParsedTokenType.OpenTag, pres.TokenType);
             Assert.Equal("div", ((HParser.ParsedTag)pres).TagName);
 
             pex = Assert.Throws<ParseError>(() => parser.Parse());
@@ -262,7 +262,7 @@ namespace HDoc.Tests
             
             pres = parser.Parse();
             Assert.IsType<HParser.ParsedTag>(pres);
-            Assert.Equal(HParser.ParsedTagType.AutoClosedTag, ((HParser.ParsedTag)pres).TagType);
+            Assert.Equal(HParser.ParsedTokenType.AutoClosedTag, pres.TokenType);
             Assert.Equal("div", ((HParser.ParsedTag)pres).TagName);
 
             pres = parser.Parse();
@@ -275,7 +275,7 @@ namespace HDoc.Tests
 
             pres = parser.Parse();
             Assert.IsType<HParser.ParsedTag>(pres);
-            Assert.Equal(HParser.ParsedTagType.OpenTag, ((HParser.ParsedTag)pres).TagType);
+            Assert.Equal(HParser.ParsedTokenType.OpenTag, pres.TokenType);
             Assert.Equal("div", ((HParser.ParsedTag)pres).TagName);
 
             pex = Assert.Throws<ParseError>(() => parser.Parse());
@@ -283,7 +283,7 @@ namespace HDoc.Tests
 
             pres = parser.Parse();
             Assert.IsType<HParser.ParsedTag>(pres);
-            Assert.Equal(HParser.ParsedTagType.AutoClosedTag, ((HParser.ParsedTag)pres).TagType);
+            Assert.Equal(HParser.ParsedTokenType.AutoClosedTag, pres.TokenType);
             Assert.Equal("div", ((HParser.ParsedTag)pres).TagName);
 
             pres = parser.Parse();
@@ -296,7 +296,7 @@ namespace HDoc.Tests
 
             pres = parser.Parse();
             Assert.IsType<HParser.ParsedTag>(pres);
-            Assert.Equal(HParser.ParsedTagType.OpenTag, ((HParser.ParsedTag)pres).TagType);
+            Assert.Equal(HParser.ParsedTokenType.OpenTag, pres.TokenType);
             Assert.Equal("div", ((HParser.ParsedTag)pres).TagName);
 
             pex = Assert.Throws<ParseError>(() => parser.Parse());
@@ -304,7 +304,7 @@ namespace HDoc.Tests
 
             pres = parser.Parse();
             Assert.IsType<HParser.ParsedTag>(pres);
-            Assert.Equal(HParser.ParsedTagType.AutoClosedTag, ((HParser.ParsedTag)pres).TagType);
+            Assert.Equal(HParser.ParsedTokenType.AutoClosedTag, pres.TokenType);
             Assert.Equal("div", ((HParser.ParsedTag)pres).TagName);
 
             pres = parser.Parse();
@@ -322,7 +322,7 @@ namespace HDoc.Tests
 
             var pres = parser.Parse();
             Assert.IsType<HParser.ParsedTag>(pres);
-            Assert.Equal(HParser.ParsedTagType.OpenTag, ((HParser.ParsedTag)pres).TagType);
+            Assert.Equal(HParser.ParsedTokenType.OpenTag, pres.TokenType);
             Assert.Equal("div", ((HParser.ParsedTag)pres).TagName);
 
             pres = parser.Parse();
@@ -355,7 +355,7 @@ namespace HDoc.Tests
 
             pres = parser.Parse();
             Assert.IsType<HParser.ParsedTag>(pres);
-            Assert.Equal(HParser.ParsedTagType.CloseTag, ((HParser.ParsedTag)pres).TagType);
+            Assert.Equal(HParser.ParsedTokenType.CloseTag, pres.TokenType);
 
             pres = parser.Parse();
             Assert.Null(pres);
@@ -367,7 +367,7 @@ namespace HDoc.Tests
 
             pres = parser.Parse();
             Assert.IsType<HParser.ParsedTag>(pres);
-            Assert.Equal(HParser.ParsedTagType.OpenTag, ((HParser.ParsedTag)pres).TagType);
+            Assert.Equal(HParser.ParsedTokenType.OpenTag, pres.TokenType);
             Assert.Equal("div", ((HParser.ParsedTag)pres).TagName);
 
             var pex = Assert.Throws<ParseError>(() => parser.Parse());
@@ -382,7 +382,7 @@ namespace HDoc.Tests
 
             pres = parser.Parse();
             Assert.IsType<HParser.ParsedTag>(pres);
-            Assert.Equal(HParser.ParsedTagType.CloseTag, ((HParser.ParsedTag)pres).TagType);
+            Assert.Equal(HParser.ParsedTokenType.CloseTag, pres.TokenType);
 
             pres = parser.Parse();
             Assert.Null(pres);
@@ -394,7 +394,7 @@ namespace HDoc.Tests
 
             pres = parser.Parse();
             Assert.IsType<HParser.ParsedTag>(pres);
-            Assert.Equal(HParser.ParsedTagType.OpenTag, ((HParser.ParsedTag)pres).TagType);
+            Assert.Equal(HParser.ParsedTokenType.OpenTag, pres.TokenType);
             Assert.Equal("div", ((HParser.ParsedTag)pres).TagName);
 
             pres = parser.Parse();
@@ -416,7 +416,7 @@ namespace HDoc.Tests
 
             pres = parser.Parse();
             Assert.IsType<HParser.ParsedTag>(pres);
-            Assert.Equal(HParser.ParsedTagType.CloseTag, ((HParser.ParsedTag)pres).TagType);
+            Assert.Equal(HParser.ParsedTokenType.CloseTag, pres.TokenType);
 
             pres = parser.Parse();
             Assert.Null(pres);
@@ -428,7 +428,7 @@ namespace HDoc.Tests
 
             pres = parser.Parse();
             Assert.IsType<HParser.ParsedTag>(pres);
-            Assert.Equal(HParser.ParsedTagType.OpenTag, ((HParser.ParsedTag)pres).TagType);
+            Assert.Equal(HParser.ParsedTokenType.OpenTag, pres.TokenType);
             Assert.Equal("div", ((HParser.ParsedTag)pres).TagName);
 
             pex = Assert.Throws<ParseError>(() => parser.Parse());
@@ -454,7 +454,7 @@ namespace HDoc.Tests
 
             pres = parser.Parse();
             Assert.IsType<HParser.ParsedTag>(pres);
-            Assert.Equal(HParser.ParsedTagType.OpenTag, ((HParser.ParsedTag)pres).TagType);
+            Assert.Equal(HParser.ParsedTokenType.OpenTag, pres.TokenType);
             Assert.Equal("div", ((HParser.ParsedTag)pres).TagName);
 
             pex = Assert.Throws<ParseError>(() => parser.Parse());
@@ -462,7 +462,7 @@ namespace HDoc.Tests
 
             pres = parser.Parse();
             Assert.IsType<HParser.ParsedTag>(pres);
-            Assert.Equal(HParser.ParsedTagType.CloseTag, ((HParser.ParsedTag)pres).TagType);
+            Assert.Equal(HParser.ParsedTokenType.CloseTag, pres.TokenType);
 
             pres = parser.Parse();
             Assert.Null(pres);
@@ -480,7 +480,7 @@ namespace HDoc.Tests
             var pres = parser.Parse();
             Assert.Same(pres, parser.LastParsed);
             Assert.IsType<HParser.ParsedTag>(pres);
-            Assert.Equal(HParser.ParsedTagType.EndTag, ((HParser.ParsedTag)pres).TagType);
+            Assert.Equal(HParser.ParsedTokenType.EndTag, pres.TokenType);
             Assert.Equal("div", ((HParser.ParsedTag)pres).TagName);
 
             pres = parser.Parse();
@@ -494,7 +494,7 @@ namespace HDoc.Tests
             pres = parser.Parse();
             Assert.Same(pres, parser.LastParsed);
             Assert.IsType<HParser.ParsedTag>(pres);
-            Assert.Equal(HParser.ParsedTagType.EndTag, ((HParser.ParsedTag)pres).TagType);
+            Assert.Equal(HParser.ParsedTokenType.EndTag, pres.TokenType);
             Assert.Equal("div", ((HParser.ParsedTag)pres).TagName);
 
             pres = parser.Parse();
@@ -511,7 +511,7 @@ namespace HDoc.Tests
             pres = parser.Parse();
             Assert.Same(pres, parser.LastParsed);
             Assert.IsType<HParser.ParsedTag>(pres);
-            Assert.Equal(HParser.ParsedTagType.EndTag, ((HParser.ParsedTag)pres).TagType);
+            Assert.Equal(HParser.ParsedTokenType.EndTag, pres.TokenType);
             Assert.Equal("div", ((HParser.ParsedTag)pres).TagName);
 
             pres = parser.Parse();
@@ -528,7 +528,7 @@ namespace HDoc.Tests
             pres = parser.Parse();
             Assert.Same(pres, parser.LastParsed);
             Assert.IsType<HParser.ParsedTag>(pres);
-            Assert.Equal(HParser.ParsedTagType.EndTag, ((HParser.ParsedTag)pres).TagType);
+            Assert.Equal(HParser.ParsedTokenType.EndTag, pres.TokenType);
             Assert.Equal("div", ((HParser.ParsedTag)pres).TagName);
 
             pres = parser.Parse();
@@ -545,7 +545,7 @@ namespace HDoc.Tests
             pres = parser.Parse();
             Assert.Same(pres, parser.LastParsed);
             Assert.IsType<HParser.ParsedTag>(pres);
-            Assert.Equal(HParser.ParsedTagType.EndTag, ((HParser.ParsedTag)pres).TagType);
+            Assert.Equal(HParser.ParsedTokenType.EndTag, pres.TokenType);
             Assert.Equal("div", ((HParser.ParsedTag)pres).TagName);
 
             pres = parser.Parse();
@@ -561,17 +561,17 @@ namespace HDoc.Tests
 
             pres = parser.Parse();
             Assert.IsType<HParser.ParsedTag>(pres);
-            Assert.Equal(HParser.ParsedTagType.EndTag, ((HParser.ParsedTag)pres).TagType);
+            Assert.Equal(HParser.ParsedTokenType.EndTag, pres.TokenType);
             Assert.Equal("div", ((HParser.ParsedTag)pres).TagName);
 
             pres = parser.Parse();
             Assert.IsType<HParser.ParsedTag>(pres);
-            Assert.Equal(HParser.ParsedTagType.OpenTag, ((HParser.ParsedTag)pres).TagType);
+            Assert.Equal(HParser.ParsedTokenType.OpenTag, pres.TokenType);
             Assert.Equal("div", ((HParser.ParsedTag)pres).TagName);
 
             pres = parser.Parse();
             Assert.IsType<HParser.ParsedTag>(pres);
-            Assert.Equal(HParser.ParsedTagType.CloseTag, ((HParser.ParsedTag)pres).TagType);
+            Assert.Equal(HParser.ParsedTokenType.CloseTag, pres.TokenType);
             Assert.Equal("div", ((HParser.ParsedTag)pres).TagName);
 
             pres = parser.Parse();
@@ -589,12 +589,12 @@ namespace HDoc.Tests
             var pres = parser.Parse();
             Assert.Same(pres, parser.LastParsed);
             Assert.IsType<HParser.ParsedTag>(pres);
-            Assert.Equal(HParser.ParsedTagType.OpenProcessInstruction, ((HParser.ParsedTag)pres).TagType);
+            Assert.Equal(HParser.ParsedTokenType.OpenProcessInstruction, pres.TokenType);
             Assert.Equal("xml", ((HParser.ParsedTag)pres).TagName);
 
             pres = parser.Parse();
             Assert.IsType<HParser.ParsedTag>(pres);
-            Assert.Equal(HParser.ParsedTagType.CloseProcessInstruction, ((HParser.ParsedTag)pres).TagType);
+            Assert.Equal(HParser.ParsedTokenType.CloseProcessInstruction, pres.TokenType);
 
             pres = parser.Parse();
             Assert.Null(pres);
