@@ -112,6 +112,14 @@ namespace HDoc.Tests.Parser
             Assert.Equal(20, new ParsePosition(17, 2, 7).GetHashCode());
         }
 
+        [Fact]
+        public void TestToString()
+        {
+            Assert.Equal("0 (L:0 / C:0)", new ParsePosition().ToString());
+            Assert.Equal("-1 (L:-1 / C:-1)", ParsePosition.None.ToString());
+            Assert.Equal("17 (L:2 / C:7)", new ParsePosition(17, 2, 7).ToString());
+        }
+
     }
 
 }

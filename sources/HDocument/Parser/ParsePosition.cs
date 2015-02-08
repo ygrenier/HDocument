@@ -79,6 +79,14 @@ namespace HDoc.Parser
         }
 
         /// <summary>
+        /// To string
+        /// </summary>
+        public override string ToString()
+        {
+            return String.Format("{0} (L:{1} / C:{2})", Position, Line, Column);
+        }
+
+        /// <summary>
         /// Increment
         /// </summary>
         public static ParsePosition operator ++(ParsePosition p)

@@ -527,6 +527,11 @@ namespace HDoc
         public TextReader Reader { get; private set; }
 
         /// <summary>
+        /// Position reading
+        /// </summary>
+        public ParsePosition ReadPosition { get { return _ReadingPosition; } }
+
+        /// <summary>
         /// The last parsed result
         /// </summary>
         /// <remarks>
