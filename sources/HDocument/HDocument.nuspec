@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>HDocument</id>
+    <version>1.0.0</version>
+    <authors>Yan Grenier</authors>
+    <owners>ygrenier</owners>
+    <licenseUrl>https://github.com/ygrenier/HDocument/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/ygrenier/HDocument/</projectUrl>
+    <description>A C# library for HTML DOM manipulations.</description>
+    <releaseNotes></releaseNotes>
+    <copyright>Copyright Yan Grenier 2015</copyright>
+    <tags>HDocument</tags>
+  </metadata>
+  <files>
+    <file src="bin\Release\HDocument.dll" target="lib\portable-net45+netcore45+wp8+win8+wpa81+MonoTouch+MonoAndroid\" />
+  </files>
+</package>
