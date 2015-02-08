@@ -16,6 +16,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Github", "Github", "{1D2483
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{712753E4-A248-486B-9DA2-006B84433BF2}"
 	ProjectSection(SolutionItems) = preProject
+		..\appveyor.yml = ..\appveyor.yml
 		HDocument\HDocument.nuspec = HDocument\HDocument.nuspec
 	EndProjectSection
 EndProject
