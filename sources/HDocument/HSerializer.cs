@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HDoc.Parser;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -314,45 +315,45 @@ namespace HDoc
             {
                 switch (token.TokenType)
                 {
-                    case HParser.ParsedTokenType.Text:
-                        var htxt = new HText(HEntity.HtmlDecode(((HParser.ParsedText)token).Text));
+                    case ParsedTokenType.Text:
+                        var htxt = new HText(HEntity.HtmlDecode(((ParsedText)token).Text));
                         if (opened.Count > 0)
                             opened.Peek().Add(htxt);
                         else
                             yield return htxt;
                         break;
-                    case HParser.ParsedTokenType.CData:
-                        var hcd = new HCData(((HParser.ParsedCData)token).Text);
+                    case ParsedTokenType.CData:
+                        var hcd = new HCData(((ParsedCData)token).Text);
                         if (opened.Count > 0)
                             opened.Peek().Add(hcd);
                         else
                             yield return hcd;
                         break;
-                    case HParser.ParsedTokenType.Comment:
-                        var hcom = new HComment(HEntity.HtmlDecode(((HParser.ParsedComment)token).Text));
+                    case ParsedTokenType.Comment:
+                        var hcom = new HComment(HEntity.HtmlDecode(((ParsedComment)token).Text));
                         if (opened.Count > 0)
                             opened.Peek().Add(hcom);
                         else
                             yield return hcom;
                         break;
-                    case HParser.ParsedTokenType.OpenTag:
-                        opened.Push(new HElement(((HParser.ParsedTag)token).TagName));
+                    case ParsedTokenType.OpenTag:
+                        opened.Push(new HElement(((ParsedTag)token).TagName));
                         break;
-                    case HParser.ParsedTokenType.AutoClosedTag:
+                    case ParsedTokenType.AutoClosedTag:
                         System.Diagnostics.Debug.Assert(opened.Count > 0, "Opened tags are empty when receiving AutoClosedTag.");
-                        System.Diagnostics.Debug.Assert(opened.Peek().Name == ((HParser.ParsedTag)token).TagName, "AutoClosedTag and opened element are not same tag name.");
+                        System.Diagnostics.Debug.Assert(opened.Peek().Name == ((ParsedTag)token).TagName, "AutoClosedTag and opened element are not same tag name.");
                         var actag = opened.Pop();
                         if (opened.Count > 0)
                             opened.Peek().Add(actag);
                         else
                             yield return actag;
                         break;
-                    case HParser.ParsedTokenType.CloseTag:
+                    case ParsedTokenType.CloseTag:
                         System.Diagnostics.Debug.Assert(opened.Count > 0, "Opened tags are empty when receiving CloseTag.");
-                        System.Diagnostics.Debug.Assert(opened.Peek().Name == ((HParser.ParsedTag)token).TagName, "CloseTag and opened element are not same tag name.");
+                        System.Diagnostics.Debug.Assert(opened.Peek().Name == ((ParsedTag)token).TagName, "CloseTag and opened element are not same tag name.");
                         break;
-                    case HParser.ParsedTokenType.EndTag:
-                        tag = ((HParser.ParsedTag)token).TagName;
+                    case ParsedTokenType.EndTag:
+                        tag = ((ParsedTag)token).TagName;
                         HElement helm;
                         // Close all elements that not matching the tag
                         while (opened.Count > 0 && !String.Equals(opened.Peek().Name, tag, StringComparison.OrdinalIgnoreCase))
@@ -373,23 +374,23 @@ namespace HDoc
                                 yield return helm;
                         }
                         break;
-                    case HParser.ParsedTokenType.OpenProcessInstruction:
+                    case ParsedTokenType.OpenProcessInstruction:
                         if (currentXDecl != null)
                         {
-                            while ((token = parser.Parse()) != null && token.TokenType != HParser.ParsedTokenType.CloseProcessInstruction)
+                            while ((token = parser.Parse()) != null && token.TokenType != ParsedTokenType.CloseProcessInstruction)
                                 ;
                             throw new ParseError("XML declaration already opened.");
                         }
-                        tag = ((HParser.ParsedTag)token).TagName;
+                        tag = ((ParsedTag)token).TagName;
                         if (!String.Equals("xml", tag, StringComparison.OrdinalIgnoreCase))
                         {
-                            while ((token = parser.Parse()) != null && token.TokenType != HParser.ParsedTokenType.CloseProcessInstruction)
+                            while ((token = parser.Parse()) != null && token.TokenType != ParsedTokenType.CloseProcessInstruction)
                                 ;
                             throw new ParseError(String.Format("Unexpected '{0}' process instruction.", tag));
                         }
                         currentXDecl = new HXmlDeclaration(null, null, null);
                         break;
-                    case HParser.ParsedTokenType.CloseProcessInstruction:
+                    case ParsedTokenType.CloseProcessInstruction:
                         if (currentXDecl == null)
                             throw new ParseError("No XML declaration opened.");
                         if (opened.Count > 0)
@@ -398,8 +399,8 @@ namespace HDoc
                             yield return currentXDecl;
                         currentXDecl = null;
                         break;
-                    case HParser.ParsedTokenType.Attribute:
-                        var attr = (HParser.ParsedAttribute)token;
+                    case ParsedTokenType.Attribute:
+                        var attr = (ParsedAttribute)token;
                         // Xml declaration ?
                         if (currentXDecl != null)
                         {

@@ -53,6 +53,14 @@
     <Compile Include="HText.cs" />
     <Compile Include="HXmlDeclaration.cs" />
     <Compile Include="ParseError.cs" />
+    <Compile Include="Parser\ParsedAttribute.cs" />
+    <Compile Include="Parser\ParsedCData.cs" />
+    <Compile Include="Parser\ParsedComment.cs" />
+    <Compile Include="Parser\ParsedContent.cs" />
+    <Compile Include="Parser\ParsedTag.cs" />
+    <Compile Include="Parser\ParsedText.cs" />
+    <Compile Include="Parser\ParsedToken.cs" />
+    <Compile Include="Parser\[Enums].cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
