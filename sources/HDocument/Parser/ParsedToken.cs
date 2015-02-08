@@ -11,6 +11,12 @@ namespace HDoc.Parser
     /// </summary>
     public abstract class ParsedToken
     {
+
+        /// <summary>
+        /// Position
+        /// </summary>
+        public ParsePosition Position { get; internal set; }
+
         /// <summary>
         /// Type of the token
         /// </summary>

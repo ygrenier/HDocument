@@ -15,9 +15,23 @@ namespace HDoc
         /// New parse error
         /// </summary>
         public ParseError(String message)
-            : base(message)
+            : this(message, Parser.ParsePosition.None)
         {
         }
+
+        /// <summary>
+        /// New parse error with position
+        /// </summary>
+        public ParseError(String message, Parser.ParsePosition pos)
+            : base(message)
+        {
+            this.Position = pos;
+        }
+
+        /// <summary>
+        /// Position
+        /// </summary>
+        public Parser.ParsePosition Position { get; private set; }
 
     }
 }

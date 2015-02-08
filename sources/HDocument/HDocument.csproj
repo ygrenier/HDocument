@@ -60,6 +60,7 @@
     <Compile Include="Parser\ParsedTag.cs" />
     <Compile Include="Parser\ParsedText.cs" />
     <Compile Include="Parser\ParsedToken.cs" />
+    <Compile Include="Parser\ParsePosition.cs" />
     <Compile Include="Parser\[Enums].cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

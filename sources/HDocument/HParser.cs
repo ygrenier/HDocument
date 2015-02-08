@@ -48,7 +48,10 @@ namespace HDoc
         ParsedTag _CurrentTag;
         ParsedAttribute _CurrentAttr;
         StringBuilder _CurrentRead;
+        ParsePosition _CurrentPosition;
         Stack<Char> _Buffer;
+        ParsePosition _ReadingPosition;
+        bool _LastWasCR;
 
         /// <summary>
         /// Create a new parser
@@ -61,6 +64,9 @@ namespace HDoc
             this._Buffer = new Stack<char>();
             this._CurrentRead = null;
             this._State = ParseState.Content;
+            this._CurrentPosition = new ParsePosition();
+            this._ReadingPosition = new ParsePosition();
+            this._LastWasCR = false;
         }
 
         /// <summary>
@@ -77,7 +83,10 @@ namespace HDoc
         protected void AddToCurrentRead(Char c)
         {
             if (_CurrentRead == null)
+            {
                 _CurrentRead = new StringBuilder(10);
+                _CurrentPosition = _ReadingPosition;
+            }
             _CurrentRead.Append(c);
         }
 
@@ -107,6 +116,22 @@ namespace HDoc
             else
             {
                 res = Reader.Read();
+                if (res == '\n')
+                {
+                    if (!_LastWasCR)
+                        _ReadingPosition = _ReadingPosition.NextLine(true);
+                    else
+                        _ReadingPosition = _ReadingPosition.AddPosition(1);
+                }
+                else if (res == '\r')
+                {
+                    _ReadingPosition = _ReadingPosition.NextLine(true);
+                }
+                else
+                {
+                    _ReadingPosition++;
+                }
+                _LastWasCR = res == '\r';
             }
             if (res >= 0 && saveToCurrent)
             {
@@ -128,6 +153,7 @@ namespace HDoc
                 SaveChar((Char)c);
             // Returns parse result
             return new ParsedText() {
+                Position = _CurrentPosition,
                 Text = GetCurrentRead(true)
             };
         }
@@ -158,12 +184,13 @@ namespace HDoc
                     s = 0;  // Reset state
             }
             if (c < 0)
-                throw new ParseError("End of file unexpected, comment not closed.");
+                throw new ParseError("End of file unexpected, comment not closed.", _ReadingPosition);
             // Back to content state
             _State = ParseState.Content;
             // Returns comment
             String comment = GetCurrentRead(true);
             return new ParsedComment() {
+                Position = _CurrentPosition,
                 Text = comment.Substring(4, comment.Length - 7).Trim()
             };
         }
@@ -179,7 +206,7 @@ namespace HDoc
             {
                 // Expect '--'
                 if (ReadChar() != '-' || ReadChar() != '-')
-                    throw new ParseError("Comments need to start with '<!--'.");
+                    throw new ParseError("Comments need to start with '<!--'.", _ReadingPosition);
                 return ParseComment();
             }
             // Process instruction ?
@@ -201,7 +228,7 @@ namespace HDoc
             while (c >= 0 && Char.IsWhiteSpace((Char)c)) c = ReadChar();
             // Tagname
             if (c < 0 || !Char.IsLetterOrDigit((Char)c))
-                throw new ParseError("Invalid tag name. Need to start with an alphanumeric");
+                throw new ParseError("Invalid tag name. Need to start with an alphanumeric", _ReadingPosition);
             // Loop tag name
             _CurrentRead = null;
             AddToCurrentRead((Char)c);
@@ -211,14 +238,15 @@ namespace HDoc
             if (_State == ParseState.EndTag)
             {
                 _CurrentTag = ParsedTag.EndTag(GetCurrentRead(true));
+                _CurrentTag.Position = _CurrentPosition;
 
                 // Pass whitespace
                 while (c >= 0 && Char.IsWhiteSpace((Char)c)) c = ReadChar(false);
                 try
                 {
-                    if (c < 0) throw new ParseError("Unexpected end of stream.");
-                    if (IsAttributeNameChar((Char)c)) throw new ParseError("End tag can't contains attribute.");
-                    if (c != '>') throw new ParseError("Unexpected char. End tag not closed.");
+                    if (c < 0) throw new ParseError("Unexpected end of stream.", _ReadingPosition);
+                    if (IsAttributeNameChar((Char)c)) throw new ParseError("End tag can't contains attribute.", _ReadingPosition);
+                    if (c != '>') throw new ParseError("Unexpected char. End tag not closed.", _ReadingPosition);
                 }
                 catch
                 {
@@ -235,6 +263,7 @@ namespace HDoc
             // Create the tag
             if (c >= 0) SaveChar((Char)c);
             _CurrentTag = _State == ParseState.Tag ? ParsedTag.OpenTag(GetCurrentRead(true)) : ParsedTag.OpenProcessInstruction(GetCurrentRead(true));
+            _CurrentTag.Position = _CurrentPosition;
             return _CurrentTag;
         }
 
@@ -257,7 +286,7 @@ namespace HDoc
             {
                 _CurrentTag = null;
                 _State = ParseState.Content;
-                throw new ParseError("Unexpected end of file. Tag not closed.");
+                throw new ParseError("Unexpected end of file. Tag not closed.", _ReadingPosition);
             }
             // End of auto closed tag ?
             else if (c == '/' && _State == ParseState.Tag)
@@ -269,7 +298,7 @@ namespace HDoc
                     // Prepare a correct next tag
                     SaveChar('>');
                     SaveChar('/');
-                    throw new ParseError("Invalid char after '/'. End of auto closed tag expected.");
+                    throw new ParseError("Invalid char after '/'. End of auto closed tag expected.", _ReadingPosition);
                 }
                 if (spaces)
                 {
@@ -277,10 +306,11 @@ namespace HDoc
                     SaveChar('>');
                     SaveChar('/');
                     // Raise the error
-                    throw new ParseError("Invalid auto closed tag, '/' need to be follow by '>'.");
+                    throw new ParseError("Invalid auto closed tag, '/' need to be follow by '>'.", _ReadingPosition);
                 }
                 // Returns autoclosed
                 var result = ParsedTag.AutoClosedTag(_CurrentTag.TagName);
+                result.Position = _CurrentTag.Position;
                 _CurrentTag = null;
                 _CurrentRead = null;
                 _State = ParseState.Content;
@@ -290,9 +320,10 @@ namespace HDoc
             else if (c == '?' && _State == ParseState.ProcessInstruction)
             {
                 c = ReadChar(false);
-                if (c != '>') throw new ParseError("Invalid char after '?'. End of process instruction expected.");
+                if (c != '>') throw new ParseError("Invalid char after '?'. End of process instruction expected.", _ReadingPosition);
                 // Returns processinstruction
                 var result = ParsedTag.CloseProcessInstruction(_CurrentTag.TagName);
+                result.Position = _CurrentTag.Position;
                 _CurrentTag = null;
                 _CurrentRead = null;
                 _State = ParseState.Content;
@@ -301,9 +332,10 @@ namespace HDoc
             else if (c == '>')
             {
                 if (_State == ParseState.ProcessInstruction)
-                    throw new ParseError("A process instruction need to be closed with '?>'.");
+                    throw new ParseError("A process instruction need to be closed with '?>'.", _ReadingPosition);
                 // Returns close
                 var result = ParsedTag.CloseTag(_CurrentTag.TagName);
+                result.Position = _CurrentTag.Position;
                 _CurrentTag = null;
                 _CurrentRead = null;
                 _State = ParseState.Content;
@@ -311,12 +343,13 @@ namespace HDoc
             }
             // Get the attribute name
             if (!IsAttributeNameChar((Char)c))
-                throw new ParseError("Unexpected character.");
+                throw new ParseError("Unexpected character.", _ReadingPosition);
             AddToCurrentRead((Char)c);
             while ((c = ReadChar(false)) >= 0 && IsAttributeNameChar((Char)c))
                 AddToCurrentRead((Char)c);
             if (c >= 0) SaveChar((Char)c);
             String attrName = GetCurrentRead(true);
+            ParsePosition attrPos = _CurrentPosition;
             // Whitespaces
             while ((c = ReadChar(false)) >= 0 && Char.IsWhiteSpace((Char)c)) ;
             // Attribute whithout value
@@ -325,6 +358,7 @@ namespace HDoc
                 SaveChar((Char)c);
                 // Attribute whithout content
                 return new ParsedAttribute() {
+                    Position = attrPos,
                     Name = attrName,
                     Value = null,
                     Quote = '\0'
@@ -336,12 +370,13 @@ namespace HDoc
             if (c == 0 || c == '/' || c == '?' || c == '>')
             {
                 _CurrentAttr = new ParsedAttribute() {
+                    Position = attrPos,
                     Name = attrName,
                     Value = null,
                     Quote = '\0'
                 };
                 if (c > 0) SaveChar((Char)c);
-                throw new ParseError("Attribute value expected.");
+                throw new ParseError("Attribute value expected.", _ReadingPosition);
             }
             // Quoted value ?
             _CurrentRead = null;
@@ -352,12 +387,13 @@ namespace HDoc
                 while ((c = ReadChar(false)) >= 0 && c != quote)
                     AddToCurrentRead((Char)c);
                 _CurrentAttr = new ParsedAttribute() {
+                    Position = attrPos,
                     Name = attrName,
                     Value = HEntity.HtmlDecode(GetCurrentRead(true)),
                     Quote = quote
                 };
                 if (c < 0)
-                    throw new ParseError("Unexpected end of file. Attribute is not closed.");
+                    throw new ParseError("Unexpected end of file. Attribute is not closed.", _ReadingPosition);
                 var result = _CurrentAttr;
                 _CurrentAttr = null;
                 return result;
@@ -368,6 +404,7 @@ namespace HDoc
                 AddToCurrentRead((Char)c);
             SaveChar((Char)c);
             return new ParsedAttribute() {
+                Position = attrPos,
                 Name = attrName,
                 Value = HEntity.HtmlDecode(GetCurrentRead(true)),
                 Quote = quote
@@ -412,18 +449,21 @@ namespace HDoc
                     case ParseState.Comment:
                         String comment = GetCurrentRead(true);
                         LastParsed = new ParsedComment() {
+                            Position = _CurrentPosition,
                             Text = comment.Substring(4).TrimStart()
                         };
                         break;
                     // Returns a text
                     case ParseState.Content:
                         LastParsed = new ParsedText() {
+                            Position = _CurrentPosition,
                             Text = GetCurrentRead(true)
                         };
                         break;
                     // Returns a text
                     case ParseState.Tag:
                         LastParsed = new ParsedText() {
+                            Position = _CurrentPosition,
                             Text = GetCurrentRead(true)
                         };
                         break;
@@ -448,7 +488,7 @@ namespace HDoc
                     if (_State != ParseState.Content)
                     {
                         _State = ParseState.Content;
-                        throw new ParseError("End of file unexpected.");
+                        throw new ParseError("End of file unexpected.", _ReadingPosition);
                     }
                     // Stop the parsing
                     LastParsed = null;

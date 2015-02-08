@@ -68,6 +68,7 @@
     <Compile Include="HSerializerTest.cs" />
     <Compile Include="HTextTest.cs" />
     <Compile Include="HXmlDeclarationTest.cs" />
+    <Compile Include="Parser\ParsePositionTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
