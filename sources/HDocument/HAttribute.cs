@@ -24,12 +24,12 @@ namespace HDoc
         /// <param name="name">Name of the attribute</param>
         /// <param name="value">Value of the attribute</param>
         /// <exception cref="ArgumentNullException">
-        /// Throws if the passed name is null or empty, or the value is null.
+        /// Throws if the passed name is null or empty.
         /// </exception>
         public HAttribute(String name, String value = "")
         {
             if (String.IsNullOrWhiteSpace(name)) throw new ArgumentNullException("name");
-            if (value == null) throw new ArgumentNullException("value");
+            //if (value == null) throw new ArgumentNullException("value");
             this.Name = name;
             this.Value = value;
         }
@@ -98,7 +98,7 @@ namespace HDoc
         {
             get { return _Value; }
             set {
-                if (value == null) throw new ArgumentNullException("value");
+                //if (value == null) throw new ArgumentNullException("value");
                 _Value = value; 
             }
         }

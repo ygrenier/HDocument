@@ -11,6 +11,8 @@ namespace HDoc
     /// </summary>
     public class HDocument : HContainer
     {
+        IList<ParseError> _ParseErrors;
+
         /// <summary>
         /// Create a new HTML document
         /// </summary>
@@ -120,6 +122,13 @@ namespace HDoc
                 throw new ArgumentException("Can't add non whitespace text in a document.");
         }
 
+        internal void AddParseError(ParseError error)
+        {
+            if (_ParseErrors == null)
+                _ParseErrors = new List<ParseError>();
+            _ParseErrors.Add(error);
+        }
+
         /// <summary>
         /// Encoding of the document
         /// </summary>
@@ -140,6 +149,10 @@ namespace HDoc
         /// </summary>
         public HElement Root { get { return  FindFirstNode<HElement>(); } }
 
+        /// <summary>
+        /// List of errors when parsed
+        /// </summary>
+        public ParseError[] ParseErrors { get { return _ParseErrors != null ? _ParseErrors.ToArray() : new ParseError[0]; } }
     }
 
 }

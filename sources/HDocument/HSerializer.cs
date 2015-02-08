@@ -277,6 +277,38 @@ namespace HDoc
 
         #region Deserialization
 
+        void ProcessError(Exception error, Func<Exception, bool> errorHandler)
+        {
+            if (errorHandler != null)
+                if (errorHandler(error))
+                    return;
+            throw error;
+        }
+
+        /// <summary>
+        /// Parse with error intercepts
+        /// </summary>
+        ParsedToken ParseNext(HParser parser, Func<Exception, bool> errorHandler)
+        {
+            ParsedToken result = null;
+            do
+            {
+                try
+                {
+                    result = parser.Parse();
+                    if (result == null) break;
+                }
+                catch (Exception ex)
+                {
+                    if (errorHandler != null)
+                        if (errorHandler(ex))
+                            continue;
+                    throw;
+                }
+            } while (result == null);
+            return result;
+        }
+
         /// <summary>
         /// Deserialize a HTML document
         /// </summary>
@@ -287,7 +319,14 @@ namespace HDoc
             HDocument result = new HDocument();
             result.Encoding = null;
             // Load nodes in the document
-            result.Add(Deserialize(reader));
+            result.Add(Deserialize(reader, err => {
+                if (err is ParseError)
+                {
+                    result.AddParseError((ParseError)err);
+                    return true;
+                }
+                return false;
+            }));
             // Check encoding
             if (result.Encoding == null)
             {
@@ -302,12 +341,12 @@ namespace HDoc
         /// <summary>
         /// Deserialize as a list of nodes
         /// </summary>
-        public IEnumerable<HNode> Deserialize(TextReader reader)
+        public IEnumerable<HNode> Deserialize(TextReader reader, Func<Exception, bool> errorHandler = null)
         {
             if (reader == null) throw new ArgumentNullException("reader");
             // Create the parser
             var parser = new HParser(reader);
-            var token = parser.Parse();
+            var token = ParseNext(parser, errorHandler);
             Stack<HElement> opened = new Stack<HElement>();
             HXmlDeclaration currentXDecl = null;
             String tag;
@@ -377,26 +416,31 @@ namespace HDoc
                     case ParsedTokenType.OpenProcessInstruction:
                         if (currentXDecl != null)
                         {
-                            while ((token = parser.Parse()) != null && token.TokenType != ParsedTokenType.CloseProcessInstruction)
+                            while ((token = ParseNext(parser, errorHandler)) != null && token.TokenType != ParsedTokenType.CloseProcessInstruction)
                                 ;
-                            throw new ParseError("XML declaration already opened.");
+                            ProcessError(new ParseError("XML declaration already opened."), errorHandler);
                         }
                         tag = ((ParsedTag)token).TagName;
                         if (!String.Equals("xml", tag, StringComparison.OrdinalIgnoreCase))
                         {
-                            while ((token = parser.Parse()) != null && token.TokenType != ParsedTokenType.CloseProcessInstruction)
+                            while ((token = ParseNext(parser, errorHandler)) != null && token.TokenType != ParsedTokenType.CloseProcessInstruction)
                                 ;
-                            throw new ParseError(String.Format("Unexpected '{0}' process instruction.", tag));
+                            ProcessError(new ParseError(String.Format("Unexpected '{0}' process instruction.", tag)), errorHandler);
                         }
                         currentXDecl = new HXmlDeclaration(null, null, null);
                         break;
                     case ParsedTokenType.CloseProcessInstruction:
                         if (currentXDecl == null)
-                            throw new ParseError("No XML declaration opened.");
-                        if (opened.Count > 0)
-                            opened.Peek().Add(currentXDecl);
+                        {
+                            ProcessError(new ParseError("No XML declaration opened."), errorHandler);
+                        }
                         else
-                            yield return currentXDecl;
+                        {
+                            if (opened.Count > 0)
+                                opened.Peek().Add(currentXDecl);
+                            else
+                                yield return currentXDecl;
+                        }
                         currentXDecl = null;
                         break;
                     case ParsedTokenType.Attribute:
@@ -411,7 +455,7 @@ namespace HDoc
                             else if (String.Equals("standalone", attr.Name, StringComparison.OrdinalIgnoreCase))
                                 currentXDecl.Standalone = attr.Value;
                             else
-                                throw new ParseError(String.Format("Invalid XML declaration attribute : ''", attr.Name));
+                                ProcessError(new ParseError(String.Format("Invalid XML declaration attribute : ''", attr.Name)), errorHandler);
                         }
                         System.Diagnostics.Debug.Assert(opened.Count > 0, "No element opened for the attribtue.");
                         opened.Peek().Add(new HAttribute(attr.Name, attr.Value));
@@ -420,7 +464,7 @@ namespace HDoc
                     //    break;
                 }
                 // Next token
-                token = parser.Parse();
+                token = ParseNext(parser, errorHandler);
             }
             // Close all opened elements
             while (opened.Count > 0)

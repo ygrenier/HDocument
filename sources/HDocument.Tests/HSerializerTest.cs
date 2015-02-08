@@ -422,9 +422,52 @@ namespace HDoc.Tests
                 hdoc = serializer.DeserializeDocument(new StreamReader(ms, Encoding.ASCII));
                 Assert.Same(Encoding.ASCII, hdoc.Encoding);
                 Assert.Equal(6, hdoc.DescendantNodes().Count());
+                Assert.Equal(0, hdoc.ParseErrors.Length);
             }
 
             Assert.Throws<ArgumentNullException>(() => serializer.DeserializeDocument(null));
+
+        }
+
+        [Fact]
+        public void TestDeserializeDocument_WithErrors()
+        {
+            var serializer = new HSerializer();
+
+            var hdoc = serializer.DeserializeDocument(new StringReader("<html><body><h1>Document</h1><p class=>Content &amp; more.</p></body></html>"));
+
+            Assert.Same(Encoding.UTF8, hdoc.Encoding);
+
+            // Document with one root
+            Assert.Equal(1, hdoc.Nodes().Count());
+            Assert.Equal("html", hdoc.Root.Name);
+
+            // Root with one body
+            Assert.Equal(1, hdoc.Root.Nodes().Count());
+            HElement body = hdoc.Root.FirstNode as HElement;
+            Assert.NotNull(body);
+            Assert.Equal("body", body.Name);
+
+            // Body contains two elements
+            Assert.Equal(2, body.Nodes().Count());
+            var elms = body.Elements().ToArray();
+            Assert.Equal(2, elms.Length);
+
+            // First h1
+            Assert.Equal("h1", elms[0].Name);
+            Assert.Equal(1, elms[0].Nodes().Count());
+            Assert.IsType<HText>(elms[0].FirstNode);
+            Assert.Equal("Document", ((HText)elms[0].FirstNode).Value);
+
+            // Second p
+            Assert.Equal("p", elms[1].Name);
+            Assert.Equal(1, elms[1].Nodes().Count());
+            Assert.IsType<HText>(elms[1].FirstNode);
+            Assert.Equal("Content & more.", ((HText)elms[1].FirstNode).Value);
+
+            // Check errors
+            Assert.Equal(1, hdoc.ParseErrors.Length);
+            Assert.Equal("Attribute value expected.", hdoc.ParseErrors[0].Message);
 
         }
 
