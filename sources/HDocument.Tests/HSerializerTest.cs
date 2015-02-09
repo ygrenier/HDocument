@@ -528,6 +528,17 @@ namespace HDoc.Tests
             Assert.False(gEnum.MoveNext());
         }
 
+        [Fact]
+        public void TestDeserializeTestPage1()
+        {
+            using (var pageStream = this.GetType().Assembly.GetManifestResourceStream("HDoc.Tests.Resources.TestPage1.html"))
+            using (var reader = new StreamReader(pageStream))
+            {
+                var serializer = new HSerializer();
+                //var doc = serializer.DeserializeDocument(reader);
+            }
+        }
+
         #endregion
 
     }

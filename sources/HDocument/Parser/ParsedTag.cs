@@ -36,7 +36,6 @@ namespace HDoc.Parser
         {
             return new ParsedTag() { TagName = tag, _TokenType = ParsedTokenType.CloseProcessInstruction };
         }
-
         /// <summary>
         /// Tag name
         /// </summary>

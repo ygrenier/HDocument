@@ -32,6 +32,8 @@ namespace HDoc
             /// In a process instruction
             /// </summary>
             ProcessInstruction,
+            // In doctype
+            Doctype,
             /// <summary>
             /// In a tag
             /// </summary>
@@ -45,7 +47,7 @@ namespace HDoc
         #endregion
 
         ParseState _State;
-        ParsedTag _CurrentTag;
+        ParsedToken _CurrentToken;
         ParsedAttribute _CurrentAttr;
         StringBuilder _CurrentRead;
         ParsePosition _CurrentPosition, _StartTagPosition;
@@ -205,6 +207,89 @@ namespace HDoc
         }
 
         /// <summary>
+        /// Parse a doctype
+        /// </summary>
+        /// <returns></returns>
+        protected ParsedToken ParseDoctype()
+        {
+            // We are in doctype
+            _State = ParseState.Doctype;
+            var stag = _CurrentPosition;
+            // read DOCTYPE
+            StringBuilder dc = new StringBuilder();
+            dc.Append((Char)ReadChar());
+            int c;
+            while ((c = ReadChar()) >= 0 && Char.IsLetter((Char)c))
+                dc.Append((Char)c);
+            if (dc.ToString().ToLower() != "doctype")
+                throw new ParseError("DOCTYPE expected.", _CurrentPosition);
+            // Read loop
+            int s = 0; char quote = '\0';
+            // s : state
+            // 0 : in tag
+            // 1 : in value
+            List<String> values = new List<string>();
+            while ((c = ReadChar()) >= 0)
+            {
+                if (s == 0)
+                {
+                    // Start a value ?
+                    if (c == '"' || c=='\'')
+                    {
+                        quote = (char)c;
+                        _CurrentRead = null;
+                        s = 1;
+                    }
+                    else if (Char.IsLetterOrDigit((Char)c))
+                    {
+                        quote = '\0';
+                        _CurrentRead = null;
+                        AddToCurrentRead((Char)c);
+                        s = 1;
+                    }
+                    else if (c == '>')
+                    {
+                        break;
+                    }
+                }
+                else if (s == 1)
+                {
+                    // End of the value ?
+                    if (quote == (Char)c)
+                    {
+                        var v = GetCurrentRead(true);
+                        values.Add(v.Substring(0, v.Length - 1));
+                        s = 0;
+                    }
+                    else if (c == '>' || (quote == '\0' && !Char.IsLetterOrDigit((Char)c)))
+                    {
+                        var v = GetCurrentRead(true);
+                        values.Add(v.Substring(0, v.Length - 1));
+                        SaveChar((Char)c);
+                        s = 0;
+                    }
+                }
+            }
+            if (s == 1 && _CurrentRead != null)
+            {
+                values.Add(GetCurrentRead(true));
+            }
+            _CurrentRead = null;
+            _CurrentToken = new ParsedDoctype() {
+                Position = stag,
+                Values = values.ToArray()
+            };
+            if (c < 0)
+                throw new ParseError("End of file unexpected, doctype not closed.", _NextCharPosition);
+            // Back to content state
+            _State = ParseState.Content;
+            // Returns doctype
+            var result = _CurrentToken;
+            _CurrentToken = null;
+            return result;
+        }
+
+        /// <summary>
         /// Parse a start tag
         /// </summary>
         protected ParsedToken ParseStartTag()
@@ -214,10 +299,20 @@ namespace HDoc
             // Comments ?
             if (c == '!')
             {
-                // Expect '--'
-                if (ReadChar() != '-' || ReadChar() != '-')
-                    throw new ParseError("Comments need to start with '<!--'.", _NextCharPosition);
-                return ParseComment();
+                // Expect '--' or 'DOCTYPE'
+                c = ReadChar();
+                if (Char.IsLetter((Char)c))
+                {
+                    SaveChar((Char)c);
+                    return ParseDoctype();
+                }
+                else if (c == '-')
+                {
+                    if (ReadChar() != '-')
+                        throw new ParseError("Comments need to start with '<!--'.", _NextCharPosition);
+                    return ParseComment();
+                }
+                throw new ParseError("Comment or DOCTYPE expected.", _NextCharPosition);
             }
             // Process instruction ?
             if (c == '?')
@@ -247,8 +342,8 @@ namespace HDoc
             // If EndTag
             if (_State == ParseState.EndTag)
             {
-                _CurrentTag = ParsedTag.EndTag(GetCurrentRead(true));
-                _CurrentTag.Position = _StartTagPosition;
+                _CurrentToken = ParsedTag.EndTag(GetCurrentRead(true));
+                _CurrentToken.Position = _StartTagPosition;
 
                 // Pass whitespace
                 while (c >= 0 && Char.IsWhiteSpace((Char)c)) c = ReadChar(false);
@@ -266,15 +361,15 @@ namespace HDoc
                     throw;
                 }
                 _State = ParseState.Content;
-                var result = _CurrentTag;
-                _CurrentTag = null;
+                var result = _CurrentToken;
+                _CurrentToken = null;
                 return result;
             }
             // Create the tag
             if (c >= 0) SaveChar((Char)c);
-            _CurrentTag = _State == ParseState.Tag ? ParsedTag.OpenTag(GetCurrentRead(true)) : ParsedTag.OpenProcessInstruction(GetCurrentRead(true));
-            _CurrentTag.Position = _StartTagPosition;
-            return _CurrentTag;
+            _CurrentToken = _State == ParseState.Tag ? ParsedTag.OpenTag(GetCurrentRead(true)) : ParsedTag.OpenProcessInstruction(GetCurrentRead(true));
+            _CurrentToken.Position = _StartTagPosition;
+            return _CurrentToken;
         }
 
         static bool IsAttributeNameChar(Char c)
@@ -295,7 +390,7 @@ namespace HDoc
             // EOF ?
             if (c < 0)
             {
-                _CurrentTag = null;
+                _CurrentToken = null;
                 _State = ParseState.Content;
                 throw new ParseError("Unexpected end of file. Tag not closed.", _NextCharPosition);
             }
@@ -320,9 +415,9 @@ namespace HDoc
                     throw new ParseError("Invalid auto closed tag, '/' need to be follow by '>'.", cpos);
                 }
                 // Returns autoclosed
-                var result = ParsedTag.AutoClosedTag(_CurrentTag.TagName);
+                var result = ParsedTag.AutoClosedTag(((ParsedTag)_CurrentToken).TagName);
                 result.Position = cpos;
-                _CurrentTag = null;
+                _CurrentToken = null;
                 _CurrentRead = null;
                 _State = ParseState.Content;
                 return result;
@@ -333,21 +428,22 @@ namespace HDoc
                 c = ReadChar(false);
                 if (c != '>') throw new ParseError("Invalid char after '?'. End of process instruction expected.", cpos);
                 // Returns processinstruction
-                var result = ParsedTag.CloseProcessInstruction(_CurrentTag.TagName);
+                var result = ParsedTag.CloseProcessInstruction(((ParsedTag)_CurrentToken).TagName);
                 result.Position = cpos;
-                _CurrentTag = null;
+                _CurrentToken = null;
                 _CurrentRead = null;
                 _State = ParseState.Content;
                 return result;
             }
             else if (c == '>')
             {
+                // Check tag
                 if (_State == ParseState.ProcessInstruction)
                     throw new ParseError("A process instruction need to be closed with '?>'.", cpos);
                 // Returns close
-                var result = ParsedTag.CloseTag(_CurrentTag.TagName);
+                var result = ParsedTag.CloseTag(((ParsedTag)_CurrentToken).TagName);
                 result.Position = cpos;
-                _CurrentTag = null;
+                _CurrentToken = null;
                 _CurrentRead = null;
                 _State = ParseState.Content;
                 return result;
@@ -430,16 +526,16 @@ namespace HDoc
             int c;
             // If end of stream when stop here
             if (EOF) return null;
-            // Current tag defined
-            if (_CurrentTag != null)
+            // Current token defined
+            if (_CurrentToken != null)
             {
-                // End tag : error while end tag parsing, reset parser
-                if (_CurrentTag.TokenType == ParsedTokenType.EndTag)
+                // End tag out Doctype : error while end tag or doctype parsing, reset parser
+                if (_CurrentToken.TokenType == ParsedTokenType.EndTag || _CurrentToken.TokenType == ParsedTokenType.Doctype)
                 {
                     _CurrentRead = null;
                     _State = ParseState.Content;
-                    LastParsed = _CurrentTag;
-                    _CurrentTag = null;
+                    LastParsed = _CurrentToken;
+                    _CurrentToken = null;
                     return LastParsed;
                 }
             }
@@ -472,6 +568,8 @@ namespace HDoc
                         };
                         break;
                     // Returns a text
+                    case ParseState.Doctype:
+                    case ParseState.ProcessInstruction:
                     case ParseState.Tag:
                         LastParsed = new ParsedText() {
                             Position = _CurrentPosition,
@@ -522,6 +620,7 @@ namespace HDoc
                         return LastParsed;
                     // In tag or process instruction
                     case ParseState.Tag:
+                    case ParseState.Doctype:
                     case ParseState.ProcessInstruction:
                         SaveChar((Char)c);
                         LastParsed = ParseInTag();

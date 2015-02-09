@@ -57,6 +57,7 @@
     <Compile Include="Parser\ParsedCData.cs" />
     <Compile Include="Parser\ParsedComment.cs" />
     <Compile Include="Parser\ParsedContent.cs" />
+    <Compile Include="Parser\ParsedDoctype.cs" />
     <Compile Include="Parser\ParsedTag.cs" />
     <Compile Include="Parser\ParsedText.cs" />
     <Compile Include="Parser\ParsedToken.cs" />

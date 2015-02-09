@@ -40,6 +40,10 @@ namespace HDoc.Parser
         /// </summary>
         EndTag,
         /// <summary>
+        /// Doctype : &lt;!DOCTYPE ... &gt;
+        /// </summary>
+        Doctype,
+        /// <summary>
         /// Open Process instruction : &lt;? ...
         /// </summary>
         OpenProcessInstruction,

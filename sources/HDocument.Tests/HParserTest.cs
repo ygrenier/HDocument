@@ -757,5 +757,131 @@ namespace HDoc.Tests
 
         }
 
+        [Fact]
+        public void TestParse_Doctype()
+        {
+            // HTML 5
+            StringReader reader = new StringReader("<!DOCTYPE html>");
+            HParser parser = new HParser(reader);
+
+            var pres = parser.Parse();
+            Assert.Same(pres, parser.LastParsed);
+            Assert.IsType<ParsedDoctype>(pres);
+            Assert.Equal(new ParsePosition(0, 0, 0), pres.Position);
+            Assert.Equal(new ParsePosition(15, 0, 15), parser.ReadPosition);
+            Assert.Equal(ParsedTokenType.Doctype, pres.TokenType);
+            var dt = (ParsedDoctype)pres;
+            Assert.Equal(1, dt.Values.Length);
+            Assert.Equal(new string[] { "html" }, dt.Values);
+
+            pres = parser.Parse();
+            Assert.Equal(new ParsePosition(15, 0, 15), parser.ReadPosition);
+            Assert.Null(pres);
+            Assert.True(parser.EOF);
+
+            // Full doctype
+            reader = new StringReader("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\"  >");
+            parser = new HParser(reader);
+
+            pres = parser.Parse();
+            Assert.Same(pres, parser.LastParsed);
+            Assert.IsType<ParsedDoctype>(pres);
+            Assert.Equal(new ParsePosition(0, 0, 0), pres.Position);
+            Assert.Equal(new ParsePosition(96, 0, 96), parser.ReadPosition);
+            Assert.Equal(ParsedTokenType.Doctype, pres.TokenType);
+            dt = (ParsedDoctype)pres;
+            Assert.Equal(4, dt.Values.Length);
+            Assert.Equal(new string[] { "html", "PUBLIC", "-//W3C//DTD HTML 4.0//EN", "http://www.w3.org/TR/REC-html40/strict.dtd" }, dt.Values);
+
+            pres = parser.Parse();
+            Assert.Equal(new ParsePosition(96, 0, 96), parser.ReadPosition);
+            Assert.Null(pres);
+            Assert.True(parser.EOF);
+
+        }
+
+        [Fact]
+        public void TestParse_Doctype_InvalidDoctypeTag()
+        {
+            // Invalid doctype
+            var reader = new StringReader("<!DOCTPE html PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\"  >");
+            var parser = new HParser(reader);
+
+            var pex = Assert.Throws<ParseError>(() => parser.Parse());
+            Assert.Equal("DOCTYPE expected.", pex.Message);
+            Assert.Equal(new ParsePosition(0, 0, 0), pex.Position);
+
+            var pres = parser.Parse();
+            Assert.Same(pres, parser.LastParsed);
+            Assert.IsType<ParsedText>(pres);
+            Assert.Equal(new ParsePosition(0, 0, 0), pres.Position);
+            Assert.Equal(new ParsePosition(9, 0, 9), parser.ReadPosition);
+            Assert.Equal(ParsedTokenType.Text, pres.TokenType);
+            Assert.Equal("<!DDOCTPE ", ((ParsedText)pres).Text);
+
+            pres = parser.Parse();
+            Assert.Same(pres, parser.LastParsed);
+            Assert.IsType<ParsedText>(pres);
+            Assert.Equal(new ParsePosition(9, 0, 9), pres.Position);
+            Assert.Equal(new ParsePosition(95, 0, 95), parser.ReadPosition);
+            Assert.Equal(ParsedTokenType.Text, pres.TokenType);
+            Assert.Equal("html PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\"  >", ((ParsedText)pres).Text);
+
+            pres = parser.Parse();
+            Assert.Equal(new ParsePosition(95, 0, 95), parser.ReadPosition);
+            Assert.Null(pres);
+            Assert.True(parser.EOF);
+
+        }
+
+        [Fact]
+        public void TestParse_Doctype_EOF()
+        {
+            var reader = new StringReader("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\"  ");
+            var parser = new HParser(reader);
+
+            var pex = Assert.Throws<ParseError>(() => parser.Parse());
+            Assert.Equal("End of file unexpected, doctype not closed.", pex.Message);
+            Assert.Equal(new ParsePosition(95, 0, 95), pex.Position);
+
+            var pres = parser.Parse();
+            Assert.Same(pres, parser.LastParsed);
+            Assert.IsType<ParsedDoctype>(pres);
+            Assert.Equal(new ParsePosition(0, 0, 0), pres.Position);
+            Assert.Equal(new ParsePosition(95, 0, 95), parser.ReadPosition);
+            Assert.Equal(ParsedTokenType.Doctype, pres.TokenType);
+            var dt = (ParsedDoctype)pres;
+            Assert.Equal(4, dt.Values.Length);
+            Assert.Equal(new string[] { "html", "PUBLIC", "-//W3C//DTD HTML 4.0//EN", "http://www.w3.org/TR/REC-html40/strict.dtd" }, dt.Values);
+
+            pres = parser.Parse();
+            Assert.Equal(new ParsePosition(95, 0, 95), parser.ReadPosition);
+            Assert.Null(pres);
+            Assert.True(parser.EOF);
+
+            // EOF in a value
+            reader = new StringReader("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict");
+            parser = new HParser(reader);
+
+            pex = Assert.Throws<ParseError>(() => parser.Parse());
+            Assert.Equal("End of file unexpected, doctype not closed.", pex.Message);
+            Assert.Equal(new ParsePosition(88, 0, 88), pex.Position);
+
+            pres = parser.Parse();
+            Assert.Same(pres, parser.LastParsed);
+            Assert.IsType<ParsedDoctype>(pres);
+            Assert.Equal(new ParsePosition(0, 0, 0), pres.Position);
+            Assert.Equal(new ParsePosition(88, 0, 88), parser.ReadPosition);
+            Assert.Equal(ParsedTokenType.Doctype, pres.TokenType);
+            dt = (ParsedDoctype)pres;
+            Assert.Equal(4, dt.Values.Length);
+            Assert.Equal(new string[] { "html", "PUBLIC", "-//W3C//DTD HTML 4.0//EN", "http://www.w3.org/TR/REC-html40/strict" }, dt.Values);
+
+            pres = parser.Parse();
+            Assert.Equal(new ParsePosition(88, 0, 88), parser.ReadPosition);
+            Assert.Null(pres);
+            Assert.True(parser.EOF);
+        }
+
     }
 }
