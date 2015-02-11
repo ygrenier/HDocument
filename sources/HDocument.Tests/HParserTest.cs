@@ -883,5 +883,54 @@ namespace HDoc.Tests
             Assert.True(parser.EOF);
         }
 
+        [Fact]
+        public void TestParseContentText()
+        {
+            StringReader reader = new StringReader(@"
+$('<div></div>').append();
+</script>
+</body>
+</html>
+");
+            HParser parser = new HParser(reader);
+
+            var tres = parser.ParseContentText("script");
+            Assert.Same(tres, parser.LastParsed);
+            Assert.Equal(new ParsePosition(), tres.Position);
+            Assert.Equal(new ParsePosition(39, 2, 9), parser.ReadPosition);
+            Assert.Equal("\r\n$('<div></div>').append();\r\n", tres.Text);
+
+            var pres = parser.Parse();
+            Assert.Same(pres, parser.LastParsed);
+            Assert.IsType<ParsedTag>(pres);
+            Assert.Equal(new ParsePosition(30, 2, 0), pres.Position);
+            Assert.Equal(new ParsePosition(39, 2, 9), parser.ReadPosition);
+            Assert.Equal(ParsedTokenType.EndTag, pres.TokenType);
+            Assert.Equal("script", ((ParsedTag)pres).TagName);
+
+            pres = parser.Parse();  // Pass text
+            pres = parser.Parse();
+            Assert.IsType<ParsedTag>(pres);
+            Assert.Equal(new ParsePosition(42, 3, 1), pres.Position);
+            Assert.Equal(new ParsePosition(48, 3, 7), parser.ReadPosition);
+            Assert.Equal(ParsedTokenType.EndTag, pres.TokenType);
+            Assert.Equal("body", ((ParsedTag)pres).TagName);
+
+            pres = parser.Parse();  // Pass text
+            pres = parser.Parse();
+            Assert.IsType<ParsedTag>(pres);
+            Assert.Equal(new ParsePosition(51, 4, 1), pres.Position);
+            Assert.Equal(new ParsePosition(57, 4, 7), parser.ReadPosition);
+            Assert.Equal(ParsedTokenType.EndTag, pres.TokenType);
+            Assert.Equal("html", ((ParsedTag)pres).TagName);
+
+            pres = parser.Parse();  // Pass text
+            pres = parser.Parse();
+            Assert.Equal(new ParsePosition(59, 5, 0), parser.ReadPosition);
+            Assert.Null(pres);
+            Assert.True(parser.EOF);
+
+        }
+
     }
 }

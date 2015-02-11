@@ -443,6 +443,19 @@ namespace HDoc
                         }
                         currentXDecl = null;
                         break;
+                    case ParsedTokenType.Doctype:
+                        var vs = ((ParsedDoctype)token).Values ?? new String[0];
+                        var hdt = new HDocumentType(
+                            vs.Length > 0 ? vs[0] : null,
+                            vs.Length > 1 ? vs[1] : null,
+                            vs.Length > 2 ? vs[2] : null,
+                            vs.Length > 3 ? vs[3] : null
+                            );
+                        if (opened.Count > 0)
+                            opened.Peek().Add(hdt);
+                        else
+                            yield return hdt;
+                        break;
                     case ParsedTokenType.Attribute:
                         var attr = (ParsedAttribute)token;
                         // Xml declaration ?

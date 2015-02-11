@@ -44,6 +44,34 @@ namespace HDoc
             EndTag,
         }
 
+        /// <summary>
+        /// Read char information
+        /// </summary>
+        protected struct CharInfo
+        {
+            /// <summary>
+            /// New CharInfo
+            /// </summary>
+            public CharInfo(int c, ParsePosition pos)
+                : this()
+            {
+                CharValue = c;
+                Position = pos;
+            }
+            /// <summary>
+            /// Char int value
+            /// </summary>
+            public int CharValue { get; private set; }
+            /// <summary>
+            /// Position
+            /// </summary>
+            public ParsePosition Position { get; private set; }
+            /// <summary>
+            /// Char
+            /// </summary>
+            public Char AsChar { get { return (Char)CharValue; } }
+        }
+
         #endregion
 
         ParseState _State;
@@ -629,6 +657,89 @@ namespace HDoc
                         break;
                 }
             }
+        }
+
+        /// <summary>
+        /// Parse a content as raw text.
+        /// </summary>
+        /// <remarks>
+        /// This method is used for parsoing the content of the script, style tag content.
+        /// The parsing is continue until matching the end of the <paramref name="tag"/>.
+        /// If <paramref name="tag"/> is null or empty then we accept all endtag.
+        /// </remarks>
+        /// <exception cref="InvalidOperationException">
+        /// Raised when the parser is not in a normal state : all tag need to be closed.
+        /// </exception>
+        /// <param name="tag">Tag name for the end tag expected.</param>
+        /// <returns>Content</returns>
+        public ParsedText ParseContentText(String tag)
+        {
+            // Verify
+            if (this._State != ParseState.Content)
+                throw new InvalidOperationException("Can't read a content in a opened tag.");
+            // Read loop
+            var start = _CharPosition;
+            int c;
+            while ((c = ReadChar(false)) >= 0)
+            {
+                // End detected ?
+                if (c == '<')
+                {
+                    var endTagPos = _CharPosition;
+                    StringBuilder saveTag = new StringBuilder(15);
+                    saveTag.Append((Char)c);
+                    while ((c = ReadChar(false)) > 0 && Char.IsWhiteSpace((Char)c)) saveTag.Append((Char)c);
+                    if (c == '/')
+                    {
+                        // Pass '/'
+                        saveTag.Append((Char)c);
+                        while ((c = ReadChar(false)) > 0 && Char.IsWhiteSpace((Char)c)) saveTag.Append((Char)c);
+                        if (c >= 0)
+                        {
+                            // Pass tag name
+                            StringBuilder tagName = new StringBuilder(10);
+                            saveTag.Append((Char)c);
+                            tagName.Append((Char)c);
+                            while ((c = ReadChar(false)) > 0 && IsAttributeNameChar((Char)c))
+                            {
+                                saveTag.Append((Char)c);
+                                tagName.Append((Char)c);
+                            }
+                            // We find the good end tag ?
+                            if (c >= 0)
+                            {
+                                if (String.IsNullOrEmpty(tag) || String.Equals(tagName.ToString(), tag, StringComparison.OrdinalIgnoreCase))
+                                {
+                                    SaveChar((Char)c);
+                                    // Search the good end
+                                    while ((c = ReadChar(false)) > 0 && Char.IsWhiteSpace((Char)c)) saveTag.Append((Char)c);
+                                    if (c == '>')
+                                    {
+                                        // Save the end tag for the next parse
+                                        _CurrentToken = ParsedTag.EndTag(tagName.ToString());
+                                        _CurrentToken.Position = endTagPos;
+                                        // Exit the loop
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    // If here then we don't find a good end tag we convert to 'text'
+                    foreach (var st in saveTag.ToString()) 
+                        AddToCurrentRead(st);
+                }
+                // 
+                AddToCurrentRead((Char)c);
+            }
+            if (c >= 0)
+                SaveChar((Char)c);
+            // Returns parse result
+            LastParsed = new ParsedText() {
+                Position = start,
+                Text = GetCurrentRead(true)
+            };
+            return (ParsedText)LastParsed;
         }
 
         /// <summary>

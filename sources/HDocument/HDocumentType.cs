@@ -118,22 +118,22 @@ namespace HDoc
         /// <summary>
         /// Root element
         /// </summary>
-        public String RootElement { get; set; }
+        public String RootElement { get; private set; }
 
         /// <summary>
         /// Kind of DTD (PUBLIC or SYSTEM)
         /// </summary>
-        public String KindDoctype { get; set; }
+        public String KindDoctype { get; private set; }
 
         /// <summary>
         /// Format Public Identifier
         /// </summary>
-        public String FPI { get; set; }
+        public String FPI { get; private set; }
 
         /// <summary>
         /// DTD Uri
         /// </summary>
-        public String Uri { get; set; }
+        public String Uri { get; private set; }
 
         /// <summary>
         /// Indicate the standard document type or null
