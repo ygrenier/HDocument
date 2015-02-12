@@ -47,8 +47,13 @@ namespace HDoc
         /// <summary>
         /// Read char information
         /// </summary>
-        protected struct CharInfo
+        protected struct CharInfo : IEquatable<CharInfo>
         {
+            /// <summary>
+            /// EOF
+            /// </summary>
+            public static readonly CharInfo EOF = new CharInfo(-1, ParsePosition.None);
+
             /// <summary>
             /// New CharInfo
             /// </summary>
@@ -58,18 +63,191 @@ namespace HDoc
                 CharValue = c;
                 Position = pos;
             }
+
+            /// <summary>
+            /// Equality with another char
+            /// </summary>
+            public bool Equals(CharInfo c)
+            {
+                return CharValue.Equals(c.CharValue);
+            }
+
+            /// <summary>
+            /// Equals
+            /// </summary>
+            public override bool Equals(object obj)
+            {
+                if (obj is CharInfo)
+                    return Equals((CharInfo)obj);
+                return base.Equals(obj);
+            }
+
+            /// <summary>
+            /// Hash code
+            /// </summary>
+            public override int GetHashCode()
+            {
+                return CharValue.GetHashCode();
+            }
+
+            /// <summary>
+            /// To string
+            /// </summary>
+            public override string ToString()
+            {
+                return AsChar.ToString();
+            }
+
+            /// <summary>
+            /// Compare with an another CharInfo
+            /// </summary>
+            public static bool operator ==(CharInfo a, CharInfo b) { return a.CharValue == b.CharValue; }
+
+            /// <summary>
+            /// Compare with an another CharInfo
+            /// </summary>
+            public static bool operator !=(CharInfo a, CharInfo b) { return a.CharValue != b.CharValue; }
+
+            /// <summary>
+            /// Compare with an int value
+            /// </summary>
+            public static bool operator ==(CharInfo ci, int value) { return ci.CharValue == value; }
+
+            /// <summary>
+            /// Compare with an int value
+            /// </summary>
+            public static bool operator !=(CharInfo ci, int value) { return ci.CharValue != value; }
+
+            /// <summary>
+            /// Compare with a char value
+            /// </summary>
+            public static bool operator ==(CharInfo ci, Char value) { return ci.AsChar == value; }
+
+            /// <summary>
+            /// Compare with a char value
+            /// </summary>
+            public static bool operator !=(CharInfo ci, Char value) { return ci.AsChar != value; }
+
             /// <summary>
             /// Char int value
             /// </summary>
             public int CharValue { get; private set; }
+
             /// <summary>
             /// Position
             /// </summary>
             public ParsePosition Position { get; private set; }
+
             /// <summary>
             /// Char
             /// </summary>
             public Char AsChar { get { return (Char)CharValue; } }
+        }
+
+        /// <summary>
+        /// Parser source reader
+        /// </summary>
+        class SourceReader
+        {
+            bool _LastWasCR;
+            Stack<CharInfo> _UnreadBuffer;
+            ParsePosition _Position;
+
+            /// <summary>
+            /// New reader
+            /// </summary>
+            public SourceReader(TextReader source)
+            {
+                this.Reader = source;
+                _UnreadBuffer = new Stack<CharInfo>();
+            }
+
+            /// <summary>
+            /// Peek the current char
+            /// </summary>
+            public CharInfo Peek()
+            {
+                // If unread char returns the peek
+                if (_UnreadBuffer.Count > 0)
+                    return _UnreadBuffer.Peek();
+                // Read
+                int c = Reader.Peek();
+                if (c < 0) return CharInfo.EOF;
+                return new CharInfo(c, Position);
+            }
+
+            /// <summary>
+            /// Read the next char
+            /// </summary>
+            public CharInfo Read()
+            {
+                CharInfo res = CharInfo.EOF;
+                bool moveNextPosition = true;
+                // If unread char get the first
+                if (_UnreadBuffer.Count > 0)
+                {
+                    res = _UnreadBuffer.Pop();
+                    // We calculate the next position if the buffer is empty
+                    moveNextPosition = _UnreadBuffer.Count == 0;
+                }
+                else
+                {
+                    res = new CharInfo(Reader.Read(), Position);
+                }
+                // Move the position ?
+                if (res != CharInfo.EOF && moveNextPosition)
+                {
+                    _Position = res.Position;
+                    if (res == '\n')
+                    {
+                        if (!_LastWasCR)
+                            _Position = _Position.NextLine(true);
+                        else
+                            _Position = _Position.AddPosition(1);
+                    }
+                    else if (res == '\r')
+                    {
+                        _Position = _Position.NextLine(true);
+                    }
+                    else
+                    {
+                        _Position++;
+                    }
+                }
+                _LastWasCR = res == '\r';
+                // Returns result
+                return res;
+            }
+
+            /// <summary>
+            /// Save a char as unread
+            /// </summary>
+            /// <param name="c"></param>
+            public void Unread(CharInfo c)
+            {
+                _UnreadBuffer.Push(c);
+            }
+
+            /// <summary>
+            /// Reader source
+            /// </summary>
+            public TextReader Reader { get; private set; }
+
+            /// <summary>
+            /// Current position
+            /// </summary>
+            public ParsePosition Position
+            {
+                get
+                {
+                    // If unread buffer, returns the position in the buffer
+                    if (_UnreadBuffer.Count > 0)
+                        return _UnreadBuffer.Peek().Position;
+                    // Returns the current position
+                    return _Position;
+                }
+            }
+
         }
 
         #endregion
