@@ -54,14 +54,14 @@ namespace HDoc.Tests
             var pres = parser.Parse();
             Assert.Same(pres, parser.LastParsed);
             Assert.Equal(new ParsePosition(), pres.Position);
-            Assert.Equal(new ParsePosition(6, 0, 6), parser.ReadPosition);
+            Assert.Equal(new ParsePosition(5, 0, 5), parser.ReadPosition);
             Assert.IsType<ParsedText>(pres);
             Assert.Equal(ParsedTokenType.Text, pres.TokenType);
             Assert.Equal("Start", ((ParsedContent)pres).Text);
 
             pres = parser.Parse();
             Assert.IsType<ParsedComment>(pres);
-            Assert.Equal(new ParsePosition(6, 0, 6), pres.Position);
+            Assert.Equal(new ParsePosition(5, 0, 5), pres.Position);
             Assert.Equal(new ParsePosition(22, 0, 22), parser.ReadPosition);
             Assert.Equal(ParsedTokenType.Comment, pres.TokenType);
             Assert.Equal("Comments", ((ParsedContent)pres).Text);
@@ -85,7 +85,7 @@ namespace HDoc.Tests
             pres = parser.Parse();  // Pass Start text
             pres = parser.Parse();
             Assert.IsType<ParsedComment>(pres);
-            Assert.Equal(new ParsePosition(6, 0, 6), pres.Position);
+            Assert.Equal(new ParsePosition(5, 0, 5), pres.Position);
             Assert.Equal(new ParsePosition(58, 1, 22), parser.ReadPosition);
             Assert.Equal(ParsedTokenType.Comment, pres.TokenType);
             Assert.Equal("Comments with -- as text \n and false -> end -", ((ParsedContent)pres).Text);
@@ -111,7 +111,7 @@ namespace HDoc.Tests
             // The next parse returns the comment non closed
             pres = parser.Parse();
             Assert.IsType<ParsedComment>(pres);
-            Assert.Equal(new ParsePosition(6, 0, 6), pres.Position);
+            Assert.Equal(new ParsePosition(5, 0, 5), pres.Position);
             Assert.Equal(new ParsePosition(35, 0, 35), parser.ReadPosition);
             Assert.Equal(ParsedTokenType.Comment, pres.TokenType);
             Assert.Equal("Comments non closed ->End", ((ParsedContent)pres).Text);
@@ -136,7 +136,7 @@ namespace HDoc.Tests
             // The next parse returns false start comment as text
             pres = parser.Parse();
             Assert.IsType<ParsedText>(pres);
-            Assert.Equal(new ParsePosition(6, 0, 6), pres.Position);
+            Assert.Equal(new ParsePosition(5, 0, 5), pres.Position);
             Assert.Equal(new ParsePosition(9, 0, 9), parser.ReadPosition);
             Assert.Equal(ParsedTokenType.Text, pres.TokenType);
             Assert.Equal("<!- ", ((ParsedContent)pres).Text);
@@ -165,7 +165,7 @@ namespace HDoc.Tests
             var pres = parser.Parse();
             Assert.IsType<ParsedTag>(pres);
             Assert.Equal(new ParsePosition(0, 0, 0), pres.Position);
-            Assert.Equal(new ParsePosition(5, 0, 5), parser.ReadPosition);
+            Assert.Equal(new ParsePosition(4, 0, 4), parser.ReadPosition);
             Assert.Equal(ParsedTokenType.OpenTag, pres.TokenType);
             Assert.Equal("div", ((ParsedTag)pres).TagName);
 
@@ -187,7 +187,7 @@ namespace HDoc.Tests
             pres = parser.Parse();
             Assert.IsType<ParsedTag>(pres);
             Assert.Equal(new ParsePosition(0, 0, 0), pres.Position);
-            Assert.Equal(new ParsePosition(7, 0, 7), parser.ReadPosition);
+            Assert.Equal(new ParsePosition(6, 0, 6), parser.ReadPosition);
             Assert.Equal(ParsedTokenType.OpenTag, pres.TokenType);
             Assert.Equal("div", ((ParsedTag)pres).TagName);
 
@@ -210,7 +210,7 @@ namespace HDoc.Tests
             pres = parser.Parse();
             Assert.IsType<ParsedTag>(pres);
             Assert.Equal(new ParsePosition(0, 0, 0), pres.Position);
-            Assert.Equal(new ParsePosition(5, 0, 5), parser.ReadPosition);
+            Assert.Equal(new ParsePosition(4, 0, 4), parser.ReadPosition);
             Assert.Equal(ParsedTokenType.OpenTag, pres.TokenType);
             Assert.Equal("div", ((ParsedTag)pres).TagName);
 
@@ -233,7 +233,7 @@ namespace HDoc.Tests
             pres = parser.Parse();
             Assert.IsType<ParsedTag>(pres);
             Assert.Equal(new ParsePosition(0, 0, 0), pres.Position);
-            Assert.Equal(new ParsePosition(7, 0, 7), parser.ReadPosition);
+            Assert.Equal(new ParsePosition(6, 0, 6), parser.ReadPosition);
             Assert.Equal(ParsedTokenType.OpenTag, pres.TokenType);
             Assert.Equal("div", ((ParsedTag)pres).TagName);
 
@@ -276,7 +276,7 @@ namespace HDoc.Tests
             pres = parser.Parse();
             Assert.IsType<ParsedTag>(pres);
             Assert.Equal(new ParsePosition(0, 0, 0), pres.Position);
-            Assert.Equal(new ParsePosition(7, 0, 7), parser.ReadPosition);
+            Assert.Equal(new ParsePosition(6, 0, 6), parser.ReadPosition);
             Assert.Equal(ParsedTokenType.OpenTag, pres.TokenType);
             Assert.Equal("div", ((ParsedTag)pres).TagName);
 
@@ -316,7 +316,7 @@ namespace HDoc.Tests
             pres = parser.Parse();
             Assert.IsType<ParsedTag>(pres);
             Assert.Equal(new ParsePosition(0, 0, 0), pres.Position);
-            Assert.Equal(new ParsePosition(5, 0, 5), parser.ReadPosition);
+            Assert.Equal(new ParsePosition(4, 0, 4), parser.ReadPosition);
             Assert.Equal(ParsedTokenType.OpenTag, pres.TokenType);
             Assert.Equal("div", ((ParsedTag)pres).TagName);
 
@@ -326,7 +326,7 @@ namespace HDoc.Tests
             
             pres = parser.Parse();
             Assert.IsType<ParsedTag>(pres);
-            Assert.Equal(new ParsePosition(7, 0, 7), pres.Position);
+            Assert.Equal(new ParsePosition(5, 0, 5), pres.Position);
             Assert.Equal(new ParsePosition(8, 0, 8), parser.ReadPosition);
             Assert.Equal(ParsedTokenType.AutoClosedTag, pres.TokenType);
             Assert.Equal("div", ((ParsedTag)pres).TagName);
@@ -343,7 +343,7 @@ namespace HDoc.Tests
             pres = parser.Parse();
             Assert.IsType<ParsedTag>(pres);
             Assert.Equal(new ParsePosition(0, 0, 0), pres.Position);
-            Assert.Equal(new ParsePosition(5, 0, 5), parser.ReadPosition);
+            Assert.Equal(new ParsePosition(4, 0, 4), parser.ReadPosition);
             Assert.Equal(ParsedTokenType.OpenTag, pres.TokenType);
             Assert.Equal("div", ((ParsedTag)pres).TagName);
 
@@ -353,7 +353,7 @@ namespace HDoc.Tests
 
             pres = parser.Parse();
             Assert.IsType<ParsedTag>(pres);
-            Assert.Equal(new ParsePosition(6, 0, 6), pres.Position);
+            Assert.Equal(new ParsePosition(5, 0, 5), pres.Position);
             Assert.Equal(new ParsePosition(7, 0, 7), parser.ReadPosition);
             Assert.Equal(ParsedTokenType.AutoClosedTag, pres.TokenType);
             Assert.Equal("div", ((ParsedTag)pres).TagName);
@@ -370,7 +370,7 @@ namespace HDoc.Tests
             pres = parser.Parse();
             Assert.IsType<ParsedTag>(pres);
             Assert.Equal(new ParsePosition(0, 0, 0), pres.Position);
-            Assert.Equal(new ParsePosition(5, 0, 5), parser.ReadPosition);
+            Assert.Equal(new ParsePosition(4, 0, 4), parser.ReadPosition);
             Assert.Equal(ParsedTokenType.OpenTag, pres.TokenType);
             Assert.Equal("div", ((ParsedTag)pres).TagName);
 
@@ -402,14 +402,14 @@ namespace HDoc.Tests
             var pres = parser.Parse();
             Assert.IsType<ParsedTag>(pres);
             Assert.Equal(new ParsePosition(0, 0, 0), pres.Position);
-            Assert.Equal(new ParsePosition(5, 0, 5), parser.ReadPosition);
+            Assert.Equal(new ParsePosition(4, 0, 4), parser.ReadPosition);
             Assert.Equal(ParsedTokenType.OpenTag, pres.TokenType);
             Assert.Equal("div", ((ParsedTag)pres).TagName);
 
             pres = parser.Parse();
             Assert.IsType<ParsedAttribute>(pres);
             Assert.Equal(new ParsePosition(5, 0, 5), pres.Position);
-            Assert.Equal(new ParsePosition(13, 0, 13), parser.ReadPosition);
+            Assert.Equal(new ParsePosition(12, 0, 12), parser.ReadPosition);
             ParsedAttribute pAttr = (ParsedAttribute)pres;
             Assert.Equal("attr1", pAttr.Name);
             Assert.Equal(null, pAttr.Value);
@@ -418,7 +418,7 @@ namespace HDoc.Tests
             pres = parser.Parse();
             Assert.IsType<ParsedAttribute>(pres);
             Assert.Equal(new ParsePosition(12, 0, 12), pres.Position);
-            Assert.Equal(new ParsePosition(27, 0, 27), parser.ReadPosition);
+            Assert.Equal(new ParsePosition(26, 0, 26), parser.ReadPosition);
             Assert.Equal(ParsedTokenType.Attribute, pres.TokenType);
             pAttr = (ParsedAttribute)pres;
             Assert.Equal("attr2", pAttr.Name);
@@ -461,18 +461,18 @@ namespace HDoc.Tests
             pres = parser.Parse();
             Assert.IsType<ParsedTag>(pres);
             Assert.Equal(new ParsePosition(0, 0, 0), pres.Position);
-            Assert.Equal(new ParsePosition(5, 0, 5), parser.ReadPosition);
+            Assert.Equal(new ParsePosition(4, 0, 4), parser.ReadPosition);
             Assert.Equal(ParsedTokenType.OpenTag, pres.TokenType);
             Assert.Equal("div", ((ParsedTag)pres).TagName);
 
             var pex = Assert.Throws<ParseError>(() => parser.Parse());
             Assert.Equal("Attribute value expected.", pex.Message);
-            Assert.Equal(new ParsePosition(14, 0, 14), pex.Position);
+            Assert.Equal(new ParsePosition(13, 0, 13), pex.Position);
 
             pres = parser.Parse();
             Assert.IsType<ParsedAttribute>(pres);
             Assert.Equal(new ParsePosition(5, 0, 5), pres.Position);
-            Assert.Equal(new ParsePosition(14, 0, 14), parser.ReadPosition);
+            Assert.Equal(new ParsePosition(13, 0, 13), parser.ReadPosition);
             pAttr = (ParsedAttribute)pres;
             Assert.Equal("attr1", pAttr.Name);
             Assert.Equal(null, pAttr.Value);
@@ -496,7 +496,7 @@ namespace HDoc.Tests
             pres = parser.Parse();
             Assert.IsType<ParsedTag>(pres);
             Assert.Equal(new ParsePosition(0, 0, 0), pres.Position);
-            Assert.Equal(new ParsePosition(5, 0, 5), parser.ReadPosition);
+            Assert.Equal(new ParsePosition(4, 0, 4), parser.ReadPosition);
             Assert.Equal(ParsedTokenType.OpenTag, pres.TokenType);
             Assert.Equal("div", ((ParsedTag)pres).TagName);
 
@@ -512,7 +512,7 @@ namespace HDoc.Tests
             pres = parser.Parse();
             Assert.IsType<ParsedAttribute>(pres);
             Assert.Equal(new ParsePosition(33, 0, 33), pres.Position);
-            Assert.Equal(new ParsePosition(39, 0, 39), parser.ReadPosition);
+            Assert.Equal(new ParsePosition(38, 0, 38), parser.ReadPosition);
             pAttr = (ParsedAttribute)pres;
             Assert.Equal("value", pAttr.Name);
             Assert.Equal(null, pAttr.Value);
@@ -540,7 +540,7 @@ namespace HDoc.Tests
             pres = parser.Parse();
             Assert.IsType<ParsedTag>(pres);
             Assert.Equal(new ParsePosition(0, 0, 0), pres.Position);
-            Assert.Equal(new ParsePosition(5, 0, 5), parser.ReadPosition);
+            Assert.Equal(new ParsePosition(4, 0, 4), parser.ReadPosition);
             Assert.Equal(ParsedTokenType.OpenTag, pres.TokenType);
             Assert.Equal("div", ((ParsedTag)pres).TagName);
 
@@ -573,7 +573,7 @@ namespace HDoc.Tests
             pres = parser.Parse();
             Assert.IsType<ParsedTag>(pres);
             Assert.Equal(new ParsePosition(0, 0, 0), pres.Position);
-            Assert.Equal(new ParsePosition(5, 0, 5), parser.ReadPosition);
+            Assert.Equal(new ParsePosition(4, 0, 4), parser.ReadPosition);
             Assert.Equal(ParsedTokenType.OpenTag, pres.TokenType);
             Assert.Equal("div", ((ParsedTag)pres).TagName);
 
@@ -705,14 +705,14 @@ namespace HDoc.Tests
             pres = parser.Parse();
             Assert.IsType<ParsedTag>(pres);
             Assert.Equal(new ParsePosition(0, 0, 0), pres.Position);
-            Assert.Equal(new ParsePosition(7, 0, 7), parser.ReadPosition);
+            Assert.Equal(new ParsePosition(6, 0, 6), parser.ReadPosition);
             Assert.Equal(ParsedTokenType.EndTag, pres.TokenType);
             Assert.Equal("div", ((ParsedTag)pres).TagName);
 
             pres = parser.Parse();
             Assert.IsType<ParsedTag>(pres);
-            Assert.Equal(new ParsePosition(7, 0, 7), pres.Position);
-            Assert.Equal(new ParsePosition(11, 0, 11), parser.ReadPosition);
+            Assert.Equal(new ParsePosition(6, 0, 6), pres.Position);
+            Assert.Equal(new ParsePosition(10, 0, 10), parser.ReadPosition);
             Assert.Equal(ParsedTokenType.OpenTag, pres.TokenType);
             Assert.Equal("div", ((ParsedTag)pres).TagName);
 
@@ -740,7 +740,7 @@ namespace HDoc.Tests
             Assert.Same(pres, parser.LastParsed);
             Assert.IsType<ParsedTag>(pres);
             Assert.Equal(new ParsePosition(0, 0, 0), pres.Position);
-            Assert.Equal(new ParsePosition(7, 0, 7), parser.ReadPosition);
+            Assert.Equal(new ParsePosition(6, 0, 6), parser.ReadPosition);
             Assert.Equal(ParsedTokenType.OpenProcessInstruction, pres.TokenType);
             Assert.Equal("xml", ((ParsedTag)pres).TagName);
 
@@ -897,21 +897,21 @@ $('<div></div>').append();
             var tres = parser.ParseContentText("script");
             Assert.Same(tres, parser.LastParsed);
             Assert.Equal(new ParsePosition(), tres.Position);
-            Assert.Equal(new ParsePosition(39, 2, 9), parser.ReadPosition);
+            Assert.Equal(new ParsePosition(38, 2, 8), parser.ReadPosition);
             Assert.Equal("\r\n$('<div></div>').append();\r\n", tres.Text);
 
             var pres = parser.Parse();
             Assert.Same(pres, parser.LastParsed);
             Assert.IsType<ParsedTag>(pres);
             Assert.Equal(new ParsePosition(30, 2, 0), pres.Position);
-            Assert.Equal(new ParsePosition(39, 2, 9), parser.ReadPosition);
+            Assert.Equal(new ParsePosition(38, 2, 8), parser.ReadPosition);
             Assert.Equal(ParsedTokenType.EndTag, pres.TokenType);
             Assert.Equal("script", ((ParsedTag)pres).TagName);
 
             pres = parser.Parse();  // Pass text
             pres = parser.Parse();
             Assert.IsType<ParsedTag>(pres);
-            Assert.Equal(new ParsePosition(42, 3, 1), pres.Position);
+            Assert.Equal(new ParsePosition(41, 3, 0), pres.Position);
             Assert.Equal(new ParsePosition(48, 3, 7), parser.ReadPosition);
             Assert.Equal(ParsedTokenType.EndTag, pres.TokenType);
             Assert.Equal("body", ((ParsedTag)pres).TagName);
@@ -919,7 +919,7 @@ $('<div></div>').append();
             pres = parser.Parse();  // Pass text
             pres = parser.Parse();
             Assert.IsType<ParsedTag>(pres);
-            Assert.Equal(new ParsePosition(51, 4, 1), pres.Position);
+            Assert.Equal(new ParsePosition(50, 4, 0), pres.Position);
             Assert.Equal(new ParsePosition(57, 4, 7), parser.ReadPosition);
             Assert.Equal(ParsedTokenType.EndTag, pres.TokenType);
             Assert.Equal("html", ((ParsedTag)pres).TagName);
