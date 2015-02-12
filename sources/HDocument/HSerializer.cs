@@ -310,6 +310,30 @@ namespace HDoc
         }
 
         /// <summary>
+        /// Parse a content text with error intercepts
+        /// </summary>
+        ParsedText ParseContentTextNext(String tagEnd, HParser parser, Func<Exception, bool> errorHandler)
+        {
+            ParsedText result = null;
+            do
+            {
+                try
+                {
+                    result = parser.ParseContentText(tagEnd);
+                    if (result == null) break;
+                }
+                catch (Exception ex)
+                {
+                    if (errorHandler != null)
+                        if (errorHandler(ex))
+                            continue;
+                    throw;
+                }
+            } while (result == null);
+            return result;
+        }
+
+        /// <summary>
         /// Deserialize a HTML document
         /// </summary>
         public HDocument DeserializeDocument(TextReader reader)
@@ -390,6 +414,13 @@ namespace HDoc
                     case ParsedTokenType.CloseTag:
                         System.Diagnostics.Debug.Assert(opened.Count > 0, "Opened tags are empty when receiving CloseTag.");
                         System.Diagnostics.Debug.Assert(opened.Peek().Name == ((ParsedTag)token).TagName, "CloseTag and opened element are not same tag name.");
+                        // Tag with text content
+                        String tagName = opened.Peek().Name;
+                        if (IsRawElement(tagName) || IsEscapableRawElement(tagName))
+                        {
+                            token = ParseContentTextNext(tagName, parser, errorHandler);
+                            continue;
+                        }
                         break;
                     case ParsedTokenType.EndTag:
                         tag = ((ParsedTag)token).TagName;

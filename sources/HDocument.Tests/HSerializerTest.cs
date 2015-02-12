@@ -535,7 +535,7 @@ namespace HDoc.Tests
             using (var reader = new StreamReader(pageStream))
             {
                 var serializer = new HSerializer();
-                //var doc = serializer.DeserializeDocument(reader);
+                var doc = serializer.DeserializeDocument(reader);
             }
         }
 
