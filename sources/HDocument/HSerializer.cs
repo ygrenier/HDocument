@@ -285,6 +285,43 @@ namespace HDoc
             throw error;
         }
 
+        void Protect(Func<Exception, bool> errorHandler, Action action)
+        {
+            if (action == null) return;
+            try
+            {
+                action();
+            }
+            catch (Exception ex)
+            {
+                if (errorHandler != null)
+                    if (errorHandler(ex))
+                        return;
+                throw;
+            }
+        }
+
+        T Protect<T>(Func<Exception, bool> errorHandler, Func<T> action)
+        {
+            if (action == null) return default(T);
+            try
+            {
+                return action();
+            }
+            catch (Exception ex)
+            {
+                if (errorHandler != null)
+                    if (errorHandler(ex))
+                        return default(T);
+                throw;
+            }
+        }
+
+        void ProtectAddOnPeek(Stack<HElement> stack, object content, Func<Exception, bool> errorHandler)
+        {
+            Protect(errorHandler, () => stack.Peek().Add(content));
+        }
+
         /// <summary>
         /// Parse with error intercepts
         /// </summary>
@@ -374,6 +411,8 @@ namespace HDoc
             Stack<HElement> opened = new Stack<HElement>();
             HXmlDeclaration currentXDecl = null;
             String tag;
+            bool inTag = false;
+            HNode tokenToReturns = null;
             while (token != null)
             {
                 switch (token.TokenType)
@@ -381,40 +420,43 @@ namespace HDoc
                     case ParsedTokenType.Text:
                         var htxt = new HText(HEntity.HtmlDecode(((ParsedText)token).Text));
                         if (opened.Count > 0)
-                            opened.Peek().Add(htxt);
+                            ProtectAddOnPeek(opened, htxt, errorHandler);
                         else
-                            yield return htxt;
+                            tokenToReturns = htxt;
                         break;
                     case ParsedTokenType.CData:
                         var hcd = new HCData(((ParsedCData)token).Text);
                         if (opened.Count > 0)
-                            opened.Peek().Add(hcd);
+                            ProtectAddOnPeek(opened, hcd, errorHandler);
                         else
-                            yield return hcd;
+                            tokenToReturns = hcd;
                         break;
                     case ParsedTokenType.Comment:
                         var hcom = new HComment(HEntity.HtmlDecode(((ParsedComment)token).Text));
                         if (opened.Count > 0)
-                            opened.Peek().Add(hcom);
+                            ProtectAddOnPeek(opened, hcom, errorHandler);
                         else
-                            yield return hcom;
+                            tokenToReturns = hcom;
                         break;
                     case ParsedTokenType.OpenTag:
                         opened.Push(new HElement(((ParsedTag)token).TagName));
+                        inTag = true;
                         break;
                     case ParsedTokenType.AutoClosedTag:
                         System.Diagnostics.Debug.Assert(opened.Count > 0, "Opened tags are empty when receiving AutoClosedTag.");
                         System.Diagnostics.Debug.Assert(opened.Peek().Name == ((ParsedTag)token).TagName, "AutoClosedTag and opened element are not same tag name.");
                         var actag = opened.Pop();
+                        inTag = false;
                         if (opened.Count > 0)
-                            opened.Peek().Add(actag);
+                            ProtectAddOnPeek(opened, actag, errorHandler);
                         else
-                            yield return actag;
+                            tokenToReturns = actag;
                         break;
                     case ParsedTokenType.CloseTag:
                         System.Diagnostics.Debug.Assert(opened.Count > 0, "Opened tags are empty when receiving CloseTag.");
                         System.Diagnostics.Debug.Assert(opened.Peek().Name == ((ParsedTag)token).TagName, "CloseTag and opened element are not same tag name.");
                         // Tag with text content
+                        inTag = false;
                         String tagName = opened.Peek().Name;
                         if (IsRawElement(tagName) || IsEscapableRawElement(tagName))
                         {
@@ -430,7 +472,7 @@ namespace HDoc
                         {
                             helm = opened.Pop();
                             if (opened.Count > 0)
-                                opened.Peek().Add(helm);
+                                ProtectAddOnPeek(opened, helm, errorHandler);
                             else
                                 yield return helm;
                         }
@@ -439,7 +481,7 @@ namespace HDoc
                         {
                             helm = opened.Pop();
                             if (opened.Count > 0)
-                                opened.Peek().Add(helm);
+                                ProtectAddOnPeek(opened, helm, errorHandler);
                             else
                                 yield return helm;
                         }
@@ -459,6 +501,7 @@ namespace HDoc
                             ProcessError(new ParseError(String.Format("Unexpected '{0}' process instruction.", tag)), errorHandler);
                         }
                         currentXDecl = new HXmlDeclaration(null, null, null);
+                        inTag = true;
                         break;
                     case ParsedTokenType.CloseProcessInstruction:
                         if (currentXDecl == null)
@@ -468,10 +511,11 @@ namespace HDoc
                         else
                         {
                             if (opened.Count > 0)
-                                opened.Peek().Add(currentXDecl);
+                                ProtectAddOnPeek(opened, currentXDecl, errorHandler);
                             else
-                                yield return currentXDecl;
+                                tokenToReturns = currentXDecl;
                         }
+                        inTag = false;
                         currentXDecl = null;
                         break;
                     case ParsedTokenType.Doctype:
@@ -483,9 +527,9 @@ namespace HDoc
                             vs.Length > 3 ? vs[3] : null
                             );
                         if (opened.Count > 0)
-                            opened.Peek().Add(hdt);
+                            ProtectAddOnPeek(opened, hdt, errorHandler);
                         else
-                            yield return hdt;
+                            tokenToReturns = hdt;
                         break;
                     case ParsedTokenType.Attribute:
                         var attr = (ParsedAttribute)token;
@@ -502,10 +546,16 @@ namespace HDoc
                                 ProcessError(new ParseError(String.Format("Invalid XML declaration attribute : ''", attr.Name)), errorHandler);
                         }
                         System.Diagnostics.Debug.Assert(opened.Count > 0, "No element opened for the attribtue.");
-                        opened.Peek().Add(new HAttribute(attr.Name, attr.Value));
+                        ProtectAddOnPeek(opened, new HAttribute(attr.Name, attr.Value), errorHandler);
                         break;
                     //default:
                     //    break;
+                }
+                // Returns a token if we have one
+                if (tokenToReturns != null)
+                {
+                    yield return tokenToReturns;
+                    tokenToReturns = null;
                 }
                 // Next token
                 token = ParseNext(parser, errorHandler);

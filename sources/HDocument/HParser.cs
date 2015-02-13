@@ -145,11 +145,67 @@ namespace HDoc
         }
 
         /// <summary>
+        /// Parser buffer
+        /// </summary>
+        protected sealed class ParseBuffer : IDisposable
+        {
+            ParserSourceReader _Reader;
+            Queue<Char> _Buffer;
+
+            /// <summary>
+            /// New buffer
+            /// </summary>
+            internal ParseBuffer(ParserSourceReader reader)
+            {
+                _Reader = reader;
+                _Buffer = new Queue<char>();
+            }
+
+            /// <summary>
+            /// Close the buffer
+            /// </summary>
+            public void Dispose()
+            {
+                _Reader.UnregisterBuffer(this);
+            }
+
+            /// <summary>
+            /// Add a char in the buffer
+            /// </summary>
+            internal void Push(CharInfo c)
+            {
+                if (Count == 0)
+                    Position = c.Position;
+                _Buffer.Enqueue(c.AsChar);
+            }
+
+            /// <summary>
+            /// Get the buffer as string
+            /// </summary>
+            public override string ToString()
+            {
+                return new String(_Buffer.ToArray());
+            }
+
+            /// <summary>
+            /// Count of chars
+            /// </summary>
+            public int Count { get { return _Buffer.Count; } }
+
+            /// <summary>
+            /// Position of the start of the buffer
+            /// </summary>
+            public ParsePosition Position { get; private set; }
+
+        }
+
+        /// <summary>
         /// Parser source reader
         /// </summary>
         protected class ParserSourceReader
         {
             bool _LastWasCR;
+            IList<ParseBuffer> _RegisteredBuffers;
             Stack<CharInfo> _UnreadBuffer;
             ParsePosition _Position;
 
@@ -160,6 +216,31 @@ namespace HDoc
             {
                 this.Reader = source;
                 _UnreadBuffer = new Stack<CharInfo>();
+            }
+
+            /// <summary>
+            /// Open a new buffer
+            /// </summary>
+            public ParseBuffer OpenBuffer()
+            {
+                ParseBuffer result = new ParseBuffer(this);
+                if (_RegisteredBuffers == null)
+                    _RegisteredBuffers = new List<ParseBuffer>();
+                _RegisteredBuffers.Add(result);
+                return result;
+            }
+
+            /// <summary>
+            /// Remove a buffer
+            /// </summary>
+            internal void UnregisterBuffer(ParseBuffer parseBuffer)
+            {
+                if (_RegisteredBuffers != null)
+                {
+                    _RegisteredBuffers.Remove(parseBuffer);
+                    if (_RegisteredBuffers.Count == 0)
+                        _RegisteredBuffers = null;
+                }
             }
 
             /// <summary>
@@ -193,6 +274,14 @@ namespace HDoc
                 else
                 {
                     res = new CharInfo(Reader.Read(), Position);
+                    // Add in buffer only if new char
+                    if (_RegisteredBuffers != null)
+                    {
+                        foreach (var buffer in _RegisteredBuffers)
+                        {
+                            buffer.Push(res);
+                        }
+                    }
                 }
                 // Move the position ?
                 if (res != CharInfo.EOF && moveNextPosition)
@@ -258,6 +347,7 @@ namespace HDoc
         StringBuilder _CurrentRead;
         ParsePosition _CurrentPosition, _StartTagPosition;
         Stack<Char> _Buffer;
+        ParseBuffer _TagBuffer;
 
         /// <summary>
         /// Create a new parser
@@ -323,6 +413,13 @@ namespace HDoc
             return ci;
         }
 
+        void ResetTagBuffer()
+        {
+            if (_TagBuffer != null)
+                _TagBuffer.Dispose();
+            _TagBuffer = null;
+        }
+
         /// <summary>
         /// Parse a text content
         /// </summary>
@@ -371,6 +468,7 @@ namespace HDoc
                 throw new ParseError("End of file unexpected, comment not closed.", ReadPosition);
             // Back to content state
             _State = ParseState.Content;
+            ResetTagBuffer();
             // Returns comment
             String comment = GetCurrentRead(true);
             return new ParsedComment() {
@@ -456,6 +554,7 @@ namespace HDoc
                 throw new ParseError("End of file unexpected, doctype not closed.", ReadPosition);
             // Back to content state
             _State = ParseState.Content;
+            ResetTagBuffer();
             // Returns doctype
             var result = _CurrentToken;
             _CurrentToken = null;
@@ -468,6 +567,7 @@ namespace HDoc
         protected ParsedToken ParseStartTag()
         {
             _StartTagPosition = _CurrentPosition;
+            _TagBuffer = SourceReader.OpenBuffer();
             CharInfo c = ReadChar();
             // Comments ?
             if (c == '!')
@@ -534,6 +634,7 @@ namespace HDoc
                     throw;
                 }
                 _State = ParseState.Content;
+                ResetTagBuffer();
                 var result = _CurrentToken;
                 _CurrentToken = null;
                 return result;
@@ -565,6 +666,7 @@ namespace HDoc
             {
                 _CurrentToken = null;
                 _State = ParseState.Content;
+                ResetTagBuffer();
                 throw new ParseError("Unexpected end of file. Tag not closed.", ReadPosition);
             }
             // End of auto closed tag ?
@@ -594,6 +696,7 @@ namespace HDoc
                 _CurrentToken = null;
                 _CurrentRead = null;
                 _State = ParseState.Content;
+                ResetTagBuffer();
                 return result;
             }
             // End of process instruction
@@ -607,6 +710,7 @@ namespace HDoc
                 _CurrentToken = null;
                 _CurrentRead = null;
                 _State = ParseState.Content;
+                ResetTagBuffer();
                 return result;
             }
             else if (c == '>')
@@ -620,6 +724,7 @@ namespace HDoc
                 _CurrentToken = null;
                 _CurrentRead = null;
                 _State = ParseState.Content;
+                ResetTagBuffer();
                 return result;
             }
             // Get the attribute name
@@ -708,6 +813,7 @@ namespace HDoc
                 {
                     _CurrentRead = null;
                     _State = ParseState.Content;
+                    ResetTagBuffer();
                     LastParsed = _CurrentToken;
                     _CurrentToken = null;
                     return LastParsed;
@@ -756,6 +862,7 @@ namespace HDoc
                     //    break;
                 }
                 _State = ParseState.Content;
+                ResetTagBuffer();
                 if (returnLast)
                     return LastParsed;
             }
@@ -771,6 +878,7 @@ namespace HDoc
                     if (_State != ParseState.Content)
                     {
                         _State = ParseState.Content;
+                        ResetTagBuffer();
                         throw new ParseError("End of file unexpected.", ReadPosition);
                     }
                     // Stop the parsing
