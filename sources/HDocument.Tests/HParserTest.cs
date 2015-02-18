@@ -214,16 +214,9 @@ namespace HDoc.Tests
             pres = parser.Parse();
             Assert.IsType<ParsedText>(pres);
             Assert.Equal(new ParsePosition(0, 0, 0), pres.Position);
-            Assert.Equal(new ParsePosition(2, 0, 2), parser.ReadPosition);
-            Assert.Equal(ParsedTokenType.Text, pres.TokenType);
-            Assert.Equal("< ", ((ParsedText)pres).Text);
-
-            pres = parser.Parse();
-            Assert.IsType<ParsedText>(pres);
-            Assert.Equal(new ParsePosition(2, 0, 2), pres.Position);
             Assert.Equal(new ParsePosition(9, 0, 9), parser.ReadPosition);
             Assert.Equal(ParsedTokenType.Text, pres.TokenType);
-            Assert.Equal(" div  >", ((ParsedText)pres).Text);
+            Assert.Equal("<  div  >", ((ParsedText)pres).Text);
 
             pres = parser.Parse();
             Assert.Equal(new ParsePosition(9, 0, 9), parser.ReadPosition);
@@ -241,16 +234,9 @@ namespace HDoc.Tests
             pres = parser.Parse();
             Assert.IsType<ParsedText>(pres);
             Assert.Equal(new ParsePosition(0, 0, 0), pres.Position);
-            Assert.Equal(new ParsePosition(2, 0, 2), parser.ReadPosition);
-            Assert.Equal(ParsedTokenType.Text, pres.TokenType);
-            Assert.Equal("< ", ((ParsedText)pres).Text);
-
-            pres = parser.Parse();
-            Assert.IsType<ParsedText>(pres);
-            Assert.Equal(new ParsePosition(2, 0, 2), pres.Position);
             Assert.Equal(new ParsePosition(9, 0, 9), parser.ReadPosition);
             Assert.Equal(ParsedTokenType.Text, pres.TokenType);
-            Assert.Equal(" div />", ((ParsedText)pres).Text);
+            Assert.Equal("<  div />", ((ParsedText)pres).Text);
 
             pres = parser.Parse();
             Assert.Equal(new ParsePosition(9, 0, 9), parser.ReadPosition);
@@ -268,16 +254,9 @@ namespace HDoc.Tests
             pres = parser.Parse();
             Assert.IsType<ParsedText>(pres);
             Assert.Equal(new ParsePosition(0, 0, 0), pres.Position);
-            Assert.Equal(new ParsePosition(2, 0, 2), parser.ReadPosition);
-            Assert.Equal(ParsedTokenType.Text, pres.TokenType);
-            Assert.Equal("< ", ((ParsedContent)pres).Text);
-
-            pres = parser.Parse();
-            Assert.IsType<ParsedText>(pres);
-            Assert.Equal(new ParsePosition(2, 0, 2), pres.Position);
             Assert.Equal(new ParsePosition(4, 0, 4), parser.ReadPosition);
             Assert.Equal(ParsedTokenType.Text, pres.TokenType);
-            Assert.Equal(" >", ((ParsedContent)pres).Text);
+            Assert.Equal("<  >", ((ParsedContent)pres).Text);
 
             pres = parser.Parse();
             Assert.Equal(new ParsePosition(4, 0, 4), parser.ReadPosition);
@@ -641,17 +620,9 @@ namespace HDoc.Tests
             Assert.Same(pres, parser.LastParsed);
             Assert.IsType<ParsedText>(pres);
             Assert.Equal(new ParsePosition(0, 0, 0), pres.Position);
-            Assert.Equal(new ParsePosition(2, 0, 2), parser.ReadPosition);
-            Assert.Equal(ParsedTokenType.Text, pres.TokenType);
-            Assert.Equal("</", ((ParsedText)pres).Text);
-
-            pres = parser.Parse();
-            Assert.Same(pres, parser.LastParsed);
-            Assert.IsType<ParsedText>(pres);
-            Assert.Equal(new ParsePosition(2, 0, 2), pres.Position);
             Assert.Equal(new ParsePosition(10, 0, 10), parser.ReadPosition);
             Assert.Equal(ParsedTokenType.Text, pres.TokenType);
-            Assert.Equal("  div  >", ((ParsedText)pres).Text);
+            Assert.Equal("</  div  >", ((ParsedText)pres).Text);
 
             pres = parser.Parse();
             Assert.Equal(new ParsePosition(10, 0, 10), parser.ReadPosition);
@@ -842,17 +813,9 @@ namespace HDoc.Tests
             Assert.Same(pres, parser.LastParsed);
             Assert.IsType<ParsedText>(pres);
             Assert.Equal(new ParsePosition(0, 0, 0), pres.Position);
-            Assert.Equal(new ParsePosition(9, 0, 9), parser.ReadPosition);
-            Assert.Equal(ParsedTokenType.Text, pres.TokenType);
-            Assert.Equal("<!DDOCTPE ", ((ParsedText)pres).Text);
-
-            pres = parser.Parse();
-            Assert.Same(pres, parser.LastParsed);
-            Assert.IsType<ParsedText>(pres);
-            Assert.Equal(new ParsePosition(9, 0, 9), pres.Position);
             Assert.Equal(new ParsePosition(95, 0, 95), parser.ReadPosition);
             Assert.Equal(ParsedTokenType.Text, pres.TokenType);
-            Assert.Equal("html PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\"  >", ((ParsedText)pres).Text);
+            Assert.Equal("<!DDOCTPE html PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\"  >", ((ParsedText)pres).Text);
 
             pres = parser.Parse();
             Assert.Equal(new ParsePosition(95, 0, 95), parser.ReadPosition);

@@ -857,10 +857,12 @@ namespace HDoc
                     case ParseState.ProcessInstruction:
                     case ParseState.EndTag:
                     case ParseState.Tag:
-                        LastParsed = new ParsedText() {
-                            Position = _CurrentPosition,
-                            Text = GetCurrentRead(true)
-                        };
+                        //LastParsed = new ParsedText() {
+                        //    Position = _CurrentPosition,
+                        //    Text = GetCurrentRead(true)
+                        //};
+                        _State = ParseState.Content;
+                        LastParsed = ParseText();
                         break;
                     // We forget the result
                     //default:
