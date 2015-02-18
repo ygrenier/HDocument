@@ -592,18 +592,23 @@ namespace HDoc
             {
                 _State = ParseState.ProcessInstruction;
                 c = ReadChar(false);
+                // Pass whitespace
+                while (c != CharInfo.EOF && Char.IsWhiteSpace(c.AsChar)) c = ReadChar(false);
             }
             else if (c == '/')
             {
                 _State = ParseState.EndTag;
                 c = ReadChar(false);
+                if (c == CharInfo.EOF || !Char.IsLetterOrDigit(c.AsChar))
+                {
+                    SaveChar(c);
+                    throw new ParseError("Invalid tag name. Need to start with an alphanumeric", ReadPosition);
+                }
             }
             else
             {
                 _State = ParseState.Tag;
             }
-            // Pass whitespace
-            while (c != CharInfo.EOF && Char.IsWhiteSpace(c.AsChar)) c = ReadChar();
             // Tagname
             if (c == CharInfo.EOF || !Char.IsLetterOrDigit(c.AsChar))
                 throw new ParseError("Invalid tag name. Need to start with an alphanumeric", ReadPosition);
@@ -850,6 +855,7 @@ namespace HDoc
                     // Returns a text
                     case ParseState.Doctype:
                     case ParseState.ProcessInstruction:
+                    case ParseState.EndTag:
                     case ParseState.Tag:
                         LastParsed = new ParsedText() {
                             Position = _CurrentPosition,

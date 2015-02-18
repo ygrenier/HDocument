@@ -180,29 +180,6 @@ namespace HDoc.Tests
             Assert.Null(pres);
             Assert.True(parser.EOF);
 
-            // With spaces
-            reader = new StringReader("<  div  >");
-            parser = new HParser(reader);
-
-            pres = parser.Parse();
-            Assert.IsType<ParsedTag>(pres);
-            Assert.Equal(new ParsePosition(0, 0, 0), pres.Position);
-            Assert.Equal(new ParsePosition(6, 0, 6), parser.ReadPosition);
-            Assert.Equal(ParsedTokenType.OpenTag, pres.TokenType);
-            Assert.Equal("div", ((ParsedTag)pres).TagName);
-
-            pres = parser.Parse();
-            Assert.IsType<ParsedTag>(pres);
-            Assert.Equal(new ParsePosition(8, 0, 8), pres.Position);
-            Assert.Equal(new ParsePosition(9, 0, 9), parser.ReadPosition);
-            Assert.Equal(ParsedTokenType.CloseTag, pres.TokenType);
-            Assert.Equal("div", ((ParsedTag)pres).TagName);
-
-            pres = parser.Parse();
-            Assert.Equal(new ParsePosition(9, 0, 9), parser.ReadPosition);
-            Assert.Null(pres);
-            Assert.True(parser.EOF);
-
             // Auto closed tag
             reader = new StringReader("<div />");
             parser = new HParser(reader);
@@ -226,23 +203,54 @@ namespace HDoc.Tests
             Assert.Null(pres);
             Assert.True(parser.EOF);
 
+            // With spaces
+            reader = new StringReader("<  div  >");
+            parser = new HParser(reader);
+
+            var pex = Assert.Throws<ParseError>(() => parser.Parse());
+            Assert.Equal("Invalid tag name. Need to start with an alphanumeric", pex.Message);
+            Assert.Equal(new ParsePosition(2, 0, 2), pex.Position);
+
+            pres = parser.Parse();
+            Assert.IsType<ParsedText>(pres);
+            Assert.Equal(new ParsePosition(0, 0, 0), pres.Position);
+            Assert.Equal(new ParsePosition(2, 0, 2), parser.ReadPosition);
+            Assert.Equal(ParsedTokenType.Text, pres.TokenType);
+            Assert.Equal("< ", ((ParsedText)pres).Text);
+
+            pres = parser.Parse();
+            Assert.IsType<ParsedText>(pres);
+            Assert.Equal(new ParsePosition(2, 0, 2), pres.Position);
+            Assert.Equal(new ParsePosition(9, 0, 9), parser.ReadPosition);
+            Assert.Equal(ParsedTokenType.Text, pres.TokenType);
+            Assert.Equal(" div  >", ((ParsedText)pres).Text);
+
+            pres = parser.Parse();
+            Assert.Equal(new ParsePosition(9, 0, 9), parser.ReadPosition);
+            Assert.Null(pres);
+            Assert.True(parser.EOF);
+
             // Auto closed tag with spaces
             reader = new StringReader("<  div />");
             parser = new HParser(reader);
 
-            pres = parser.Parse();
-            Assert.IsType<ParsedTag>(pres);
-            Assert.Equal(new ParsePosition(0, 0, 0), pres.Position);
-            Assert.Equal(new ParsePosition(6, 0, 6), parser.ReadPosition);
-            Assert.Equal(ParsedTokenType.OpenTag, pres.TokenType);
-            Assert.Equal("div", ((ParsedTag)pres).TagName);
+            pex = Assert.Throws<ParseError>(() => parser.Parse());
+            Assert.Equal("Invalid tag name. Need to start with an alphanumeric", pex.Message);
+            Assert.Equal(new ParsePosition(2, 0, 2), pex.Position);
 
             pres = parser.Parse();
-            Assert.IsType<ParsedTag>(pres);
-            Assert.Equal(new ParsePosition(7, 0, 7), pres.Position);
+            Assert.IsType<ParsedText>(pres);
+            Assert.Equal(new ParsePosition(0, 0, 0), pres.Position);
+            Assert.Equal(new ParsePosition(2, 0, 2), parser.ReadPosition);
+            Assert.Equal(ParsedTokenType.Text, pres.TokenType);
+            Assert.Equal("< ", ((ParsedText)pres).Text);
+
+            pres = parser.Parse();
+            Assert.IsType<ParsedText>(pres);
+            Assert.Equal(new ParsePosition(2, 0, 2), pres.Position);
             Assert.Equal(new ParsePosition(9, 0, 9), parser.ReadPosition);
-            Assert.Equal(ParsedTokenType.AutoClosedTag, pres.TokenType);
-            Assert.Equal("div", ((ParsedTag)pres).TagName);
+            Assert.Equal(ParsedTokenType.Text, pres.TokenType);
+            Assert.Equal(" div />", ((ParsedText)pres).Text);
 
             pres = parser.Parse();
             Assert.Equal(new ParsePosition(9, 0, 9), parser.ReadPosition);
@@ -253,16 +261,23 @@ namespace HDoc.Tests
             reader = new StringReader("<  >");
             parser = new HParser(reader);
 
-            var pex = Assert.Throws<ParseError>(() => parser.Parse());
+            pex = Assert.Throws<ParseError>(() => parser.Parse());
             Assert.Equal("Invalid tag name. Need to start with an alphanumeric", pex.Message);
-            Assert.Equal(new ParsePosition(4, 0, 4), pex.Position);
+            Assert.Equal(new ParsePosition(2, 0, 2), pex.Position);
 
             pres = parser.Parse();
             Assert.IsType<ParsedText>(pres);
             Assert.Equal(new ParsePosition(0, 0, 0), pres.Position);
+            Assert.Equal(new ParsePosition(2, 0, 2), parser.ReadPosition);
+            Assert.Equal(ParsedTokenType.Text, pres.TokenType);
+            Assert.Equal("< ", ((ParsedContent)pres).Text);
+
+            pres = parser.Parse();
+            Assert.IsType<ParsedText>(pres);
+            Assert.Equal(new ParsePosition(2, 0, 2), pres.Position);
             Assert.Equal(new ParsePosition(4, 0, 4), parser.ReadPosition);
             Assert.Equal(ParsedTokenType.Text, pres.TokenType);
-            Assert.Equal("<  >", ((ParsedContent)pres).Text);
+            Assert.Equal(" >", ((ParsedContent)pres).Text);
 
             pres = parser.Parse();
             Assert.Equal(new ParsePosition(4, 0, 4), parser.ReadPosition);
@@ -270,42 +285,42 @@ namespace HDoc.Tests
             Assert.True(parser.EOF);
 
             // End of file
-            reader = new StringReader("<  div  ");
+            reader = new StringReader("<div  ");
             parser = new HParser(reader);
 
             pres = parser.Parse();
             Assert.IsType<ParsedTag>(pres);
             Assert.Equal(new ParsePosition(0, 0, 0), pres.Position);
-            Assert.Equal(new ParsePosition(6, 0, 6), parser.ReadPosition);
+            Assert.Equal(new ParsePosition(4, 0, 4), parser.ReadPosition);
             Assert.Equal(ParsedTokenType.OpenTag, pres.TokenType);
             Assert.Equal("div", ((ParsedTag)pres).TagName);
 
             pex = Assert.Throws<ParseError>(() => parser.Parse());
             Assert.Equal("Unexpected end of file. Tag not closed.", pex.Message);
-            Assert.Equal(new ParsePosition(8, 0, 8), pex.Position);
+            Assert.Equal(new ParsePosition(6, 0, 6), pex.Position);
 
             pres = parser.Parse();
-            Assert.Equal(new ParsePosition(8, 0, 8), parser.ReadPosition);
+            Assert.Equal(new ParsePosition(6, 0, 6), parser.ReadPosition);
             Assert.Null(pres);
             Assert.True(parser.EOF);
 
             // End of file
-            reader = new StringReader("<  div");
+            reader = new StringReader("<div");
             parser = new HParser(reader);
 
             pres = parser.Parse();
             Assert.IsType<ParsedTag>(pres);
             Assert.Equal(new ParsePosition(0, 0, 0), pres.Position);
-            Assert.Equal(new ParsePosition(6, 0, 6), parser.ReadPosition);
+            Assert.Equal(new ParsePosition(4, 0, 4), parser.ReadPosition);
             Assert.Equal(ParsedTokenType.OpenTag, pres.TokenType);
             Assert.Equal("div", ((ParsedTag)pres).TagName);
 
             pex = Assert.Throws<ParseError>(() => parser.Parse());
             Assert.Equal("End of file unexpected.", pex.Message);
-            Assert.Equal(new ParsePosition(6, 0, 6), pex.Position);
+            Assert.Equal(new ParsePosition(4, 0, 4), pex.Position);
 
             pres = parser.Parse();
-            Assert.Equal(new ParsePosition(6, 0, 6), parser.ReadPosition);
+            Assert.Equal(new ParsePosition(4, 0, 4), parser.ReadPosition);
             Assert.Null(pres);
             Assert.True(parser.EOF);
 
@@ -618,13 +633,25 @@ namespace HDoc.Tests
             reader = new StringReader("</  div  >");
             parser = new HParser(reader);
 
+            var pex = Assert.Throws<ParseError>(() => parser.Parse());
+            Assert.Equal("Invalid tag name. Need to start with an alphanumeric", pex.Message);
+            Assert.Equal(new ParsePosition(2, 0, 2), pex.Position);
+
             pres = parser.Parse();
             Assert.Same(pres, parser.LastParsed);
-            Assert.IsType<ParsedTag>(pres);
+            Assert.IsType<ParsedText>(pres);
             Assert.Equal(new ParsePosition(0, 0, 0), pres.Position);
+            Assert.Equal(new ParsePosition(2, 0, 2), parser.ReadPosition);
+            Assert.Equal(ParsedTokenType.Text, pres.TokenType);
+            Assert.Equal("</", ((ParsedText)pres).Text);
+
+            pres = parser.Parse();
+            Assert.Same(pres, parser.LastParsed);
+            Assert.IsType<ParsedText>(pres);
+            Assert.Equal(new ParsePosition(2, 0, 2), pres.Position);
             Assert.Equal(new ParsePosition(10, 0, 10), parser.ReadPosition);
-            Assert.Equal(ParsedTokenType.EndTag, pres.TokenType);
-            Assert.Equal("div", ((ParsedTag)pres).TagName);
+            Assert.Equal(ParsedTokenType.Text, pres.TokenType);
+            Assert.Equal("  div  >", ((ParsedText)pres).Text);
 
             pres = parser.Parse();
             Assert.Equal(new ParsePosition(10, 0, 10), parser.ReadPosition);
@@ -635,7 +662,7 @@ namespace HDoc.Tests
             reader = new StringReader("</div attr=val>");
             parser = new HParser(reader);
 
-            var pex = Assert.Throws<ParseError>(() => parser.Parse());
+            pex = Assert.Throws<ParseError>(() => parser.Parse());
             Assert.Equal("End tag can't contains attribute.", pex.Message);
             Assert.Equal(new ParsePosition(7, 0, 7), pex.Position);
 
