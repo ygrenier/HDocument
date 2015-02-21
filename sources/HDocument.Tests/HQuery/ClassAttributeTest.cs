@@ -70,5 +70,23 @@ namespace HDoc.Tests.HQuery
 
         }
 
+        [Fact]
+        public void TestAddClassByCallback()
+        {
+            var elements = new HElement[]{
+                new HElement("p", "First paragraph."),
+                null,
+                new HElement("p", new HAttribute("class", "selected class3"), "Second paragraph is selected.")
+            };
+
+            elements
+                .AddClass((elm, idx) => String.Format("index-{0}", idx))
+                ;
+
+            Assert.Equal("index-0", elements[0].Attribute("class").Value);
+            Assert.Equal("selected class3 index-2", elements[2].Attribute("class").Value);
+
+        }
+
     }
 }

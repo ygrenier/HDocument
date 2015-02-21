@@ -22,6 +22,8 @@ namespace HDoc
             return clsAttr.Value.Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
         }
 
+        #region HasClass
+
         /// <summary>
         /// Determine if the element is assigned the given class.
         /// </summary>
@@ -57,6 +59,10 @@ namespace HDoc
             }
             return false;
         }
+
+        #endregion
+
+        #region AddClass
 
         /// <summary>
         /// Adds the specified class(es) to the element.
@@ -112,6 +118,27 @@ namespace HDoc
         {
             return elements.AddClass(className.Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries));
         }
+
+        /// <summary>
+        /// Add the specified class(es) returns by a callback method to each of the set of matched elements.
+        /// </summary>
+        /// <param name="elements">Source elements.</param>
+        /// <param name="getClassName">Callback method returning the class name to added.</param>
+        /// <returns>Source elements updated.</returns>
+        public static IEnumerable<HElement> AddClass(this IEnumerable<HElement> elements, Func<HElement, int, String> getClassName)
+        {
+            if (elements != null && getClassName != null)
+            {
+                int i = 0;
+                foreach (var element in elements)
+                {
+                    element.AddClass(getClassName(element, i++));
+                }
+            }
+            return elements;
+        }
+
+        #endregion
 
         // TODO RemoveClass
         // TODO ToggleClass
