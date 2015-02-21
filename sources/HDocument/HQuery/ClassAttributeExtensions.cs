@@ -259,7 +259,137 @@ namespace HDoc
 
         #endregion
 
-        // TODO ToggleClass
+        #region ToggleClass
+
+        /// <summary>
+        /// Add or remove one or more classes to the element, depending on either the class's presence.
+        /// </summary>
+        public static HElement ToggleClass(this HElement element, String[] className)
+        {
+            if (element != null && className != null)
+            {
+                foreach (var cName in className)
+                {
+                    if (element.HasClass(cName))
+                        element.RemoveClass(cName);
+                    else
+                        element.AddClass(cName);
+                }
+            }
+            return element;
+        }
+
+        /// <summary>
+        /// Add or remove one or more classes to the element, depending on either the class's presence or the value of the state argument.
+        /// </summary>
+        public static HElement ToggleClass(this HElement element, String[] className, bool state)
+        {
+            if (element != null && className != null)
+            {
+                if (state)
+                    element.AddClass(className);
+                else
+                    element.RemoveClass(className);
+            }
+            return element;
+        }
+
+        /// <summary>
+        /// Add or remove one or more classes to the element, depending on either the class's presence.
+        /// </summary>
+        public static HElement ToggleClass(this HElement element, String className)
+        {
+            return element.ToggleClass(ExtractClassNames(className));
+        }
+
+        /// <summary>
+        /// Add or remove one or more classes to the element, depending on either the class's presence or the value of the state argument.
+        /// </summary>
+        public static HElement ToggleClass(this HElement element, String className, bool state)
+        {
+            return element.ToggleClass(ExtractClassNames(className), state);
+        }
+
+        /// <summary>
+        /// Add or remove one or more classes from each element in the set of matched elements, depending on either the class's presence.
+        /// </summary>
+        public static IEnumerable<HElement> ToggleClass(this IEnumerable<HElement> elements, String[] className)
+        {
+            if (elements != null && className != null)
+            {
+                foreach (var element in elements)
+                {
+                    element.ToggleClass(className);
+                }
+            }
+            return elements;
+        }
+
+        /// <summary>
+        /// Add or remove one or more classes from each element in the set of matched elements, depending on either the class's presence or the value of the state argument.
+        /// </summary>
+        public static IEnumerable<HElement> ToggleClass(this IEnumerable<HElement> elements, String[] className, bool state)
+        {
+            if (elements != null && className != null)
+            {
+                foreach (var element in elements)
+                {
+                    element.ToggleClass(className, state);
+                }
+            }
+            return elements;
+        }
+
+        /// <summary>
+        /// Add or remove one or more classes from each element in the set of matched elements, depending on either the class's presence.
+        /// </summary>
+        public static IEnumerable<HElement> ToggleClass(this IEnumerable<HElement> elements, String className)
+        {
+            return elements.ToggleClass(ExtractClassNames(className));
+        }
+
+        /// <summary>
+        /// Add or remove one or more classes from each element in the set of matched elements, depending on either the class's presence or the value of the state argument.
+        /// </summary>
+        public static IEnumerable<HElement> ToggleClass(this IEnumerable<HElement> elements, String className, bool state)
+        {
+            return elements.ToggleClass(ExtractClassNames(className), state);
+        }
+
+        /// <summary>
+        /// Add or remove the specified class(es) returns by a callback method from each element in the set of matched elements, depending on either the class's presence.
+        /// </summary>
+        public static IEnumerable<HElement> ToggleClass(this IEnumerable<HElement> elements, Func<HElement, int, String> getClassName)
+        {
+            if (elements != null && getClassName != null)
+            {
+                int i = 0;
+                foreach (var element in elements)
+                {
+                    element.ToggleClass(getClassName(element, i++));
+                }
+            }
+            return elements;
+        }
+
+        /// <summary>
+        /// Add or remove the specified class(es) returns by a callback method from each element in the set of matched elements, depending on either the class's presence or the value of the state argument.
+        /// </summary>
+        public static IEnumerable<HElement> ToggleClass(this IEnumerable<HElement> elements, Func<HElement, int, String> getClassName, bool state)
+        {
+            if (elements != null && getClassName != null)
+            {
+                int i = 0;
+                foreach (var element in elements)
+                {
+                    element.ToggleClass(getClassName(element, i++), state);
+                }
+            }
+            return elements;
+        }
+
+        #endregion
+
     }
 
 }

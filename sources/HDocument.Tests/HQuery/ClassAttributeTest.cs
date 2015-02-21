@@ -145,5 +145,87 @@ namespace HDoc.Tests.HQuery
             Assert.Equal("class3", elements[2].Attribute("class").Value);
 
         }
+
+        [Fact]
+        public void TestToggleClass()
+        {
+            var elements = new HElement[]{
+                new HElement("p","First paragraph."),
+                null,
+                new HElement("p", new HAttribute("class", "selected class3"), "Second paragraph is selected.")
+            };
+
+            elements
+                .ToggleClass("class1 selected")
+                ;
+
+            Assert.Equal("class1 selected", elements[0].Attribute("class").Value);
+            Assert.Equal("class3 class1", elements[2].Attribute("class").Value);
+
+            elements
+                .ToggleClass("class1 selected", true)
+                ;
+
+            Assert.Equal("class1 selected", elements[0].Attribute("class").Value);
+            Assert.Equal("class3 class1 selected", elements[2].Attribute("class").Value);
+
+            elements
+                .ToggleClass("class1 selected", false)
+                ;
+
+            Assert.Null(elements[0].Attribute("class"));
+            Assert.Equal("class3", elements[2].Attribute("class").Value);
+
+            elements[0].ToggleClass("class1");
+            Assert.Equal("class1", elements[0].Attribute("class").Value);
+
+            elements[0].ToggleClass("class1", true);
+            Assert.Equal("class1", elements[0].Attribute("class").Value);
+
+            elements[0].ToggleClass("class1", false);
+            Assert.Null(elements[0].Attribute("class"));
+
+        }
+
+        [Fact]
+        public void TestToggleClassByCallback()
+        {
+            var elements = new HElement[]{
+                new HElement("p",new HAttribute("class", "class0"),  "First paragraph."),
+                null,
+                new HElement("p", new HAttribute("class", "selected class3"), "Second paragraph is selected.")
+            };
+
+            elements
+                .AddClass("class2")
+                .AddClass("Selected")
+                .ToggleClass((elm, idx) => String.Format("class{0} selected", idx))
+                ;
+
+            Assert.Equal("class2", elements[0].Attribute("class").Value);
+            Assert.Equal("class3", elements[2].Attribute("class").Value);
+
+            elements
+                .ToggleClass((elm, idx) => String.Format("class{0} selected", idx))
+                ;
+
+            Assert.Equal("class2 class0 selected", elements[0].Attribute("class").Value);
+            Assert.Equal("class3 class2 selected", elements[2].Attribute("class").Value);
+
+            elements
+                .ToggleClass((elm, idx) => String.Format("class{0} selected", idx), true)
+                ;
+
+            Assert.Equal("class2 class0 selected", elements[0].Attribute("class").Value);
+            Assert.Equal("class3 class2 selected", elements[2].Attribute("class").Value);
+
+            elements
+                .ToggleClass((elm, idx) => String.Format("class{0} selected", idx), false)
+                ;
+
+            Assert.Equal("class2", elements[0].Attribute("class").Value);
+            Assert.Equal("class3", elements[2].Attribute("class").Value);
+        }
+
     }
 }
