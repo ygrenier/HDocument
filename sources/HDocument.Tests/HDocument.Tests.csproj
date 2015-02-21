@@ -68,6 +68,7 @@
     <Compile Include="HObjectTest.cs" />
     <Compile Include="HCommentTest.cs" />
     <Compile Include="HParserTest.cs" />
+    <Compile Include="HQuery\AttributeTest.cs" />
     <Compile Include="HQuery\ClassAttributeTest.cs" />
     <Compile Include="HSerializerTest.cs" />
     <Compile Include="HTextTest.cs" />

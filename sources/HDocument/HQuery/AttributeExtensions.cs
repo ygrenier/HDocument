@@ -72,7 +72,7 @@ namespace HDoc
         /// </summary>
         public static HElement Attr(this HElement element, String name, String value)
         {
-            return element.Attr(name, value);
+            return element.Attribute(name, value);
         }
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace HDoc
             {
                 foreach (var element in elements)
                 {
-                    elements.Attr(name, value);
+                    element.Attr(name, value);
                 }
             }
             return elements;
@@ -99,10 +99,11 @@ namespace HDoc
             {
                 foreach (var member in attributes.GetType().GetMembers().Where(m => m is PropertyInfo || m is FieldInfo))
                 {
+                    String mName = member.Name.Replace("_", "-");
                     if (member is PropertyInfo)
-                        element.Attr(member.Name, Convert.ToString(((PropertyInfo)member).GetValue(attributes, null)));
+                        element.Attr(mName, Convert.ToString(((PropertyInfo)member).GetValue(attributes, null)));
                     else if (member is FieldInfo)
-                        element.Attr(member.Name, Convert.ToString(((FieldInfo)member).GetValue(attributes)));
+                        element.Attr(mName, Convert.ToString(((FieldInfo)member).GetValue(attributes)));
                 }
             }
             return element;
@@ -117,7 +118,7 @@ namespace HDoc
             {
                 foreach (var element in elements)
                 {
-                    elements.Attr(attributes);
+                    element.Attr(attributes);
                 }
             }
             return elements;
