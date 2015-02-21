@@ -50,5 +50,25 @@ namespace HDoc.Tests.HQuery
             Assert.True(elements.HasClass("selected"));
         }
 
+        [Fact]
+        public void TestAddClass()
+        {
+            var elements = new HElement[]{
+                new HElement("p", "First paragraph."),
+                null,
+                new HElement("p", new HAttribute("class", "selected class3"), "Second paragraph is selected.")
+            };
+
+            elements
+                .AddClass("class1")
+                .AddClass("Selected")
+                ;
+            elements[0].AddClass("more");
+
+            Assert.Equal("class1 Selected more", elements[0].Attribute("class").Value);
+            Assert.Equal("selected class3 class1", elements[2].Attribute("class").Value);
+
+        }
+
     }
 }

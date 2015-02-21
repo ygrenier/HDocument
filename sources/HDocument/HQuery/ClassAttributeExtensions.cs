@@ -58,7 +58,61 @@ namespace HDoc
             return false;
         }
 
-        // TODO AddClass
+        /// <summary>
+        /// Adds the specified class(es) to the element.
+        /// </summary>
+        /// <param name="element">Element.</param>
+        /// <param name="classNames">One or more classes to be added to the class attribute of the element.</param>
+        /// <returns>Element</returns>
+        public static HElement AddClass(this HElement element, IEnumerable<String> classNames)
+        {
+            if (element != null && classNames != null)
+            {
+                element.Attribute("class", String.Join(" ", element.GetClasses().Concat(classNames).Distinct(StringComparer.OrdinalIgnoreCase)));
+            }
+            return element;
+        }
+
+        /// <summary>
+        /// Adds the specified classes to each of the set of matched elements.
+        /// </summary>
+        /// <param name="elements>Source elements.</param>
+        /// <param name="className">One or more classes to be added to the class attribute of each matched element.</param>
+        /// <returns>Source elements updated</returns>
+        public static IEnumerable<HElement> AddClass(this IEnumerable<HElement> elements, IEnumerable<String> classNames)
+        {
+            if (elements != null && classNames != null)
+            {
+                foreach (var element in elements)
+                {
+                    element.AddClass(classNames);
+                }
+            }
+            return elements;
+        }
+
+        /// <summary>
+        /// Adds the specified class(es) to the element.
+        /// </summary>
+        /// <param name="element">Element.</param>
+        /// <param name="className">One or more space-separated classes to be added to the class attribute of the element.</param>
+        /// <returns>Element</returns>
+        public static HElement AddClass(this HElement element, String className)
+        {
+            return element.AddClass(className.Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries));
+        }
+
+        /// <summary>
+        /// Adds the specified class(es) to each of the set of matched elements.
+        /// </summary>
+        /// <param name="elements>Source elements.</param>
+        /// <param name="className">One or more space-separated classes to be added to the class attribute of each matched element.</param>
+        /// <returns>Source elements updated</returns>
+        public static IEnumerable<HElement> AddClass(this IEnumerable<HElement> elements, String className)
+        {
+            return elements.AddClass(className.Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries));
+        }
+
         // TODO RemoveClass
         // TODO ToggleClass
     }

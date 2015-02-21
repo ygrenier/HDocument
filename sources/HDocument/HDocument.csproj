@@ -49,6 +49,7 @@
     <Compile Include="HNode.cs" />
     <Compile Include="HObject.cs" />
     <Compile Include="HParser.cs" />
+    <Compile Include="HQuery\AttributeExtensions.cs" />
     <Compile Include="HQuery\ClassAttributeExtensions.cs" />
     <Compile Include="HSerializer.cs" />
     <Compile Include="HText.cs" />
