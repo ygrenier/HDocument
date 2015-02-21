@@ -22,12 +22,20 @@ namespace HDoc
             if (element != null && !String.IsNullOrWhiteSpace(name))
             {
                 var attr = element.Attribute(name);
-                if (attr == null)
+                if (String.IsNullOrEmpty(value))
                 {
-                    attr = new HAttribute(name);
-                    element.Add(attr);
+                    if (attr != null)
+                        attr.Remove();
                 }
-                attr.Value = value;
+                else
+                {
+                    if (attr == null)
+                    {
+                        attr = new HAttribute(name);
+                        element.Add(attr);
+                    }
+                    attr.Value = value;
+                }
             }
             return element;
         }

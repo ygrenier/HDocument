@@ -11,6 +11,13 @@ namespace HDoc
     /// </summary>
     public static class ClassAttributeExtensions
     {
+        /// <summary>
+        /// Helper to extract class names from string
+        /// </summary>
+        internal static String[] ExtractClassNames(String className)
+        {
+            return className != null ? className.Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries) : new String[0];
+        }
 
         /// <summary>
         /// Extract classes from an element
@@ -19,7 +26,7 @@ namespace HDoc
         {
             HAttribute clsAttr = element != null ? element.Attribute("class") : null;
             if (clsAttr == null|| clsAttr.Value==null) return new String[0];
-            return clsAttr.Value.Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+            return ExtractClassNames(clsAttr.Value);
         }
 
         #region HasClass
@@ -105,7 +112,7 @@ namespace HDoc
         /// <returns>Element</returns>
         public static HElement AddClass(this HElement element, String className)
         {
-            return element.AddClass(className.Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries));
+            return element.AddClass(ExtractClassNames(className));
         }
 
         /// <summary>
@@ -116,7 +123,7 @@ namespace HDoc
         /// <returns>Source elements updated</returns>
         public static IEnumerable<HElement> AddClass(this IEnumerable<HElement> elements, String className)
         {
-            return elements.AddClass(className.Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries));
+            return elements.AddClass(ExtractClassNames(className));
         }
 
         /// <summary>
@@ -140,7 +147,118 @@ namespace HDoc
 
         #endregion
 
-        // TODO RemoveClass
+        #region Remove Class
+
+        /// <summary>
+        /// Remove all classes to an element.
+        /// </summary>
+        /// <param name="element"></param>
+        /// <returns></returns>
+        public static HElement RemoveClass(this HElement element)
+        {
+            if (element != null)
+            {
+                var attr = element.Attribute("class");
+                if (attr != null)
+                    attr.Remove();
+            }
+            return element;
+        }
+
+        /// <summary>
+        /// Remove some class names to an element.
+        /// </summary>
+        /// <param name="element"></param>
+        /// <param name="className"></param>
+        /// <returns></returns>
+        public static HElement RemoveClass(this HElement element, String[] className)
+        {
+            if (element != null && className != null && className.Length > 0)
+            {
+                var classes = element.GetClasses();
+                element.Attribute("class", String.Join(" ", classes.Except(className, StringComparer.OrdinalIgnoreCase)));
+            }
+            return element;
+        }
+
+        /// <summary>
+        /// Remove all classes to each of elements.
+        /// </summary>
+        /// <param name="elements">Source elements.</param>
+        /// <returns>Source elements updated.</returns>
+        public static IEnumerable<HElement> RemoveClass(this IEnumerable<HElement> elements)
+        {
+            if (elements != null)
+            {
+                foreach (var element in elements)
+                {
+                    element.RemoveClass();
+                }
+            }
+            return elements;
+        }
+
+        /// <summary>
+        /// Remove all class names to each of the elements.
+        /// </summary>
+        /// <param name="elements">Source elements.</param>
+        /// <param name="className">Class names to remove</param>
+        /// <returns>Source elements updated.</returns>
+        public static IEnumerable<HElement> RemoveClass(this IEnumerable<HElement> elements, String[] className)
+        {
+            if (elements != null)
+            {
+                foreach (var element in elements)
+                {
+                    element.RemoveClass(className);
+                }
+            }
+            return elements;
+        }
+
+        /// <summary>
+        /// Remove one or more space-separated classes to be removed from the class attribute of the element
+        /// </summary>
+        /// <param name="element"></param>
+        /// <param name="className"></param>
+        /// <returns></returns>
+        public static HElement RemoveClass(this HElement element, String className)
+        {
+            return element.RemoveClass(ExtractClassNames(className));
+        }
+
+        /// <summary>
+        /// Remove one or more space-separated classes to be removed from the class attribute of each matched element
+        /// </summary>
+        /// <param name="elements"></param>
+        /// <param name="className"></param>
+        /// <returns></returns>
+        public static IEnumerable<HElement> RemoveClass(this IEnumerable<HElement> elements, String className)
+        {
+            return elements.RemoveClass(ExtractClassNames(className));
+        }
+
+        /// <summary>
+        /// Remove the specified class(es) returns by a callback method to each of the set of matched elements.
+        /// </summary>
+        /// <param name="elements">Source elements.</param>
+        /// <param name="getClassName">Callback method returning the class name to removed.</param>
+        /// <returns>Source elements updated.</returns>
+        public static IEnumerable<HElement> RemoveClass(this IEnumerable<HElement> elements, Func<HElement, int, String> getClassName)
+        {
+            if (elements != null && getClassName != null)
+            {
+                int i = 0;
+                foreach (var element in elements)
+                {
+                    element.RemoveClass(getClassName(element, i++));
+                }
+            }
+            return elements;
+        }
+
+        #endregion
+
         // TODO ToggleClass
     }
 

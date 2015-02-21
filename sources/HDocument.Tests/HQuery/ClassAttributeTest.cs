@@ -88,5 +88,62 @@ namespace HDoc.Tests.HQuery
 
         }
 
+        [Fact]
+        public void TestRemoveClassAll()
+        {
+            var elements = new HElement[]{
+                new HElement("p", "First paragraph."),
+                null,
+                new HElement("p", new HAttribute("class", "selected class3"), "Second paragraph is selected.")
+            };
+
+            elements.RemoveClass();
+
+            Assert.Null(elements[0].Attribute("class"));
+            Assert.Null(elements[2].Attribute("class"));
+
+        }
+
+        [Fact]
+        public void TestRemoveClass()
+        {
+            var elements = new HElement[]{
+                new HElement("p","First paragraph."),
+                null,
+                new HElement("p", new HAttribute("class", "selected class3"), "Second paragraph is selected.")
+            };
+
+            elements
+                .AddClass("class2")
+                .AddClass("Selected")
+                .RemoveClass("class2 selected")
+                ;
+
+
+            Assert.Null(elements[0].Attribute("class"));
+            Assert.Equal("class3", elements[2].Attribute("class").Value);
+
+        }
+
+        [Fact]
+        public void TestRemoveClassByCallback()
+        {
+            var elements = new HElement[]{
+                new HElement("p",new HAttribute("class", "class0"),  "First paragraph."),
+                null,
+                new HElement("p", new HAttribute("class", "selected class3"), "Second paragraph is selected.")
+            };
+
+            elements
+                .AddClass("class2")
+                .AddClass("Selected")
+                .RemoveClass((elm, idx) => String.Format("class{0} selected", idx))
+                ;
+
+
+            Assert.Equal("class2", elements[0].Attribute("class").Value);
+            Assert.Equal("class3", elements[2].Attribute("class").Value);
+
+        }
     }
 }
