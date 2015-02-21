@@ -21,7 +21,6 @@ namespace HDoc.Tests
             Assert.Equal("name", attr.Name);
             Assert.Equal("", attr.Value);
 
-            Assert.Throws<ArgumentNullException>(() => new HAttribute("name", null));
             Assert.Throws<ArgumentNullException>(() => new HAttribute(" ", null));
             Assert.Throws<ArgumentNullException>(() => new HAttribute(null, null));
         }
@@ -53,7 +52,8 @@ namespace HDoc.Tests
             attr.Value = value;
             Assert.Equal(value, attr.Value);
 
-            Assert.Throws<ArgumentNullException>(() => attr.Value = null);
+            attr.Value = null;
+            Assert.Null(attr.Value);
 
         }
 

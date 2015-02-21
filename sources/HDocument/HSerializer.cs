@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HDoc.Parser;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -12,6 +13,9 @@ namespace HDoc
     /// </summary>
     public class HSerializer
     {
+
+        #region Helpers
+
         /// <summary>
         /// List of void elements
         /// </summary>
@@ -33,6 +37,34 @@ namespace HDoc
         protected static String[] EscapableRawTextElements = new String[]{
             "textarea", "title"
         };
+
+        /// <summary>
+        /// Check if a tag is a void element
+        /// </summary>
+        protected virtual bool IsVoidElement(string tag)
+        {
+            return VoidElements.Any(ve => String.Equals(ve, tag, StringComparison.OrdinalIgnoreCase));
+        }
+
+        /// <summary>
+        /// Check if a tag is a raw text element
+        /// </summary>
+        protected virtual bool IsRawElement(String tag)
+        {
+            return RawTextElements.Any(ve => String.Equals(ve, tag, StringComparison.OrdinalIgnoreCase));
+        }
+
+        /// <summary>
+        /// Check if a tag is an escapable raw text element
+        /// </summary>
+        protected virtual bool IsEscapableRawElement(String tag)
+        {
+            return EscapableRawTextElements.Any(ve => String.Equals(ve, tag, StringComparison.OrdinalIgnoreCase));
+        }
+
+        #endregion
+
+        #region Serialization
 
         /// <summary>
         /// Serialise an HTML document
@@ -134,30 +166,6 @@ namespace HDoc
         }
 
         /// <summary>
-        /// Check if a tag is a void element
-        /// </summary>
-        protected virtual bool IsVoidElement(string tag)
-        {
-            return VoidElements.Any(ve => String.Equals(ve, tag, StringComparison.OrdinalIgnoreCase));
-        }
-
-        /// <summary>
-        /// Check if a tag is a raw text element
-        /// </summary>
-        protected virtual bool IsRawElement(String tag)
-        {
-            return RawTextElements.Any(ve => String.Equals(ve, tag, StringComparison.OrdinalIgnoreCase));
-        }
-
-        /// <summary>
-        /// Check if a tag is an escapable raw text element
-        /// </summary>
-        protected virtual bool IsEscapableRawElement(String tag)
-        {
-            return EscapableRawTextElements.Any(ve => String.Equals(ve, tag, StringComparison.OrdinalIgnoreCase));
-        }
-
-        /// <summary>
         /// Serialize an element
         /// </summary>
         protected virtual void SerializeElement(HElement element, TextWriter writer)
@@ -224,7 +232,7 @@ namespace HDoc
             {
                 SerializeAttribute("standalone", xmldecl.Standalone, writer);
             }
-            writer.Write(" ?>\r\n");
+            writer.Write(" ?>");
         }
 
         /// <summary>
@@ -251,7 +259,7 @@ namespace HDoc
             {
                 writer.Write(" \"{0}\"", doctype.Uri);
             }
-            writer.Write(">\r\n");
+            writer.Write(">");
         }
 
         /// <summary>
@@ -264,6 +272,300 @@ namespace HDoc
                 writer.Write(" {0}=\"{1}\"", name.Trim(), HEntity.HtmlEncode(value));
             }
         }
+
+        #endregion
+
+        #region Deserialization
+
+        void ProcessError(Exception error, Func<Exception, bool> errorHandler)
+        {
+            if (errorHandler != null)
+                if (errorHandler(error))
+                    return;
+            throw error;
+        }
+
+        void Protect(Func<Exception, bool> errorHandler, Action action)
+        {
+            if (action == null) return;
+            try
+            {
+                action();
+            }
+            catch (Exception ex)
+            {
+                if (errorHandler != null)
+                    if (errorHandler(ex))
+                        return;
+                throw;
+            }
+        }
+
+        T Protect<T>(Func<Exception, bool> errorHandler, Func<T> action)
+        {
+            if (action == null) return default(T);
+            try
+            {
+                return action();
+            }
+            catch (Exception ex)
+            {
+                if (errorHandler != null)
+                    if (errorHandler(ex))
+                        return default(T);
+                throw;
+            }
+        }
+
+        void ProtectAddOnPeek(Stack<HElement> stack, object content, Func<Exception, bool> errorHandler)
+        {
+            Protect(errorHandler, () => stack.Peek().Add(content));
+        }
+
+        /// <summary>
+        /// Parse with error intercepts
+        /// </summary>
+        ParsedToken ParseNext(HParser parser, Func<Exception, bool> errorHandler)
+        {
+            ParsedToken result = null;
+            do
+            {
+                try
+                {
+                    result = parser.Parse();
+                    if (result == null) break;
+                }
+                catch (Exception ex)
+                {
+                    if (errorHandler != null)
+                        if (errorHandler(ex))
+                            continue;
+                    throw;
+                }
+            } while (result == null);
+            return result;
+        }
+
+        /// <summary>
+        /// Parse a content text with error intercepts
+        /// </summary>
+        ParsedText ParseContentTextNext(String tagEnd, HParser parser, Func<Exception, bool> errorHandler)
+        {
+            ParsedText result = null;
+            do
+            {
+                try
+                {
+                    result = parser.ParseContentText(tagEnd);
+                    if (result == null) break;
+                }
+                catch (Exception ex)
+                {
+                    if (errorHandler != null)
+                        if (errorHandler(ex))
+                            continue;
+                    throw;
+                }
+            } while (result == null);
+            return result;
+        }
+
+        /// <summary>
+        /// Deserialize a HTML document
+        /// </summary>
+        public HDocument DeserializeDocument(TextReader reader)
+        {
+            if (reader == null) throw new ArgumentNullException("reader");
+            // Create result
+            HDocument result = new HDocument();
+            result.Encoding = null;
+            // Load nodes in the document
+            result.Add(Deserialize(reader, err => {
+                if (err is ParseError)
+                {
+                    result.AddParseError((ParseError)err);
+                    return true;
+                }
+                return false;
+            }));
+            // Check encoding
+            if (result.Encoding == null)
+            {
+                if (reader is StreamReader)
+                    result.Encoding = ((StreamReader)reader).CurrentEncoding;
+                else
+                    result.Encoding = Encoding.UTF8;
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// Deserialize as a list of nodes
+        /// </summary>
+        public IEnumerable<HNode> Deserialize(TextReader reader, Func<Exception, bool> errorHandler = null)
+        {
+            if (reader == null) throw new ArgumentNullException("reader");
+            // Create the parser
+            var parser = new HParser(reader);
+            var token = ParseNext(parser, errorHandler);
+            Stack<HElement> opened = new Stack<HElement>();
+            HXmlDeclaration currentXDecl = null;
+            String tag;
+            bool inTag = false;
+            HNode tokenToReturns = null;
+            while (token != null)
+            {
+                switch (token.TokenType)
+                {
+                    case ParsedTokenType.Text:
+                        var htxt = new HText(HEntity.HtmlDecode(((ParsedText)token).Text));
+                        if (opened.Count > 0)
+                            ProtectAddOnPeek(opened, htxt, errorHandler);
+                        else
+                            tokenToReturns = htxt;
+                        break;
+                    case ParsedTokenType.CData:
+                        var hcd = new HCData(((ParsedCData)token).Text);
+                        if (opened.Count > 0)
+                            ProtectAddOnPeek(opened, hcd, errorHandler);
+                        else
+                            tokenToReturns = hcd;
+                        break;
+                    case ParsedTokenType.Comment:
+                        var hcom = new HComment(HEntity.HtmlDecode(((ParsedComment)token).Text));
+                        if (opened.Count > 0)
+                            ProtectAddOnPeek(opened, hcom, errorHandler);
+                        else
+                            tokenToReturns = hcom;
+                        break;
+                    case ParsedTokenType.OpenTag:
+                        opened.Push(new HElement(((ParsedTag)token).TagName));
+                        inTag = true;
+                        break;
+                    case ParsedTokenType.AutoClosedTag:
+                        System.Diagnostics.Debug.Assert(opened.Count > 0, "Opened tags are empty when receiving AutoClosedTag.");
+                        System.Diagnostics.Debug.Assert(opened.Peek().Name == ((ParsedTag)token).TagName, "AutoClosedTag and opened element are not same tag name.");
+                        var actag = opened.Pop();
+                        inTag = false;
+                        if (opened.Count > 0)
+                            ProtectAddOnPeek(opened, actag, errorHandler);
+                        else
+                            tokenToReturns = actag;
+                        break;
+                    case ParsedTokenType.CloseTag:
+                        System.Diagnostics.Debug.Assert(opened.Count > 0, "Opened tags are empty when receiving CloseTag.");
+                        System.Diagnostics.Debug.Assert(opened.Peek().Name == ((ParsedTag)token).TagName, "CloseTag and opened element are not same tag name.");
+                        // Tag with text content
+                        inTag = false;
+                        String tagName = opened.Peek().Name;
+                        if (IsRawElement(tagName) || IsEscapableRawElement(tagName))
+                        {
+                            token = ParseContentTextNext(tagName, parser, errorHandler);
+                            continue;
+                        }
+                        break;
+                    case ParsedTokenType.EndTag:
+                        tag = ((ParsedTag)token).TagName;
+                        HElement helm;
+                        // Close all elements that not matching the tag
+                        while (opened.Count > 0 && !String.Equals(opened.Peek().Name, tag, StringComparison.OrdinalIgnoreCase))
+                        {
+                            helm = opened.Pop();
+                            if (opened.Count > 0)
+                                ProtectAddOnPeek(opened, helm, errorHandler);
+                            else
+                                yield return helm;
+                        }
+                        // If we are opened tag, then close it because we find our element
+                        if (opened.Count > 0)
+                        {
+                            helm = opened.Pop();
+                            if (opened.Count > 0)
+                                ProtectAddOnPeek(opened, helm, errorHandler);
+                            else
+                                yield return helm;
+                        }
+                        break;
+                    case ParsedTokenType.OpenProcessInstruction:
+                        if (currentXDecl != null)
+                        {
+                            while ((token = ParseNext(parser, errorHandler)) != null && token.TokenType != ParsedTokenType.CloseProcessInstruction)
+                                ;
+                            ProcessError(new ParseError("XML declaration already opened."), errorHandler);
+                        }
+                        tag = ((ParsedTag)token).TagName;
+                        if (!String.Equals("xml", tag, StringComparison.OrdinalIgnoreCase))
+                        {
+                            while ((token = ParseNext(parser, errorHandler)) != null && token.TokenType != ParsedTokenType.CloseProcessInstruction)
+                                ;
+                            ProcessError(new ParseError(String.Format("Unexpected '{0}' process instruction.", tag)), errorHandler);
+                        }
+                        currentXDecl = new HXmlDeclaration(null, null, null);
+                        inTag = true;
+                        break;
+                    case ParsedTokenType.CloseProcessInstruction:
+                        if (currentXDecl == null)
+                        {
+                            ProcessError(new ParseError("No XML declaration opened."), errorHandler);
+                        }
+                        else
+                        {
+                            if (opened.Count > 0)
+                                ProtectAddOnPeek(opened, currentXDecl, errorHandler);
+                            else
+                                tokenToReturns = currentXDecl;
+                        }
+                        inTag = false;
+                        currentXDecl = null;
+                        break;
+                    case ParsedTokenType.Doctype:
+                        var vs = ((ParsedDoctype)token).Values ?? new String[0];
+                        var hdt = new HDocumentType(
+                            vs.Length > 0 ? vs[0] : null,
+                            vs.Length > 1 ? vs[1] : null,
+                            vs.Length > 2 ? vs[2] : null,
+                            vs.Length > 3 ? vs[3] : null
+                            );
+                        if (opened.Count > 0)
+                            ProtectAddOnPeek(opened, hdt, errorHandler);
+                        else
+                            tokenToReturns = hdt;
+                        break;
+                    case ParsedTokenType.Attribute:
+                        var attr = (ParsedAttribute)token;
+                        // Xml declaration ?
+                        if (currentXDecl != null)
+                        {
+                            if (String.Equals("version", attr.Name, StringComparison.OrdinalIgnoreCase))
+                                currentXDecl.Version = attr.Value;
+                            else if (String.Equals("encoding", attr.Name, StringComparison.OrdinalIgnoreCase))
+                                currentXDecl.Encoding = attr.Value;
+                            else if (String.Equals("standalone", attr.Name, StringComparison.OrdinalIgnoreCase))
+                                currentXDecl.Standalone = attr.Value;
+                            else
+                                ProcessError(new ParseError(String.Format("Invalid XML declaration attribute : ''", attr.Name)), errorHandler);
+                        }
+                        System.Diagnostics.Debug.Assert(opened.Count > 0, "No element opened for the attribtue.");
+                        ProtectAddOnPeek(opened, new HAttribute(attr.Name, attr.Value), errorHandler);
+                        break;
+                    //default:
+                    //    break;
+                }
+                // Returns a token if we have one
+                if (tokenToReturns != null)
+                {
+                    yield return tokenToReturns;
+                    tokenToReturns = null;
+                }
+                // Next token
+                token = ParseNext(parser, errorHandler);
+            }
+            // Close all opened elements
+            while (opened.Count > 0)
+                yield return opened.Pop();
+        }
+
+        #endregion
 
     }
 
