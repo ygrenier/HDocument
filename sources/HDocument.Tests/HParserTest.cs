@@ -876,12 +876,13 @@ namespace HDoc.Tests
         [Fact]
         public void TestParseContentText()
         {
-            StringReader reader = new StringReader(@"
-$('<div></div>').append();
-</script>
-</body>
-</html>
-");
+            StringReader reader = new StringReader(
+                "\r\n$('<div></div>').append();"
+                +"\r\n</script>"
+                +"\r\n</body>"
+                +"\r\n</html>\r\n"
+            );
+
             HParser parser = new HParser(reader);
 
             var tres = parser.ParseContentText("script");
