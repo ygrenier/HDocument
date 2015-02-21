@@ -44,7 +44,7 @@ namespace HDoc.Tests
             serializer.Serialize(doc, writer);
 
             var expected = new StringBuilder();
-            expected.AppendLine("<!DOCTYPE html>");
+            expected.Append("<!DOCTYPE html>");
             expected.Append("<html>");
             expected.Append("<header>");
             expected.Append("<title>Title of the document</title>");
@@ -92,7 +92,7 @@ namespace HDoc.Tests
             String html = serializer.Serialize(doc);
 
             var expected = new StringBuilder();
-            expected.AppendLine("<!DOCTYPE html>");
+            expected.Append("<!DOCTYPE html>");
             expected.Append("<html>");
             expected.Append("<header>");
             expected.Append("<title>Title of the document</title>");
@@ -127,7 +127,7 @@ namespace HDoc.Tests
             serializer.Serialize(doc, writer);
 
             var expected = new StringBuilder();
-            expected.AppendLine("<?xml version=\"1.0\" encoding=\"utf-8\" ?>");
+            expected.Append("<?xml version=\"1.0\" encoding=\"utf-8\" ?>");
             expected.Append("<html></html>");
             Assert.Equal(expected.ToString(), html.ToString());
 
@@ -147,7 +147,7 @@ namespace HDoc.Tests
             serializer.Serialize(doc, writer);
 
             var expected = new StringBuilder();
-            expected.AppendLine("<?xml ?>");
+            expected.Append("<?xml ?>");
             expected.Append("<html></html>");
             Assert.Equal(expected.ToString(), html.ToString());
 
@@ -167,7 +167,7 @@ namespace HDoc.Tests
             serializer.Serialize(doc, writer);
 
             var expected = new StringBuilder();
-            expected.AppendLine("<?xml version=\"version\" encoding=\"encoding\" standalone=\"standalone\" ?>");
+            expected.Append("<?xml version=\"version\" encoding=\"encoding\" standalone=\"standalone\" ?>");
             expected.Append("<html></html>");
             Assert.Equal(expected.ToString(), html.ToString());
 
@@ -192,7 +192,7 @@ namespace HDoc.Tests
             serializer.Serialize(doc, writer);
 
             var expected = new StringBuilder();
-            expected.AppendLine("<!DOCTYPE html>");
+            expected.Append("<!DOCTYPE html>");
             expected.Append("<html></html>");
             Assert.Equal(expected.ToString(), html.ToString());
 
@@ -213,7 +213,7 @@ namespace HDoc.Tests
             serializer.Serialize(doc, writer);
 
             var expected = new StringBuilder();
-            expected.AppendLine("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">");
+            expected.Append("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">");
             expected.Append("<html></html>");
             Assert.Equal(expected.ToString(), html.ToString());
 
@@ -244,7 +244,7 @@ namespace HDoc.Tests
 
             var expected = new StringBuilder();
             expected.Append("<!-- First comment before doctype -->");
-            expected.AppendLine("<!DOCTYPE html>");
+            expected.Append("<!DOCTYPE html>");
             expected.Append("<!-- First second comments before &lt;html&gt; -->");
             expected.Append("<html>");
             expected.Append("<!-- Another comments \n with multiple lines -->");
@@ -275,7 +275,7 @@ namespace HDoc.Tests
             serializer.Serialize(doc, writer);
 
             var expected = new StringBuilder();
-            expected.AppendLine("<!DOCTYPE html>");
+            expected.Append("<!DOCTYPE html>");
             expected.Append("<html>");
             expected.Append("<![CDATA[A content <CDATA> \n with multiple lines and é accented]]>");
             expected.Append("</html>");
@@ -305,7 +305,7 @@ namespace HDoc.Tests
             serializer.Serialize(doc, writer);
 
             var expected = new StringBuilder();
-            expected.AppendLine("<!DOCTYPE html>");
+            expected.Append("<!DOCTYPE html>");
             expected.Append("<html>");
             expected.Append("A content &lt;text&gt; \n with multiple lines and &eacute; accented");
             expected.Append("</html>");
@@ -336,7 +336,7 @@ namespace HDoc.Tests
             serializer.Serialize(doc, writer);
 
             var expected = new StringBuilder();
-            expected.AppendLine("<!DOCTYPE html>");
+            expected.Append("<!DOCTYPE html>");
             expected.Append("<html>");
             expected.Append("<script>A content <text> \n with multiple lines and é accented</script>");
             expected.Append("<div>A content &lt;text&gt; \n with multiple lines and &eacute; accented</div>");
@@ -365,7 +365,7 @@ namespace HDoc.Tests
             String html = serializer.Serialize(doc);
 
             var expected = new StringBuilder();
-            expected.AppendLine("<!DOCTYPE html>");
+            expected.Append("<!DOCTYPE html>");
             expected.Append("<html>");
             expected.Append("<textarea>A content &lt;text&gt; \n with multiple lines and &eacute; accented</textarea>");
             expected.Append("<div>A content &lt;text&gt; \n with multiple lines and &eacute; accented</div>");
@@ -531,11 +531,41 @@ namespace HDoc.Tests
         [Fact]
         public void TestDeserializeTestPage1()
         {
+            String pageContent;
+            using (var pageStream = this.GetType().Assembly.GetManifestResourceStream("HDoc.Tests.Resources.TestPage1.html"))
+            using (var reader = new StreamReader(pageStream))
+                pageContent = reader.ReadToEnd();
+
             using (var pageStream = this.GetType().Assembly.GetManifestResourceStream("HDoc.Tests.Resources.TestPage1.html"))
             using (var reader = new StreamReader(pageStream))
             {
                 var serializer = new HSerializer();
                 var doc = serializer.DeserializeDocument(reader);
+
+                Assert.Same(Encoding.UTF8, doc.Encoding);
+                Assert.Null(doc.XmlDeclaration);
+                Assert.Equal(StandardDoctype.Html5, doc.DocumentType.StandardType);
+
+                var nodes = doc.Nodes().ToArray();
+                Assert.Equal(3, nodes.Length);
+                Assert.IsType<HDocumentType>(nodes[0]);
+                Assert.IsType<HText>(nodes[1]);
+                Assert.IsType<HElement>(nodes[2]);
+
+                nodes = doc.DescendantNodes().ToArray();
+                Assert.Equal(129, nodes.Length);
+
+                var elms = doc.Descendants().ToArray();
+                Assert.Equal(46, elms.Length);
+
+                // Correct false HTML source
+                String tmp = pageContent
+                    .Replace("src=\"http://placekitten.com/g/64/64\">", "src=\"http://placekitten.com/g/64/64\" />")
+                    .Replace("a = b < c;", "a = b &lt; c;")
+                    .Replace("s = \"&lt;html&gt;\";", "s = &quot;&lt;html&gt;&quot;;")
+                    .Replace("français", "fran&ccedil;ais")
+                    ;
+                Assert.Equal(tmp, serializer.Serialize(doc));
             }
         }
 

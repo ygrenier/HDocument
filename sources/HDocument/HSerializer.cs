@@ -232,7 +232,7 @@ namespace HDoc
             {
                 SerializeAttribute("standalone", xmldecl.Standalone, writer);
             }
-            writer.Write(" ?>\r\n");
+            writer.Write(" ?>");
         }
 
         /// <summary>
@@ -259,7 +259,7 @@ namespace HDoc
             {
                 writer.Write(" \"{0}\"", doctype.Uri);
             }
-            writer.Write(">\r\n");
+            writer.Write(">");
         }
 
         /// <summary>

@@ -980,6 +980,7 @@ namespace HDoc
                                         // Save the end tag for the next parse
                                         _CurrentToken = ParsedTag.EndTag(tagName.ToString());
                                         _CurrentToken.Position = endTagPos;
+                                        c = CharInfo.EOF;   // Don't save the char
                                         // Exit the loop
                                         break;
                                     }
