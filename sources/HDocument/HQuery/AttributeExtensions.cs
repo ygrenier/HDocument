@@ -210,6 +210,7 @@ namespace HDoc
         /// </summary>
         public static String Css(this HElement element, String propertyName)
         {
+            if (element == null || String.IsNullOrWhiteSpace(propertyName)) return String.Empty;
             var styles = element.Css();
             String result;
             if (styles.TryGetValue(ConvertCamelNameToStyleName(propertyName), out result))
@@ -253,8 +254,45 @@ namespace HDoc
             return elements.First().Css(propertyNames);
         }
 
-        // TODO css( String propertyName, String value )
-        // TODO css( String propertyName, Func<HElement, int, String> callback )
+        /// <summary>
+        /// Set a style property in the element
+        /// </summary>
+        public static HElement Css(this HElement element, String propertyName, String value)
+        {
+            if (element == null || String.IsNullOrWhiteSpace(propertyName)) return element;
+            var styles = element.Css();
+            styles[ConvertCamelNameToStyleName(propertyName)] = value;
+            return element.Attr("style", String.Join(";", styles.Where(kvp => !String.IsNullOrWhiteSpace(kvp.Value)).Select(kvp => String.Concat(kvp.Key, "=", kvp.Value))));
+        }
+
+        /// <summary>
+        /// Set a style property in a set of elements
+        /// </summary>
+        public static IEnumerable<HElement> Css(this IEnumerable<HElement> elements, String propertyName, String value)
+        {
+            if (elements == null || String.IsNullOrWhiteSpace(propertyName)) return elements;
+            foreach (var element in elements)
+                element.Css(propertyName, value);
+            return elements;
+        }
+
+        /// <summary>
+        /// Set a style property from a callback in the element
+        /// </summary>
+        public static IEnumerable<HElement> Css(this IEnumerable<HElement> elements, String propertyName, Func<HElement, int, String> getValue)
+        {
+            if (elements != null && !String.IsNullOrWhiteSpace(propertyName))
+            {
+                int i = 0;
+                foreach (var element in elements)
+                {
+                    String value = getValue != null ? getValue(element, i++) : null;
+                    element.Css(propertyName, value);
+                }
+            }
+            return elements;
+        }
+
         // TODO css( Object properties )
 
         #endregion
