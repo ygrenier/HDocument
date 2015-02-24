@@ -153,15 +153,17 @@ namespace HDoc
         static String ConvertCamelNameToStyleName(String name)
         {
             StringBuilder result = new StringBuilder();
+            Char last = '\0';
             foreach (var c in name)
             {
                 if (Char.IsUpper(c))
                 {
-                    if (result.Length > 0) result.Append('-');
+                    if (result.Length > 0 && last != '-') result.Append('-');
                     result.Append(Char.ToLower(c));
                 }
                 else
                     result.Append(c);
+                last = c;
             }
             return result.ToString();
         }
@@ -221,7 +223,7 @@ namespace HDoc
         /// </summary>
         public static IDictionary<String, String> Css(this IEnumerable<HElement> elements)
         {
-            return elements.First().Css();
+            return (elements != null ? elements.FirstOrDefault() : null).Css();
         }
 
         /// <summary>
@@ -242,13 +244,13 @@ namespace HDoc
         /// </summary>
         public static String Css(this IEnumerable<HElement> elements, String propertyName)
         {
-            return elements.First().Css(propertyName);
+            return (elements != null ? elements.FirstOrDefault() : null).Css(propertyName);
         }
 
         /// <summary>
         /// Get the values of a list of style properties in the element
         /// </summary>
-        public static IEnumerable<String> Css(this HElement element, params String[] propertyNames)
+        public static IEnumerable<String> Css(this HElement element, String[] propertyNames)
         {
             var styles = element.Css();
             if (propertyNames != null)
@@ -268,9 +270,9 @@ namespace HDoc
         /// <summary>
         /// Get the values of a list of style properties in the first element in the list
         /// </summary>
-        public static IEnumerable<String> Css(this IEnumerable<HElement> elements, params String[] propertyNames)
+        public static IEnumerable<String> Css(this IEnumerable<HElement> elements, String[] propertyNames)
         {
-            return elements.First().Css(propertyNames);
+            return (elements != null ? elements.FirstOrDefault() : null).Css(propertyNames);
         }
 
         /// <summary>
