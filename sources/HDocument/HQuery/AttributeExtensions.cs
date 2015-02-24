@@ -167,6 +167,25 @@ namespace HDoc
         }
 
         /// <summary>
+        /// Apply style to an element
+        /// </summary>
+        static void SetStyle(HElement element, IDictionary<String, String> properties)
+        {
+            if (element != null && properties != null)
+            {
+                element.Attr(
+                    "style",
+                    String.Join(
+                        ";",
+                        properties
+                            .Where(kvp => !String.IsNullOrWhiteSpace(kvp.Value))
+                            .Select(kvp => String.Concat(kvp.Key, "=", kvp.Value))
+                    )
+                );
+            }
+        }
+
+        /// <summary>
         /// Extract all style properties of the element
         /// </summary>
         public static IDictionary<String, String> Css(this HElement element)
@@ -262,7 +281,8 @@ namespace HDoc
             if (element == null || String.IsNullOrWhiteSpace(propertyName)) return element;
             var styles = element.Css();
             styles[ConvertCamelNameToStyleName(propertyName)] = value;
-            return element.Attr("style", String.Join(";", styles.Where(kvp => !String.IsNullOrWhiteSpace(kvp.Value)).Select(kvp => String.Concat(kvp.Key, "=", kvp.Value))));
+            SetStyle(element, styles);
+            return element;
         }
 
         /// <summary>
@@ -293,7 +313,47 @@ namespace HDoc
             return elements;
         }
 
-        // TODO css( Object properties )
+        /// <summary>
+        /// Set some style properties from an object to an element
+        /// </summary>
+        public static HElement Css(this HElement element, Object properties)
+        {
+            if (element != null && properties != null)
+            {
+                var styles = element.Css();
+                if (properties is IDictionary<String, String>)
+                {
+                    foreach (var prop in ((IDictionary<String, String>)properties))
+                        styles[ConvertCamelNameToStyleName(prop.Key)] = prop.Value;
+                }
+                else
+                {
+                    foreach (var member in properties.GetType().GetMembers().Where(m => m is PropertyInfo || m is FieldInfo))
+                    {
+                        String mName = ConvertCamelNameToStyleName(member.Name.Replace("_", "-"));
+                        if (member is PropertyInfo)
+                            styles[mName] = Convert.ToString(((PropertyInfo)member).GetValue(properties, null));
+                        else if (member is FieldInfo)
+                            styles[mName] = Convert.ToString(((FieldInfo)member).GetValue(properties));
+                    }
+                }
+                SetStyle(element, styles);
+            }
+            return element;
+        }
+
+        /// <summary>
+        /// Set some style properties from an objet to a set of elements
+        /// </summary>
+        public static IEnumerable<HElement> Css(this IEnumerable<HElement> elements, Object properties)
+        {
+            if (elements != null && properties != null)
+            {
+                foreach (var element in elements)
+                    element.Css(properties);
+            }
+            return elements;
+        }
 
         #endregion
 
