@@ -7,8 +7,10 @@ using Xunit;
 
 namespace HDoc.Tests.HQuery
 {
-    public class AttributeTest
+    public class AttributeTest 
     {
+        #region Attribute
+
         [Fact]
         public void TestAttribute()
         {
@@ -133,6 +135,347 @@ namespace HDoc.Tests.HQuery
             Assert.Equal("color-2", elements[2].Attr("style"));
 
         }
+        
+        #endregion
+
+        #region Css
+
+        [Fact]
+        public void TestGetCssElement()
+        {
+            HElement element = null;
+            var style = element.Css();
+            Assert.Equal(0, style.Count);
+
+            element = new HElement("div");
+
+            style = element.Css();
+            Assert.Equal(0, style.Count);
+
+            element.Attr("id", "test").Attr("style", "");
+            style = element.Css();
+            Assert.Equal(0, style.Count);
+
+            element.Attr("style", "font-size=12px;color=blue;");
+            style = element.Css();
+            Assert.Equal(2, style.Count);
+            Assert.Equal("12px", style["font-size"]);
+            Assert.Equal("blue", style["color"]);
+
+            element.Attr("style", "font-size=12px;other=;empty;color=blue");
+            style = element.Css();
+            Assert.Equal(4, style.Count);
+            Assert.Equal("12px", style["font-size"]);
+            Assert.Equal("blue", style["color"]);
+            Assert.Equal("", style["other"]);
+            Assert.Equal("", style["empty"]);
+
+        }
+
+        [Fact]
+        public void TestGetCssElements()
+        {
+            var element1 = new HElement("div");
+            var element2 = new HElement("div").Attr("style", "font-size=12px;color=blue;");
+            var element3 = new HElement("div").Attr("style", "font-size=12px;other=;empty;color=blue");
+
+            HElement[] elements = null;
+
+            var style = elements.Css();
+            Assert.Equal(0, style.Count);
+
+            elements = new HElement[] { element1, element2, element3 };
+            style = elements.Css();
+            Assert.Equal(0, style.Count);
+
+            elements = new HElement[] { element2, element1, element3 };
+            style = elements.Css();
+            Assert.Equal(2, style.Count);
+            Assert.Equal("12px", style["font-size"]);
+            Assert.Equal("blue", style["color"]);
+
+            elements = new HElement[] { element3, element2, element1 };
+            style = elements.Css();
+            Assert.Equal(4, style.Count);
+            Assert.Equal("12px", style["font-size"]);
+            Assert.Equal("blue", style["color"]);
+            Assert.Equal("", style["other"]);
+            Assert.Equal("", style["empty"]);
+        }
+
+        [Fact]
+        public void TestGetCssPropertyElement()
+        {
+            HElement element = null;
+            Assert.Equal(String.Empty, element.Css("color"));
+
+            element = new HElement("div");
+
+            Assert.Equal(String.Empty, element.Css("color"));
+
+            element.Attr("id", "test").Attr("style", "");
+            Assert.Equal(String.Empty, element.Css("color"));
+
+            element.Attr("style", "font-size=12px;color=blue;");
+            Assert.Equal("blue", element.Css("color"));
+
+            element.Attr("style", "font-size=12px;other=;empty;color=blue");
+            Assert.Equal("blue", element.Css("color"));
+        }
+
+        [Fact]
+        public void TestGetCssPropertyElements()
+        {
+            var element1 = new HElement("div");
+            var element2 = new HElement("div").Attr("style", "font-size=12px;color=blue;");
+            var element3 = new HElement("div").Attr("style", "font-size=12px;other=;empty;color=blue");
+
+            HElement[] elements = null;
+
+            Assert.Equal("", elements.Css("color"));
+
+            elements = new HElement[] { element1, element2, element3 };
+            Assert.Equal("", elements.Css("color"));
+
+            elements = new HElement[] { element2, element1, element3 };
+            Assert.Equal("blue", elements.Css("color"));
+
+            elements = new HElement[] { element3, element2, element1 };
+            Assert.Equal("blue", elements.Css("color"));
+
+        }
+
+        [Fact]
+        public void TestGetCssPropertiesElement()
+        {
+            HElement element = null;
+            Assert.Equal(new String[] { "", "" }, element.Css(new String[] { "color", "font-size" }).ToArray());
+
+            element = new HElement("div");
+
+            Assert.Equal(new String[] { "", "" }, element.Css(new String[] { "color", "font-size" }).ToArray());
+
+            element.Attr("id", "test").Attr("style", "");
+            Assert.Equal(new String[] { "", "" }, element.Css(new String[] { "color", "font-size" }).ToArray());
+
+            element.Attr("style", "color=blue;");
+            Assert.Equal(new String[] { "blue", "" }, element.Css(new String[] { "color", "font-size" }).ToArray());
+
+            element.Attr("style", "font-size=12px;other=;empty;color=blue");
+            Assert.Equal(new String[] { "blue", "12px" }, element.Css(new String[] { "color", "font-size" }).ToArray());
+
+        }
+
+        [Fact]
+        public void TestGetCssPropertiesElements()
+        {
+            var element1 = new HElement("div");
+            var element2 = new HElement("div").Attr("style", "color=blue;");
+            var element3 = new HElement("div").Attr("style", "font-size=12px;other=;empty;color=blue");
+
+            HElement[] elements = null;
+
+            Assert.Equal(new String[] { "", "" }, elements.Css(new String[] { "color", "font-size" }).ToArray());
+
+            elements = new HElement[] { element1, element2, element3 };
+            Assert.Equal(new String[] { "", "" }, elements.Css(new String[] { "color", "font-size" }).ToArray());
+
+            elements = new HElement[] { element2, element1, element3 };
+            Assert.Equal(new String[] { "blue", "" }, elements.Css(new String[] { "color", "font-size" }).ToArray());
+
+            elements = new HElement[] { element3, element2, element1 };
+            Assert.Equal(new String[] { "blue", "12px" }, elements.Css(new String[] { "color", "font-size" }).ToArray());
+
+        }
+
+        [Fact]
+        public void TestSetCssPropertyElement()
+        {
+            HElement element = null;
+            Assert.Equal(null, element.Css("color", "blue").Attr("style"));
+
+            Assert.Equal(
+                "color=blue;font-size=12px;font-name=Arial", 
+                new HElement("div")
+                    .Css("color", "blue")
+                    .Css("fontSize", "12px")
+                    .Css("font-name", "Arial")
+                    .Attr("style")
+            );
+
+            Assert.Equal(
+                "color=blue;font-size=24px",
+                new HElement("div")
+                    .Css("color", "blue")
+                    .Css("fontSize", "12px")
+                    .Css("font-name", "Arial")
+                    .Css("font-Size", "24px")
+                    .Css("font-name", "")
+                    .Attr("style")
+            );
+
+        }
+
+        [Fact]
+        public void TestSetCssPropertyElements()
+        {
+            var element1 = new HElement("div");
+            var element2 = new HElement("div").Attr("style", "color=blue;");
+            var element3 = new HElement("div").Attr("style", "font-size=12px;other=;empty;color=blue");
+
+            HElement[] elements = null;
+
+            Assert.Equal(
+                null, 
+                    elements
+                        .Css("font-name", "Arial")
+                        .Css("font-Size", "24px")
+                        .Css("font-name", "")
+                        );
+
+            elements = new HElement[] { element1, element2, element3 };
+            Assert.Equal(
+                new String[] { "font-size=24px", "color=blue;font-size=24px", "font-size=24px;color=blue" },
+                    elements
+                        .Css("font-name", "Arial")
+                        .Css("font-Size", "24px")
+                        .Css("font-name", "")
+                        .Select(e => e.Attr("style"))
+                        .ToArray());
+
+        }
+
+        [Fact]
+        public void TestSetCssPropertyElementsByCallback()
+        {
+            var element1 = new HElement("div");
+            var element2 = new HElement("div").Attr("style", "color=blue;");
+            var element3 = new HElement("div").Attr("style", "font-size=12px;other=;empty;color=blue");
+
+            HElement[] elements = null;
+
+            Assert.Equal(
+                null,
+                    elements
+                        .Css("font-name", (h, i) => String.Format("font-{0}", i))
+                        );
+
+            elements = new HElement[] { element1, element2, element3 };
+            Assert.Equal(
+                new String[] { "font-name=font-0", "color=blue;font-name=font-1", "font-size=12px;color=blue;font-name=font-2" },
+                    elements
+                        .Css("font-name", (h, i) => String.Format("font-{0}", i))
+                        .Select(e => e.Attr("style"))
+                        .ToArray());
+
+        }
+
+        [Fact]
+        public void TestSetCssPropertiesElement()
+        {
+            HElement element = null;
+            Assert.Equal(null, element.Css(new {
+                fontSize = "12px",
+                font_Name = "Arial"
+            }).Attr("style"));
+
+            Assert.Equal(
+                "color=blue;font-size=12px;font-name=Arial",
+                new HElement("div")
+                    .Css("color", "blue")
+                    .Css(new {
+                        fontSize = "12px",
+                        font_Name = "Arial"
+                    })
+                    .Attr("style")
+            );
+
+            Assert.Equal(
+                "color=blue;font-size=24px",
+                new HElement("div")
+                    .Css("color", "blue")
+                    .Css("font-name", "Arial")
+                    .Css(new Dictionary<String, String> { 
+                        { "fontSize", "24px" },
+                        { "font_Name", ""}
+                    })
+                    .Attr("style")
+            );
+
+            Assert.Equal(
+                "color=blue;font-name=Arial;data-str=text;data-int=12",
+                new HElement("div")
+                    .Css("color", "blue")
+                    .Css("font-name", "Arial")
+                    .Css(new TestPoco {
+                        data_int = 12,
+                        data_str = "text"
+                    })
+                    .Attr("style")
+            );
+
+        }
+
+        [Fact]
+        public void TestSetCssPropertiesElements()
+        {
+            var element1 = new HElement("div");
+            var element2 = new HElement("div").Attr("style", "color=blue;");
+            var element3 = new HElement("div").Attr("style", "font-size=12px;other=;empty;color=blue");
+
+            HElement[] elements = null;
+
+            Assert.Equal(
+                null,
+                    elements
+                        .Css(new {
+                            fontSize = "12px",
+                            font_Name = "Arial"
+                        })
+                        );
+
+            elements = new HElement[] { element1, element2, element3 };
+            Assert.Equal(
+                new String[] { "font-size=12px;font-name=Arial", "color=blue;font-size=12px;font-name=Arial", "font-size=12px;color=blue;font-name=Arial" },
+                    elements
+                        .Css(new {
+                            fontSize = "12px",
+                            font_Name = "Arial"
+                        })
+                        .Select(e => e.Attr("style"))
+                        .ToArray());
+
+            element1 = new HElement("div");
+            element2 = new HElement("div").Attr("style", "color=blue;");
+            element3 = new HElement("div").Attr("style", "font-size=12px;other=;empty;color=blue");
+            elements = new HElement[] { element1, element2, element3 };
+            Assert.Equal(
+                new String[] { "font-size=24px", "color=blue;font-size=24px", "font-size=24px;color=blue" },
+                    elements
+                        .Css(new Dictionary<String, String> { 
+                            { "fontSize", "24px" },
+                            { "font_Name", ""}
+                        })
+                        .Select(e => e.Attr("style"))
+                        .ToArray());
+
+            element1 = new HElement("div");
+            element2 = new HElement("div").Attr("style", "color=blue;");
+            element3 = new HElement("div").Attr("style", "font-size=12px;other=;empty;color=blue");
+            elements = new HElement[] { element1, element2, element3 };
+            Assert.Equal(
+                new String[] { "data-str=text;data-int=12", "color=blue;data-str=text;data-int=12", "font-size=12px;color=blue;data-str=text;data-int=12" },
+                    elements
+                        .Css(new TestPoco {
+                            data_int = 12,
+                            data_str = "text"
+                        })
+                        .Select(e => e.Attr("style"))
+                        .ToArray());
+
+        }
+
+        #endregion
 
     }
 }
