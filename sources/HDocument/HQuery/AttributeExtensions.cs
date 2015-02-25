@@ -159,11 +159,22 @@ namespace HDoc
                 if (Char.IsUpper(c))
                 {
                     if (result.Length > 0 && last != '-') result.Append('-');
-                    result.Append(Char.ToLower(c));
+                    last = Char.ToLower(c);
+                    result.Append(last);
+                }
+                else if (c == '_')
+                {
+                    if (result.Length > 0 && last != '-')
+                    {
+                        result.Append('-');
+                        last = '-';
+                    }
                 }
                 else
+                {
                     result.Append(c);
-                last = c;
+                    last = c;
+                }
             }
             return result.ToString();
         }
