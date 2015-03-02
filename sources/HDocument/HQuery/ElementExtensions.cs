@@ -60,7 +60,48 @@ namespace HDoc
 
         #region Before()
 
+        /// <summary>
+        /// Add content before the element
+        /// </summary>
+        public static HElement Before(this HElement element, params HElement[] content)
+        {
+            if (element != null && content != null)
+            {
+                element.AddBefore(content.Where(c => c != null).Cast<object>().ToArray());
+            }
+            return element;
+        }
 
+        /// <summary>
+        /// Add content before each element of a set of elements
+        /// </summary>
+        public static IEnumerable<HElement> Before(this IEnumerable<HElement> elements, params HElement[] content)
+        {
+            if (elements != null && content != null)
+            {
+                foreach (var element in elements.ToList())
+                {
+                    element.Before(content);
+                }
+            }
+            return elements;
+        }
+
+        /// <summary>
+        /// Add content from a callback before each element of a set of elements
+        /// </summary>
+        public static IEnumerable<HElement> Before(this IEnumerable<HElement> elements, Func<HElement, int, IEnumerable<HElement>> getContent)
+        {
+            if (elements != null && getContent != null)
+            {
+                int idx = 0;
+                foreach (var element in elements.ToList())
+                {
+                    element.Before(getContent(element, idx++).ToArray());
+                }
+            }
+            return elements;
+        }
 
         #endregion
 
