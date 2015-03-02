@@ -71,6 +71,7 @@
     <Compile Include="HQuery\AttributeTest.cs" />
     <Compile Include="HQuery\ClassAttributeTest.cs" />
     <Compile Include="HQuery\DataTest.cs" />
+    <Compile Include="HQuery\ElementTest.cs" />
     <Compile Include="HSerializerTest.cs" />
     <Compile Include="HTextTest.cs" />
     <Compile Include="HXmlDeclarationTest.cs" />
