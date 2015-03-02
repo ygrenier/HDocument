@@ -39,7 +39,7 @@ namespace HDoc
         /// </summary>
         public static HElement Data(this HElement element, String key, String value)
         {
-            return element.Data(MakeDataKey(key), value);
+            return element.Attr(MakeDataKey(key), value);
         }
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace HDoc
             {
                 foreach (var kv in UtilHelpers.ExtractKeyValues(values))
                 {
-                    element.Data(MakeDataKey(kv.Key), kv.Value);
+                    element.Data(kv.Key, kv.Value);
                 }
             }
             return element;
