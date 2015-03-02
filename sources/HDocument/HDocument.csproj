@@ -51,6 +51,7 @@
     <Compile Include="HParser.cs" />
     <Compile Include="HQuery\AttributeExtensions.cs" />
     <Compile Include="HQuery\ClassAttributeExtensions.cs" />
+    <Compile Include="HQuery\DataExtensions.cs" />
     <Compile Include="HSerializer.cs" />
     <Compile Include="HText.cs" />
     <Compile Include="HXmlDeclaration.cs" />
@@ -66,6 +67,7 @@
     <Compile Include="Parser\ParsePosition.cs" />
     <Compile Include="Parser\[Enums].cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UtilHelpers.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
