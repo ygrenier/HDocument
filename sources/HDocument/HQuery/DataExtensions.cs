@@ -92,20 +92,23 @@ namespace HDoc
         /// </summary>
         public static HElement RemoveData(this HElement element, params String[] keys)
         {
-            // Build the key list from the context
-            if (keys != null && keys.Length > 0)
+            if (element != null)
             {
-                // Convert all keys to data keys
-                keys = keys.Select(k => MakeDataKey(k)).ToArray();
-            }
-            else
-            {
-                // Extract all data keys
-                keys = element.Attributes().Where(attr => attr.Name.StartsWith("data-", StringComparison.OrdinalIgnoreCase)).Select(attr => attr.Name).ToArray();
-            }
-            foreach (var key in keys)
-            {
-                element.Attr(key, null);
+                // Build the key list from the context
+                if (keys != null && keys.Length > 0)
+                {
+                    // Convert all keys to data keys
+                    keys = keys.Select(k => MakeDataKey(k)).ToArray();
+                }
+                else
+                {
+                    // Extract all data keys
+                    keys = element.Attributes().Where(attr => attr.Name.StartsWith("data-", StringComparison.OrdinalIgnoreCase)).Select(attr => attr.Name).ToArray();
+                }
+                foreach (var key in keys)
+                {
+                    element.Attr(key, null);
+                }
             }
             return element;
         }
@@ -130,6 +133,7 @@ namespace HDoc
         /// </summary>
         public static bool HasData(this HElement element)
         {
+            if (element == null) return false;
             return element.Attributes().Where(attr => attr.Name.StartsWith("data-", StringComparison.OrdinalIgnoreCase)).Any();
         }
 
@@ -146,7 +150,7 @@ namespace HDoc
         /// </summary>
         public static bool HasData(this HElement element, String key)
         {
-            if (String.IsNullOrWhiteSpace(key)) return false;
+            if (element == null || String.IsNullOrWhiteSpace(key)) return false;
             return element.Attribute(MakeDataKey(key)) != null;
         }
 
