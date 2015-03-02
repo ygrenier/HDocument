@@ -52,6 +52,7 @@
     <Compile Include="HQuery\AttributeExtensions.cs" />
     <Compile Include="HQuery\ClassAttributeExtensions.cs" />
     <Compile Include="HQuery\DataExtensions.cs" />
+    <Compile Include="HQuery\ElementExtensions.cs" />
     <Compile Include="HSerializer.cs" />
     <Compile Include="HText.cs" />
     <Compile Include="HXmlDeclaration.cs" />
