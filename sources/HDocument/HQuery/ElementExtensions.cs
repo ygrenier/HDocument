@@ -105,5 +105,34 @@ namespace HDoc
 
         #endregion
 
+        #region Empty()
+
+        /// <summary>
+        /// Remove all nodes in the element.
+        /// </summary>
+        public static HElement Empty(this HElement element)
+        {
+            if (element != null)
+                element.RemoveNodes();
+            return element;
+        }
+
+        /// <summary>
+        /// Remove all nodes in the elements of the sets
+        /// </summary>
+        public static IEnumerable<HElement> Empty(this IEnumerable<HElement> elements)
+        {
+            if (elements != null)
+            {
+                foreach (var element in elements)
+                {
+                    element.Empty();
+                }
+            }
+            return elements;
+        }
+
+        #endregion
+
     }
 }
