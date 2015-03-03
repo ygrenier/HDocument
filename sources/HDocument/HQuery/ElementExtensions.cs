@@ -134,5 +134,19 @@ namespace HDoc
 
         #endregion
 
+        #region Clone()
+
+        /// <summary>
+        /// Clone the set of elements
+        /// </summary>
+        public static IEnumerable<HElement> Clone(this IEnumerable<HElement> elements)
+        {
+            if (elements != null)
+                return elements.Select(e => e != null ? e.Clone() : null).ToList();
+            return elements;
+        }
+
+        #endregion
+
     }
 }

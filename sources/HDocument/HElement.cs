@@ -76,6 +76,14 @@ namespace HDoc
             return new HElement(this);
         }
 
+        /// <summary>
+        /// Clone the element
+        /// </summary>
+        public HElement Clone()
+        {
+            return (HElement)CloneNode();
+        }
+
         #region Attributes management
 
         /// <summary>
