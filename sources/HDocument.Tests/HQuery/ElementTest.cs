@@ -99,5 +99,38 @@ namespace HDoc.Tests.HQuery
 
         #endregion
 
+        #region Empty()
+
+        [Fact]
+        public void TestEmptyElement()
+        {
+            var element = new HElement("div", new HAttribute("attr", "value"), new HElement("p"), new HElement("div"));
+            Assert.Same(element, element.Empty());
+            Assert.Equal(false, element.HasNodes);
+            Assert.Equal(true, element.HasAttributes);
+
+            element = null;
+            Assert.Null(element.Empty());
+        }
+
+        [Fact]
+        public void TestEmptyElements()
+        {
+            var element1 = new HElement("div", new HAttribute("attr", "value"), new HElement("p"), new HElement("div"));
+            var element2 = new HElement("div", new HAttribute("attr", "value"), new HElement("p"), new HElement("div"), new HElement("p"), new HElement("div"));
+
+            var elements = new HElement[] { element1, null, element2 };
+            Assert.Same(elements, elements.Empty());
+            Assert.Equal(false, element1.HasNodes);
+            Assert.Equal(true, element1.HasAttributes);
+            Assert.Equal(false, element2.HasNodes);
+            Assert.Equal(true, element2.HasAttributes);
+
+            elements = null;
+            Assert.Null(elements.Empty());
+        }
+
+        #endregion
+
     }
 }
