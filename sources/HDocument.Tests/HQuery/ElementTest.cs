@@ -132,5 +132,31 @@ namespace HDoc.Tests.HQuery
 
         #endregion
 
+        #region Clone()
+
+        [Fact]
+        public void TestCloneElements()
+        {
+            var element1 = new HElement("div", new HAttribute("attr", "value"), new HElement("p"), new HElement("div"));
+            var element2 = new HElement("div", new HAttribute("attr", "value"), new HElement("p"), new HElement("div"), new HElement("p"), new HElement("div"));
+
+            var elements = new HElement[] { element1, null, element2 };
+
+            var clones = ((IEnumerable<HElement>)elements).Clone().ToArray();
+            Assert.NotSame(elements[0], clones[0]);
+            Assert.NotSame(elements[2], clones[2]);
+
+            Assert.Null(clones[1]);
+            Assert.Equal(1, clones[0].Attributes().Count());
+            Assert.Equal(2, clones[0].Elements().Count());
+            Assert.Equal(1, clones[2].Attributes().Count());
+            Assert.Equal(4, clones[2].Elements().Count());
+
+            elements = null;
+            Assert.Null(((IEnumerable<HElement>)elements).Clone());
+        }
+
+        #endregion
+
     }
 }
