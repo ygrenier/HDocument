@@ -85,6 +85,12 @@ namespace HDoc.Tests
             Assert.Equal(2, c.Attributes().Count());
             Assert.Equal(0, c.Attributes("Attr2").Count());
             Assert.Equal(1, c.Nodes().Count());
+
+            var cloneElm = c.Clone();
+            Assert.Equal(2, cloneElm.Attributes().Count());
+            Assert.Equal(0, cloneElm.Attributes("Attr2").Count());
+            Assert.Equal(1, cloneElm.Nodes().Count());
+
         }
 
         [Fact]
