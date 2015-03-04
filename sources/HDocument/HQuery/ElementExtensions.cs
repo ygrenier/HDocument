@@ -148,5 +148,52 @@ namespace HDoc
 
         #endregion
 
+        #region Append()
+
+        /// <summary>
+        /// Append content at the end of the element
+        /// </summary>
+        public static HElement Append(this HElement element, params object[] content)
+        {
+            if (element != null)
+            {
+                element.Add(content);
+            }
+            return element;
+        }
+
+        /// <summary>
+        /// Append content at the end of each element of the set.
+        /// </summary>
+        public static IEnumerable<HElement> Append(this IEnumerable<HElement> elements, params object[] content)
+        {
+            if (elements != null)
+            {
+                foreach (var element in elements)
+                {
+                    element.Append(content);
+                }
+            }
+            return elements;
+        }
+
+        /// <summary>
+        /// Append content at the end of each element of the set.
+        /// </summary>
+        public static IEnumerable<HElement> Append(this IEnumerable<HElement> elements, Func<HElement, int, object> getContent)
+        {
+            if (elements != null && getContent!=null)
+            {
+                int i = 0;
+                foreach (var element in elements)
+                {
+                    element.Append(getContent(element, i++));
+                }
+            }
+            return elements;
+        }
+
+        #endregion
+
     }
 }
