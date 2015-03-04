@@ -195,5 +195,52 @@ namespace HDoc
 
         #endregion
 
+        #region Prepend()
+
+        /// <summary>
+        /// Append content at the beginning of the element
+        /// </summary>
+        public static HElement Prepend(this HElement element, params object[] content)
+        {
+            if (element != null)
+            {
+                element.Insert(null, content);
+            }
+            return element;
+        }
+
+        /// <summary>
+        /// Append content at the beginning of each element of the set.
+        /// </summary>
+        public static IEnumerable<HElement> Prepend(this IEnumerable<HElement> elements, params object[] content)
+        {
+            if (elements != null)
+            {
+                foreach (var element in elements)
+                {
+                    element.Prepend(content);
+                }
+            }
+            return elements;
+        }
+
+        /// <summary>
+        /// Append content at the beginning of each element of the set.
+        /// </summary>
+        public static IEnumerable<HElement> Prepend(this IEnumerable<HElement> elements, Func<HElement, int, object> getContent)
+        {
+            if (elements != null && getContent != null)
+            {
+                int i = 0;
+                foreach (var element in elements)
+                {
+                    element.Prepend(getContent(element, i++));
+                }
+            }
+            return elements;
+        }
+
+        #endregion
+
     }
 }

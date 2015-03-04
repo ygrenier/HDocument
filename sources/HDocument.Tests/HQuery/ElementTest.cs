@@ -222,5 +222,69 @@ namespace HDoc.Tests.HQuery
 
         #endregion
 
+        #region Prepend()
+
+        [Fact]
+        public void TestPrependElement()
+        {
+            var element = new HElement("div", new HElement("p"));
+
+            Assert.Same(element, element.Prepend(new HElement("span"), "test", null, new HAttribute("attr", "value")));
+            Assert.Equal(3, element.Nodes().Count());
+            Assert.Equal("value", element.Attr("attr"));
+
+            element = null;
+            Assert.Null(element.Prepend(new HElement("span"), "test", null, new HAttribute("attr", "value")));
+
+        }
+
+        [Fact]
+        public void TestPrependElements()
+        {
+            var element1 = new HElement("div", new HElement("p"));
+            var element2 = new HElement("div", new HElement("p"), new HElement("div"), new HAttribute("attr1", "val1"));
+
+            var elements = new HElement[] { element1, null, element2 };
+            Assert.Same(elements, elements.Prepend(new HElement("span"), "test", null, new HAttribute("attr", "value")));
+            Assert.Equal(3, element1.Nodes().Count());
+            Assert.Equal("value", element1.Attr("attr"));
+            Assert.Equal(4, element2.Nodes().Count());
+            Assert.Equal("value", element2.Attr("attr"));
+
+            elements = null;
+            Assert.Null(elements.Prepend(new HElement("span"), "test", null, new HAttribute("attr", "value")));
+
+        }
+
+        [Fact]
+        public void TestPrependElementsByCallback()
+        {
+            var element1 = new HElement("div", new HElement("p"));
+            var element2 = new HElement("div", new HElement("p"), new HElement("div"), new HAttribute("attr1", "val1"));
+
+            var elements = new HElement[] { element1, null, element2 };
+            Assert.Same(elements, elements.Prepend((e, i) => {
+                return new object[]{
+                    new HAttribute("a"+i.ToString(), i.ToString()),
+                    "Content"
+                };
+            }));
+            Assert.Equal(2, element1.Nodes().Count());
+            Assert.Equal("0", element1.Attr("a0"));
+            Assert.Equal(3, element2.Nodes().Count());
+            Assert.Equal("2", element2.Attr("a2"));
+
+            elements = null;
+            Assert.Null(elements.Prepend((e, i) => {
+                return new object[]{
+                    new HAttribute("a"+i.ToString(), i.ToString()),
+                    "Content"
+                };
+            }));
+
+        }
+
+        #endregion
+
     }
 }
