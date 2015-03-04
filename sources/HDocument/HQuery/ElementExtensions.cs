@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -247,7 +248,7 @@ namespace HDoc
         /// <summary>
         /// Append the element to the end of the content of the target
         /// </summary>
-        public static HElement AppendTo(this HElement element, HElement target)
+        public static T AppendTo<T>(this T element, HElement target)
         {
             if (element != null && target != null)
             {
@@ -259,11 +260,11 @@ namespace HDoc
         /// <summary>
         /// Append the set of elements to the end of the content of the target
         /// </summary>
-        public static IEnumerable<HElement> AppendTo(this IEnumerable<HElement> elements, HElement target)
+        public static IEnumerable<T> AppendTo<T>(this IEnumerable<T> content, HElement target)
         {
-            if (elements != null && target != null)
-                target.Append(elements);
-            return elements;
+            if (content != null && target != null)
+                target.Append(content);
+            return content;
         }
 
         #endregion
