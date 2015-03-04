@@ -269,5 +269,31 @@ namespace HDoc
 
         #endregion
 
+        #region PrependTo()
+
+        /// <summary>
+        /// Append the element to the beginning of the content of the target
+        /// </summary>
+        public static T PrependTo<T>(this T element, HElement target)
+        {
+            if (element != null && target != null)
+            {
+                target.Prepend(element);
+            }
+            return element;
+        }
+
+        /// <summary>
+        /// Append the set of elements to the beginning of the content of the target
+        /// </summary>
+        public static IEnumerable<T> PrependTo<T>(this IEnumerable<T> content, HElement target)
+        {
+            if (content != null && target != null)
+                target.Prepend(content);
+            return content;
+        }
+
+        #endregion
+
     }
 }
