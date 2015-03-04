@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -238,6 +239,58 @@ namespace HDoc
                 }
             }
             return elements;
+        }
+
+        #endregion
+
+        #region AppendTo()
+
+        /// <summary>
+        /// Append the element to the end of the content of the target
+        /// </summary>
+        public static T AppendTo<T>(this T element, HElement target)
+        {
+            if (element != null && target != null)
+            {
+                target.Append(element);
+            }
+            return element;
+        }
+
+        /// <summary>
+        /// Append the set of elements to the end of the content of the target
+        /// </summary>
+        public static IEnumerable<T> AppendTo<T>(this IEnumerable<T> content, HElement target)
+        {
+            if (content != null && target != null)
+                target.Append(content);
+            return content;
+        }
+
+        #endregion
+
+        #region PrependTo()
+
+        /// <summary>
+        /// Append the element to the beginning of the content of the target
+        /// </summary>
+        public static T PrependTo<T>(this T element, HElement target)
+        {
+            if (element != null && target != null)
+            {
+                target.Prepend(element);
+            }
+            return element;
+        }
+
+        /// <summary>
+        /// Append the set of elements to the beginning of the content of the target
+        /// </summary>
+        public static IEnumerable<T> PrependTo<T>(this IEnumerable<T> content, HElement target)
+        {
+            if (content != null && target != null)
+                target.Prepend(content);
+            return content;
         }
 
         #endregion
