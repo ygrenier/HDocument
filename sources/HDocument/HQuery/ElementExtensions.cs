@@ -242,5 +242,31 @@ namespace HDoc
 
         #endregion
 
+        #region AppendTo()
+
+        /// <summary>
+        /// Append the element to the end of the content of the target
+        /// </summary>
+        public static HElement AppendTo(this HElement element, HElement target)
+        {
+            if (element != null && target != null)
+            {
+                target.Append(element);
+            }
+            return element;
+        }
+
+        /// <summary>
+        /// Append the set of elements to the end of the content of the target
+        /// </summary>
+        public static IEnumerable<HElement> AppendTo(this IEnumerable<HElement> elements, HElement target)
+        {
+            if (elements != null && target != null)
+                target.Append(elements);
+            return elements;
+        }
+
+        #endregion
+
     }
 }
