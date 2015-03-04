@@ -153,18 +153,6 @@ namespace HDoc
         /// <summary>
         /// Append content at the end of the element
         /// </summary>
-        public static HElement Append(this HElement element, object content)
-        {
-            if (element != null)
-            {
-                element.Add(content);
-            }
-            return element;
-        }
-
-        /// <summary>
-        /// Append content at the end of the element
-        /// </summary>
         public static HElement Append(this HElement element, params object[] content)
         {
             if (element != null)
@@ -172,21 +160,6 @@ namespace HDoc
                 element.Add(content);
             }
             return element;
-        }
-
-        /// <summary>
-        /// Append content at the end of each element of the set.
-        /// </summary>
-        public static IEnumerable<HElement> Append(this IEnumerable<HElement> elements, object content)
-        {
-            if (elements != null)
-            {
-                foreach (var element in elements)
-                {
-                    element.Append(content);
-                }
-            }
-            return elements;
         }
 
         /// <summary>
