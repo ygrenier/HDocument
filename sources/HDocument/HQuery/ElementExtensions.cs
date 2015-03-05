@@ -134,6 +134,34 @@ namespace HDoc
 
         #endregion
 
+        #region InsertBefore()
+
+        /// <summary>
+        /// Insert element before the target
+        /// </summary>
+        public static HElement InsertBefore(this HElement element, HElement target)
+        {
+            if (element != null && target != null)
+            {
+                target.Before(element);
+            }
+            return element;
+        }
+
+        /// <summary>
+        /// Insert the set of elements before the target
+        /// </summary>
+        public static IEnumerable<HElement> InsertBefore(this IEnumerable<HElement> elements, HElement target)
+        {
+            if (elements != null && target != null)
+            {
+                target.Before(elements.ToArray());
+            }
+            return elements;
+        }
+
+        #endregion
+
         #region Empty()
 
         /// <summary>
