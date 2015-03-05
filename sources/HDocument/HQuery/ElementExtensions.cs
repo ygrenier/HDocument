@@ -106,6 +106,34 @@ namespace HDoc
 
         #endregion
 
+        #region InsertAfter()
+
+        /// <summary>
+        /// Insert element after the target
+        /// </summary>
+        public static HElement InsertAfter(this HElement element, HElement target)
+        {
+            if (element != null && target != null)
+            {
+                target.After(element);
+            }
+            return element;
+        }
+
+        /// <summary>
+        /// Insert the set of elements after the target
+        /// </summary>
+        public static IEnumerable<HElement> InsertAfter(this IEnumerable<HElement> elements, HElement target)
+        {
+            if (elements != null && target != null)
+            {
+                target.After(elements.ToArray());
+            }
+            return elements;
+        }
+
+        #endregion
+
         #region Empty()
 
         /// <summary>
