@@ -356,7 +356,7 @@ namespace HDoc
         /// <summary>
         /// Remove the set of elements
         /// </summary>
-        public IEnumerable<HNode> Remove(this IEnumerable<HNode> nodes)
+        public static IEnumerable<HNode> Remove(this IEnumerable<HNode> nodes)
         {
             if (nodes != null)
             {
