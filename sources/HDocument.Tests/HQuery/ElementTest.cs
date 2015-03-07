@@ -631,5 +631,43 @@ namespace HDoc.Tests.HQuery
 
         #endregion
 
+        #region Parent()
+
+        [Fact]
+        public void TestParent()
+        {
+            var n1 = new HText("Content");
+            var n2 = new HElement("span", n1);
+            var n3 = new HElement("span", "Another content");
+            var n4 = new HElement("div", n2, n3);
+
+            Assert.Equal(new HElement[] { n2 }, new HNode[] { n1 }.Parent());
+            Assert.Equal(new HElement[] { n4 }, new HNode[] { n3 }.Parent());
+            Assert.Equal(new HElement[] { }, new HNode[] { n4 }.Parent());
+            Assert.Equal(new HElement[] { n4, n2 }, new HNode[] { n3, n1, n2 }.Parent());
+            Assert.Equal(new HElement[] { }, ((HNode[])null).Parent());
+        }
+
+        #endregion
+
+        #region Parents()
+
+        [Fact]
+        public void TestParents()
+        {
+            var n1 = new HText("Content");
+            var n2 = new HElement("span", n1);
+            var n3 = new HElement("span", "Another content");
+            var n4 = new HElement("div", n2, n3);
+
+            Assert.Equal(new HElement[] { n2, n4 }, new HNode[] { n1 }.Parents());
+            Assert.Equal(new HElement[] { n4 }, new HNode[] { n3 }.Parents());
+            Assert.Equal(new HElement[] { }, new HNode[] { n4 }.Parents());
+            Assert.Equal(new HElement[] { n4, n2 }, new HNode[] { n3, n1, n2 }.Parents());
+            Assert.Equal(new HElement[] { }, ((HNode[])null).Parents());
+        }
+
+        #endregion
+
     }
 }

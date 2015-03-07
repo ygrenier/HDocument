@@ -613,7 +613,7 @@ namespace HDoc
         public static IEnumerable<HElement> Parent(this IEnumerable<HNode> elements)
         {
             if (elements != null)
-                return elements.Where(e => e != null && e.Parent != null).Select(e => e.Parent);
+                return elements.Where(e => e != null && e.Parent != null).Select(e => e.Parent).Distinct();
             return Enumerable.Empty<HElement>();
         }
 
