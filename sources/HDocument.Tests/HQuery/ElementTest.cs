@@ -355,5 +355,35 @@ namespace HDoc.Tests.HQuery
 
         #endregion
 
+        #region Contents()
+
+        [Fact]
+        public void TestContentsElement()
+        {
+            var element = new HElement("div", "Content Before", new HElement("p", "Content"), "Content After");
+
+            Assert.Equal(3, element.Contents().Count());
+
+            element = null;
+            Assert.Equal(0, element.Contents().Count());
+
+        }
+
+        [Fact]
+        public void TestContentsElements()
+        {
+            var element1 = new HElement("div", "Content Before", new HElement("p", "Content"), "Content After");
+            var element2 = new HElement("div", "Content Before", new HElement("p", "Content"), "Content After", new HElement("p", "Content"));
+
+            var elements = new HElement[] { element1, null, element2 };
+            Assert.Equal(7, elements.Contents().Count());
+
+            elements = null;
+            Assert.Equal(0, elements.Contents().Count());
+
+        }
+
+        #endregion
+
     }
 }
