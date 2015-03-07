@@ -437,5 +437,55 @@ namespace HDoc
 
         #endregion
 
+        #region Wrap()
+
+        /// <summary>
+        /// Wrap <paramref name="wrappingElement"/> around the element
+        /// </summary>
+        public static HElement Wrap(this HElement element, HElement wrappingElement)
+        {
+            if (element != null && wrappingElement != null)
+            {
+                element.ReplaceWith(wrappingElement);
+                var dp = wrappingElement;
+                while (dp.HasElements) dp = dp.Elements().First();
+                dp.Append(element);
+            }
+            return element;
+        }
+
+        /// <summary>
+        /// Wrap <paramref name="wrappingElement"/> around each element of the set
+        /// </summary>
+        public static IEnumerable<HElement> Wrap(this IEnumerable<HElement> elements, HElement wrappingElement)
+        {
+            if (elements != null && wrappingElement != null)
+            {
+                foreach (var element in elements)
+                {
+                    element.Wrap(wrappingElement);
+                }
+            }
+            return elements;
+        }
+
+        /// <summary>
+        /// Wrap a callback result around each element of the set
+        /// </summary>
+        public static IEnumerable<HElement> Wrap(this IEnumerable<HElement> elements, Func<HElement,int, HElement> getWrappingElement)
+        {
+            if (elements != null && getWrappingElement != null)
+            {
+                int idx = 0;
+                foreach (var element in elements)
+                {
+                    element.Wrap(getWrappingElement(element, idx++));
+                }
+            }
+            return elements;
+        }
+
+        #endregion
+
     }
 }
