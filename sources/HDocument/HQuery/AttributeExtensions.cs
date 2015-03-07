@@ -145,6 +145,42 @@ namespace HDoc
 
         #endregion
 
+        #region RemoveAttr()
+
+        /// <summary>
+        /// Remove attributes from the element
+        /// </summary>
+        public static HElement RemoveAttr(this HElement element, params String[] attributes)
+        {
+            if (element != null && attributes != null)
+            {
+                foreach (var attrName in attributes)
+                {
+                    var attr = element.Attribute(attrName);
+                    if (attr != null)
+                        attr.Remove();
+                }
+            }
+            return element;
+        }
+
+        /// <summary>
+        /// Remove attributes from the elements of the set
+        /// </summary>
+        public static IEnumerable<HElement> RemoveAttr(this IEnumerable<HElement> elements, params String[] attributes)
+        {
+            if (elements != null && attributes != null)
+            {
+                foreach (var element in elements)
+                {
+                    element.RemoveAttr(attributes);
+                }
+            }
+            return elements;
+        }
+
+        #endregion
+
         #region CSS
 
         /// <summary>
