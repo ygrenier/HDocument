@@ -604,5 +604,19 @@ namespace HDoc
 
         #endregion
 
+        #region Parent()
+
+        /// <summary>
+        /// Get the parent for each elements of the set
+        /// </summary>
+        public static IEnumerable<HElement> Parent(this IEnumerable<HNode> elements)
+        {
+            if (elements != null)
+                return elements.Where(e => e != null && e.Parent != null).Select(e => e.Parent);
+            return Enumerable.Empty<HElement>();
+        }
+
+        #endregion
+
     }
 }
