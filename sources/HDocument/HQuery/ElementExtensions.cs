@@ -394,7 +394,7 @@ namespace HDoc
         {
             if (elements != null)
             {
-                foreach (var element in elements)
+                foreach (var element in elements.ToList())
                 {
                     element.ReplaceWith(content);
                 }
@@ -410,7 +410,7 @@ namespace HDoc
             if (elements != null)
             {
                 int idx = 0;
-                foreach (var element in elements)
+                foreach (var element in elements.ToList())
                 {
                     IEnumerable<HNode> content = getContent != null ? getContent(element, idx++) : null;
                     if (content != null)

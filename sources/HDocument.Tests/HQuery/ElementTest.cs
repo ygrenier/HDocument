@@ -729,5 +729,97 @@ namespace HDoc.Tests.HQuery
 
         #endregion
 
+        #region ReplaceWith()
+
+        [Fact]
+        public void TestReplaceWith()
+        {
+            var n1 = new HText("Content");
+            var n2 = new HElement("span", n1);
+            var n3 = new HElement("span", "Another content");
+            var n4 = new HElement("div", n2, n3);
+
+            Assert.Same(n2, n2.ReplaceWith(new HElement("div", "Div Content"), new HElement("p", "P content")));
+            Assert.Equal("<div><div>Div Content</div><p>P content</p><span>Another content</span></div>", n4.ToString());
+
+            Assert.Same(n3, n3.ReplaceWith(null));
+            Assert.Equal("<div><div>Div Content</div><p>P content</p></div>", n4.ToString());
+
+            n2 = null;
+            Assert.Null(n2.ReplaceWith(new HElement("div", "Div Content"), new HElement("p", "P content")));
+            Assert.Equal("<div><div>Div Content</div><p>P content</p></div>", n4.ToString());
+
+        }
+
+        [Fact]
+        public void TestReplaceWithElements()
+        {
+            var n1 = new HText("Content");
+            var n2 = new HElement("span", n1);
+            var n3 = new HElement("span", "Another content");
+            var n4 = new HElement("div", n2, n3);
+
+            var elements = new HElement[] { n2, n3 };
+            Assert.Same(elements, elements.ReplaceWith(new HElement("div", "Div Content"), new HElement("p", "P content")));
+            Assert.Equal("<div><div>Div Content</div><p>P content</p><div>Div Content</div><p>P content</p></div>", n4.ToString());
+
+            n4.Descendants("div").ReplaceWith(null, null, null);
+            Assert.Equal("<div><p>P content</p><p>P content</p></div>", n4.ToString());
+
+            elements = null;
+            Assert.Null(elements.ReplaceWith(new HElement("div", "Div Content"), new HElement("p", "P content")));
+            Assert.Equal("<div><p>P content</p><p>P content</p></div>", n4.ToString());
+
+        }
+
+        [Fact]
+        public void TestReplaceWithElementsByCallback()
+        {
+            var n1 = new HText("Content");
+            var n2 = new HElement("span", n1);
+            var n3 = new HElement("span", "Another content");
+            var n4 = new HElement("div", n2, n3);
+
+            var elements = new HElement[] { n2, n3 };
+            Assert.Same(elements, elements.ReplaceWith((e, i) => {
+                return new HNode[] { new HElement("div", "Div Content " + i.ToString()), new HElement("span", "Span Content " + i.ToString()) };
+            }));
+            Assert.Equal("<div><div>Div Content 0</div><span>Span Content 0</span><div>Div Content 1</div><span>Span Content 1</span></div>", n4.ToString());
+
+            n4.Descendants("div").ReplaceWith((e, i) => null);
+            Assert.Equal("<div><span>Span Content 0</span><span>Span Content 1</span></div>", n4.ToString());
+
+            elements = null;
+            Assert.Null(elements.ReplaceWith((e, i) => {
+                return new HNode[] { new HElement("div", "Div Content " + i.ToString()), new HElement("span", "Span Content " + i.ToString()) };
+            }));
+            Assert.Equal("<div><span>Span Content 0</span><span>Span Content 1</span></div>", n4.ToString());
+
+        }
+
+        #endregion
+
+        #region ReplaceAll
+
+        [Fact]
+        public void TestReplaceAll()
+        {
+            var n1 = new HText("Content");
+            var n2 = new HElement("span", n1);
+            var n3 = new HElement("span", "Another content");
+            var n4 = new HElement("div", n2, n3);
+
+            var elements = new HElement[] { new HElement("p", "p 1"), null, new HElement("div", "div 2") };
+            Assert.Same(elements, elements.ReplaceAll(n3, n2));
+            Assert.Equal("<div><p>p 1</p><div>div 2</div><p>p 1</p><div>div 2</div></div>", n4.ToString());
+
+            elements = null;
+            Assert.Null(elements.ReplaceAll(n3, n2));
+            Assert.Equal("<div><p>p 1</p><div>div 2</div><p>p 1</p><div>div 2</div></div>", n4.ToString());
+
+        }
+
+        #endregion
+
     }
 }
