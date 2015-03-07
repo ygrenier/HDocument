@@ -671,5 +671,33 @@ namespace HDoc
 
         #endregion
 
+        #region Siblings()
+
+        /// <summary>
+        /// Get the siblings of the element
+        /// </summary>
+        public static IEnumerable<HElement> Siblings(this HElement element)
+        {
+            if (element != null && element.Parent != null)
+            {
+                return element.Parent.Elements().Where(e => e != null && e != element).Distinct();
+            }
+            return Enumerable.Empty<HElement>();
+        }
+
+        /// <summary>
+        /// Get the siblings of each element of the set
+        /// </summary>
+        public static IEnumerable<HElement> Siblings(this IEnumerable<HElement> elements)
+        {
+            if (elements != null)
+            {
+                return elements.SelectMany(e => e.Siblings()).Distinct();
+            }
+            return Enumerable.Empty<HElement>();
+        }
+
+        #endregion
+
     }
 }
