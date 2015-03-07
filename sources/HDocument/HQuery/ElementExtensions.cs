@@ -867,5 +867,29 @@ namespace HDoc
 
         #endregion
 
+        #region Children()
+
+        /// <summary>
+        /// Get te children elements of the elements
+        /// </summary>
+        public static IEnumerable<HElement> Children(this HElement element)
+        {
+            if (element != null)
+                return element.Elements();
+            return Enumerable.Empty<HElement>();
+        }
+
+        /// <summary>
+        /// Get the children elements of each element of the set
+        /// </summary>
+        public static IEnumerable<HElement> Children(this IEnumerable<HElement> elements)
+        {
+            if (elements != null)
+                return elements.Where(e => e != null).SelectMany(e => e.Elements());
+            return Enumerable.Empty<HElement>();
+        }
+
+        #endregion
+
     }
 }
