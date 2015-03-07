@@ -65,7 +65,7 @@ namespace HDoc
         /// <summary>
         /// Add content before the element
         /// </summary>
-        public static HElement Before(this HElement element, params HNode[] content)
+        public static T Before<T>(this T element, params HNode[] content) where T : HNode
         {
             if (element != null && content != null)
             {
@@ -377,7 +377,7 @@ namespace HDoc
         /// <summary>
         /// Replace the element by a new content
         /// </summary>
-        public static HElement ReplaceWith(this HElement element, params HNode[] content)
+        public static T ReplaceWith<T>(this T element, params HNode[] content) where T : HNode
         {
             if (element != null)
             {
@@ -390,7 +390,7 @@ namespace HDoc
         /// <summary>
         /// Replace each element of the set by a new content
         /// </summary>
-        public static IEnumerable<HElement> ReplaceWith(this IEnumerable<HElement> elements, params HNode[] content)
+        public static IEnumerable<T> ReplaceWith<T>(this IEnumerable<T> elements, params HNode[] content) where T : HNode
         {
             if (elements != null)
             {
@@ -405,7 +405,7 @@ namespace HDoc
         /// <summary>
         /// Replace each element of the set by a new content returned by a callback
         /// </summary>
-        public static IEnumerable<HElement> ReplaceWith(this IEnumerable<HElement> elements, Func<HElement, int, IEnumerable<HNode>> getContent)
+        public static IEnumerable<T> ReplaceWith<T>(this IEnumerable<T> elements, Func<T, int, IEnumerable<HNode>> getContent) where T : HNode
         {
             if (elements != null)
             {
@@ -429,10 +429,10 @@ namespace HDoc
         /// <summary>
         /// Replace each target element with the set of elements
         /// </summary>
-        public static IEnumerable<HElement> ReplaceAll(this IEnumerable<HElement> elements, params HElement[] target)
+        public static IEnumerable<T> ReplaceAll<T>(this IEnumerable<T> elements, params HNode[] target) where T : HNode
         {
             if (elements != null)
-                target.ReplaceWith(elements.ToArray());
+                target.AsEnumerable<HNode>().ReplaceWith(elements.ToArray());
             return elements;
         }
 
@@ -447,9 +447,11 @@ namespace HDoc
         {
             if (element != null && wrappingElement != null)
             {
-                element.ReplaceWith(wrappingElement);
-                var dp = wrappingElement;
+                var we = wrappingElement.Clone();
+                var dp = we;
                 while (dp.HasElements) dp = dp.Elements().First();
+                if (element.Parent != null)
+                    element.ReplaceWith(we);
                 dp.Append(element);
             }
             return element;
@@ -462,7 +464,7 @@ namespace HDoc
         {
             if (elements != null && wrappingElement != null)
             {
-                foreach (var element in elements)
+                foreach (var element in elements.ToList())
                 {
                     element.Wrap(wrappingElement);
                 }
@@ -493,16 +495,20 @@ namespace HDoc
         /// <summary>
         /// Wrap <paramref name="wrappingElement"/> around all elements of the set.
         /// </summary>
-        public static IEnumerable<HElement> WrapAll(this IEnumerable<HElement> elements, HElement wrappingElement)
+        public static IEnumerable<T> WrapAll<T>(this IEnumerable<T> elements, HElement wrappingElement) where T : HNode
         {
             if (elements != null)
             {
+                var we = wrappingElement.Clone();
                 var first = elements.FirstOrDefault(e => e != null);
-                first.ReplaceWith(wrappingElement);
-                var dp = wrappingElement;
-                while (dp.HasElements) dp = dp.Elements().First();
-                elements.Remove();
-                dp.Append(elements);
+                if (first != null)
+                {
+                    first.ReplaceWith(we);
+                    var dp = we;
+                    while (dp.HasElements) dp = dp.Elements().First();
+                    elements.Where(e => e != first).Remove();
+                    dp.Append(elements);
+                }
             }
             return elements;
         }
@@ -518,13 +524,13 @@ namespace HDoc
         {
             if (element != null && wrappingElement != null)
             {
-                if (element.HasElements)
+                if (element.HasNodes)
                 {
-                    element.Elements().WrapAll(wrappingElement);
+                    element.Nodes().ToList().WrapAll(wrappingElement);
                 }
                 else
                 {
-                    element.Append(wrappingElement);
+                    element.Append(wrappingElement.Clone());
                 }
             }
             return element;
@@ -568,7 +574,7 @@ namespace HDoc
         /// <summary>
         /// Remove the parent of the element
         /// </summary>
-        public static HElement Unwrap(this HElement element)
+        public static T Unwrap<T>(this T element) where T : HNode
         {
             if (element != null && element.Parent != null)
             {
@@ -585,7 +591,7 @@ namespace HDoc
         /// <summary>
         /// Remove the parent of the set
         /// </summary>
-        public static IEnumerable<HElement> Unwrap(this IEnumerable<HElement> elements)
+        public static IEnumerable<T> Unwrap<T>(this IEnumerable<T> elements) where T : HNode
         {
             if (elements != null)
             {

@@ -759,7 +759,7 @@ namespace HDoc.Tests.HQuery
             var n3 = new HElement("span", "Another content");
             var n4 = new HElement("div", n2, n3);
 
-            var elements = new HElement[] { n2, n3 };
+            IEnumerable<HElement> elements = new HElement[] { n2, n3 };
             Assert.Same(elements, elements.ReplaceWith(new HElement("div", "Div Content"), new HElement("p", "P content")));
             Assert.Equal("<div><div>Div Content</div><p>P content</p><div>Div Content</div><p>P content</p></div>", n4.ToString());
 
@@ -816,6 +816,177 @@ namespace HDoc.Tests.HQuery
             elements = null;
             Assert.Null(elements.ReplaceAll(n3, n2));
             Assert.Equal("<div><p>p 1</p><div>div 2</div><p>p 1</p><div>div 2</div></div>", n4.ToString());
+
+        }
+
+        #endregion
+
+        #region Wrap()
+
+        [Fact]
+        public void TestWrapElement()
+        {
+            var n1 = new HElement("span", "Content");
+            var n2 = new HElement("div", n1);
+
+            Assert.Same(n1, n1.Wrap(new HElement("strong", new HElement("em"))));
+            Assert.Equal("<div><strong><em><span>Content</span></em></strong></div>", n2.ToString());
+
+            n1 = null;
+            Assert.Null(n1.Wrap(new HElement("strong", new HElement("em"))));
+            Assert.Equal("<div><strong><em><span>Content</span></em></strong></div>", n2.ToString());
+
+        }
+
+        [Fact]
+        public void TestWrapElements()
+        {
+            var n1 = new HElement("span", "Content 1");
+            var n2 = new HElement("span", "Content 2");
+            var n3 = new HElement("div", n1, n2);
+            Assert.Equal("<div><span>Content 1</span><span>Content 2</span></div>", n3.ToString());
+
+            var elements = new HElement[] { n1, n2 };
+            Assert.Same(elements, elements.Wrap(new HElement("strong", new HElement("em"))));
+            Assert.Equal("<div><strong><em><span>Content 1</span></em></strong><strong><em><span>Content 2</span></em></strong></div>", n3.ToString());
+
+            elements = null;
+            Assert.Null(elements.Wrap(new HElement("strong", new HElement("em"))));
+            Assert.Equal("<div><strong><em><span>Content 1</span></em></strong><strong><em><span>Content 2</span></em></strong></div>", n3.ToString());
+
+        }
+
+        [Fact]
+        public void TestWrapElementsByCallback()
+        {
+            var n1 = new HElement("span", "Content 1");
+            var n2 = new HElement("span", "Content 2");
+            var n3 = new HElement("div", n1, n2);
+            Assert.Equal("<div><span>Content 1</span><span>Content 2</span></div>", n3.ToString());
+
+            var elements = new HElement[] { n1, n2 };
+            Assert.Same(elements, elements.Wrap((e, i) => new HElement("strong", "C" + i.ToString(), new HElement("em"))));
+            Assert.Equal("<div><strong>C0<em><span>Content 1</span></em></strong><strong>C1<em><span>Content 2</span></em></strong></div>", n3.ToString());
+
+            elements = null;
+            Assert.Null(elements.Wrap((e, i) => new HElement("strong", "C" + i.ToString(), new HElement("em"))));
+            Assert.Equal("<div><strong>C0<em><span>Content 1</span></em></strong><strong>C1<em><span>Content 2</span></em></strong></div>", n3.ToString());
+
+        }
+
+        #endregion
+
+        #region WrapAll()
+
+        [Fact]
+        public void TestWrapAll()
+        {
+            var n1 = new HElement("span", "Content 1");
+            var n2 = new HElement("span", "Content 2");
+            var n3 = new HElement("span", "Content 3");
+            var n4 = new HElement("span", "Content 4");
+            var root = new HElement("div", n1, n2, n3, n4);
+
+            var elements = new HElement[] { n1, n3, n4 };
+            Assert.Same(elements, elements.WrapAll(new HElement("p", new HElement("a"))));
+            Assert.Equal("<div><p><a><span>Content 1</span><span>Content 3</span><span>Content 4</span></a></p><span>Content 2</span></div>", root.ToString());
+
+        }
+
+        #endregion
+
+        #region WrapInner()
+
+        [Fact]
+        public void TestWrapInnerElement()
+        {
+            var n1 = new HElement("span", "Content");
+            var n2 = new HElement("span");
+            var root = new HElement("div", n1, n2);
+
+            Assert.Same(n1, n1.WrapInner(new HElement("strong", new HElement("em"))));
+            Assert.Equal("<div><span><strong><em>Content</em></strong></span><span></span></div>", root.ToString());
+
+            Assert.Same(n2, n2.WrapInner(new HElement("p", new HElement("a"))));
+            Assert.Equal("<div><span><strong><em>Content</em></strong></span><span><p><a></a></p></span></div>", root.ToString());
+
+            n1 = null;
+            Assert.Null(n1.WrapInner(new HElement("strong", new HElement("em"))));
+            Assert.Equal("<div><span><strong><em>Content</em></strong></span><span><p><a></a></p></span></div>", root.ToString());
+
+        }
+
+        [Fact]
+        public void TestWrapInnerElements()
+        {
+            var n1 = new HElement("span", "Content 1");
+            var n2 = new HElement("span", "Content 2");
+            var n3 = new HElement("div", n1, n2);
+            Assert.Equal("<div><span>Content 1</span><span>Content 2</span></div>", n3.ToString());
+
+            var elements = new HElement[] { n1, n2 };
+            Assert.Same(elements, elements.WrapInner(new HElement("strong", new HElement("em"))));
+            Assert.Equal("<div><span><strong><em>Content 1</em></strong></span><span><strong><em>Content 2</em></strong></span></div>", n3.ToString());
+
+            elements = null;
+            Assert.Null(elements.WrapInner(new HElement("strong", new HElement("em"))));
+            Assert.Equal("<div><span><strong><em>Content 1</em></strong></span><span><strong><em>Content 2</em></strong></span></div>", n3.ToString());
+
+        }
+
+        [Fact]
+        public void TestWrapInnerElementsByCallback()
+        {
+            var n1 = new HElement("span", "Content 1");
+            var n2 = new HElement("span", "Content 2");
+            var n3 = new HElement("div", n1, n2);
+            Assert.Equal("<div><span>Content 1</span><span>Content 2</span></div>", n3.ToString());
+
+            var elements = new HElement[] { n1, n2 };
+            Assert.Same(elements, elements.WrapInner((e, i) => new HElement("strong", "C" + i.ToString(), new HElement("em"))));
+            Assert.Equal("<div><span><strong>C0<em>Content 1</em></strong></span><span><strong>C1<em>Content 2</em></strong></span></div>", n3.ToString());
+
+            elements = null;
+            Assert.Null(elements.WrapInner((e, i) => new HElement("strong", "C" + i.ToString(), new HElement("em"))));
+            Assert.Equal("<div><span><strong>C0<em>Content 1</em></strong></span><span><strong>C1<em>Content 2</em></strong></span></div>", n3.ToString());
+
+        }
+
+        #endregion
+
+        #region Unwrap
+
+        [Fact]
+        public void TestUnwrapElement()
+        {
+            var n1 = new HElement("span", "Content");
+            var root = new HElement("div", new HElement("strong", new HElement("em", n1)));
+
+            Assert.Equal("<div><strong><em><span>Content</span></em></strong></div>", root.ToString());
+
+            Assert.Same(n1, n1.Unwrap());
+            Assert.Equal("<div><strong><span>Content</span></strong></div>", root.ToString());
+
+            n1 = null;
+            Assert.Null(n1.Unwrap());
+
+        }
+
+        [Fact]
+        public void TestUnwrapElements()
+        {
+            var n1 = new HElement("span", "Content");
+            var n2 = new HText("Content");
+            var root = new HElement("div", new HElement("a", new HElement("strong", new HElement("em", n1))), new HElement("div", n2));
+
+            Assert.Equal("<div><a><strong><em><span>Content</span></em></strong></a><div>Content</div></div>", root.ToString());
+
+            IEnumerable<HNode> elements = new HNode[] { n1, n2 };
+            Assert.Same(elements, elements.Unwrap());
+            Assert.Equal("<div><a><strong><span>Content</span></strong></a>Content</div>", root.ToString());
+
+            elements = null;
+            Assert.Null(elements.Unwrap());
 
         }
 
