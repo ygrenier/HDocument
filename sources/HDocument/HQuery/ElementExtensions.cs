@@ -718,5 +718,40 @@ namespace HDoc
 
         #endregion
 
+        #region PrevAll()
+
+        /// <summary>
+        /// Get all precedings siblings of the element
+        /// </summary>
+        public static IEnumerable<HElement> PrevAll(this HNode element)
+        {
+            if (element != null)
+            {
+                var p = element.PreviousNode;
+                while (p != null)
+                {
+                    if (p is HElement)
+                        yield return (HElement)p;
+                    p = p.PreviousNode;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Get all precedings siblings of each element in the set.
+        /// </summary>
+        public static IEnumerable<HElement> PrevAll(this IEnumerable<HNode> elements)
+        {
+            if (elements != null)
+            {
+                return elements
+                    .SelectMany(e => e.PrevAll())
+                    .Distinct();
+            }
+            return Enumerable.Empty<HElement>();
+        }
+
+        #endregion
+
     }
 }
