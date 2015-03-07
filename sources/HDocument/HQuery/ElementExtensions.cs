@@ -18,7 +18,7 @@ namespace HDoc
         /// <summary>
         /// Add content after the element
         /// </summary>
-        public static HElement After(this HElement element, params HNode[] content)
+        public static T After<T>(this T element, params HNode[] content) where T: HNode
         {
             if (element != null && content != null)
             {
@@ -30,7 +30,7 @@ namespace HDoc
         /// <summary>
         /// Add content after each element of a set of elements
         /// </summary>
-        public static IEnumerable<HElement> After(this IEnumerable<HElement> elements, params HNode[] content)
+        public static IEnumerable<T> After<T>(this IEnumerable<T> elements, params HNode[] content) where T : HNode
         {
             if (elements != null && content != null)
             {
@@ -45,7 +45,7 @@ namespace HDoc
         /// <summary>
         /// Add content from a callback after each element of a set of elements
         /// </summary>
-        public static IEnumerable<HElement> After(this IEnumerable<HElement> elements, Func<HElement, int, IEnumerable<HNode>> getContent)
+        public static IEnumerable<T> After<T>(this IEnumerable<T> elements, Func<T, int, IEnumerable<HNode>> getContent) where T : HNode
         {
             if (elements != null && getContent != null)
             {
@@ -77,7 +77,7 @@ namespace HDoc
         /// <summary>
         /// Add content before each element of a set of elements
         /// </summary>
-        public static IEnumerable<HElement> Before(this IEnumerable<HElement> elements, params HNode[] content)
+        public static IEnumerable<T> Before<T>(this IEnumerable<T> elements, params HNode[] content) where T : HNode
         {
             if (elements != null && content != null)
             {
@@ -92,7 +92,7 @@ namespace HDoc
         /// <summary>
         /// Add content from a callback before each element of a set of elements
         /// </summary>
-        public static IEnumerable<HElement> Before(this IEnumerable<HElement> elements, Func<HElement, int, IEnumerable<HNode>> getContent)
+        public static IEnumerable<T> Before<T>(this IEnumerable<T> elements, Func<T, int, IEnumerable<HNode>> getContent) where T : HNode
         {
             if (elements != null && getContent != null)
             {
@@ -112,7 +112,7 @@ namespace HDoc
         /// <summary>
         /// Insert element after the target
         /// </summary>
-        public static HNode InsertAfter(this HNode element, HNode target)
+        public static T InsertAfter<T>(this T element, HNode target) where T : HNode
         {
             if (element != null && target != null)
             {
@@ -124,7 +124,7 @@ namespace HDoc
         /// <summary>
         /// Insert the set of elements after the target
         /// </summary>
-        public static IEnumerable<HNode> InsertAfter(this IEnumerable<HNode> elements, HNode target)
+        public static IEnumerable<T> InsertAfter<T>(this IEnumerable<T> elements, HNode target) where T : HNode
         {
             if (elements != null && target != null)
             {
@@ -140,7 +140,7 @@ namespace HDoc
         /// <summary>
         /// Insert element before the target
         /// </summary>
-        public static HNode InsertBefore(this HNode element, HElement target)
+        public static T InsertBefore<T>(this T element, HElement target) where T : HNode
         {
             if (element != null && target != null)
             {
@@ -152,7 +152,7 @@ namespace HDoc
         /// <summary>
         /// Insert the set of elements before the target
         /// </summary>
-        public static IEnumerable<HNode> InsertBefore(this IEnumerable<HNode> elements, HElement target)
+        public static IEnumerable<T> InsertBefore<T>(this IEnumerable<T> elements, HElement target) where T : HNode
         {
             if (elements != null && target != null)
             {
@@ -305,7 +305,7 @@ namespace HDoc
         /// <summary>
         /// Append the element to the end of the content of the target
         /// </summary>
-        public static HNode AppendTo(this HNode content, HElement target)
+        public static T AppendTo<T>(this T content, HElement target) where T : HNode
         {
             if (content != null && target != null)
             {
@@ -317,7 +317,7 @@ namespace HDoc
         /// <summary>
         /// Append the set of elements to the end of the content of the target
         /// </summary>
-        public static IEnumerable<HNode> AppendTo(this IEnumerable<HNode> content, HElement target)
+        public static IEnumerable<T> AppendTo<T>(this IEnumerable<T> content, HElement target) where T : HNode
         {
             if (content != null && target != null)
                 target.Append(content);
@@ -331,7 +331,7 @@ namespace HDoc
         /// <summary>
         /// Append the element to the beginning of the content of the target
         /// </summary>
-        public static HNode PrependTo(this HNode element, HElement target)
+        public static T PrependTo<T>(this T element, HElement target) where T : HNode
         {
             if (element != null && target != null)
             {
@@ -343,7 +343,7 @@ namespace HDoc
         /// <summary>
         /// Append the set of elements to the beginning of the content of the target
         /// </summary>
-        public static IEnumerable<HNode> PrependTo(this IEnumerable<HNode> content, HElement target)
+        public static IEnumerable<T> PrependTo<T>(this IEnumerable<T> content, HElement target) where T : HNode
         {
             if (content != null && target != null)
                 target.Prepend(content);
@@ -357,7 +357,7 @@ namespace HDoc
         /// <summary>
         /// Remove the set of elements
         /// </summary>
-        public static IEnumerable<HNode> Remove(this IEnumerable<HNode> nodes)
+        public static IEnumerable<T> Remove<T>(this IEnumerable<T> nodes) where T : HNode
         {
             if (nodes != null)
             {
@@ -443,7 +443,7 @@ namespace HDoc
         /// <summary>
         /// Wrap <paramref name="wrappingElement"/> around the element
         /// </summary>
-        public static HElement Wrap(this HElement element, HElement wrappingElement)
+        public static T Wrap<T>(this T element, HElement wrappingElement) where T : HNode
         {
             if (element != null && wrappingElement != null)
             {
@@ -460,7 +460,7 @@ namespace HDoc
         /// <summary>
         /// Wrap <paramref name="wrappingElement"/> around each element of the set
         /// </summary>
-        public static IEnumerable<HElement> Wrap(this IEnumerable<HElement> elements, HElement wrappingElement)
+        public static IEnumerable<T> Wrap<T>(this IEnumerable<T> elements, HElement wrappingElement) where T : HNode
         {
             if (elements != null && wrappingElement != null)
             {
@@ -475,7 +475,7 @@ namespace HDoc
         /// <summary>
         /// Wrap a callback result around each element of the set
         /// </summary>
-        public static IEnumerable<HElement> Wrap(this IEnumerable<HElement> elements, Func<HElement,int, HElement> getWrappingElement)
+        public static IEnumerable<T> Wrap<T>(this IEnumerable<T> elements, Func<T, int, HElement> getWrappingElement) where T : HNode
         {
             if (elements != null && getWrappingElement != null)
             {
@@ -616,7 +616,7 @@ namespace HDoc
         /// <summary>
         /// Get the parent for each elements of the set
         /// </summary>
-        public static IEnumerable<HElement> Parent(this IEnumerable<HNode> elements)
+        public static IEnumerable<HElement> Parent(this IEnumerable<HNode> elements) 
         {
             if (elements != null)
                 return elements.Where(e => e != null && e.Parent != null).Select(e => e.Parent).Distinct();
@@ -630,7 +630,7 @@ namespace HDoc
         /// <summary>
         /// Get the ancestors of each element in the set
         /// </summary>
-        public static IEnumerable<HElement> Parents(this IEnumerable<HNode> elements)
+        public static IEnumerable<HElement> Parents(this IEnumerable<HNode> elements) 
         {
             if (elements != null)
             {
@@ -650,20 +650,20 @@ namespace HDoc
         /// <summary>
         /// Reduce the set of elements
         /// </summary>
-        public static IEnumerable<HElement> Slice(this IEnumerable<HElement> elements, int start)
+        public static IEnumerable<T> Slice<T>(this IEnumerable<T> elements, int start) where T : HNode
         {
             if (elements != null)
             {
                 if (start < 0) start = elements.Count() + start;
                 return elements.Skip(start);
             }
-            return Enumerable.Empty<HElement>();
+            return Enumerable.Empty<T>();
         }
 
         /// <summary>
         /// Reduce the set of elements
         /// </summary>
-        public static IEnumerable<HElement> Slice(this IEnumerable<HElement> elements, int start, int end)
+        public static IEnumerable<T> Slice<T>(this IEnumerable<T> elements, int start, int end) where T : HNode
         {
             if (elements != null)
             {
@@ -673,7 +673,7 @@ namespace HDoc
                 if (count > 0)
                     return elements.Skip(start).Take(count);
             }
-            return Enumerable.Empty<HElement>();
+            return Enumerable.Empty<T>();
         }
 
         #endregion
@@ -818,15 +818,15 @@ namespace HDoc
         /// <summary>
         /// Reduce the set of matched elements to the first one in the set.
         /// </summary>
-        public static IEnumerable<HElement> FirstElement(this IEnumerable<HElement> elements)
+        public static IEnumerable<T> FirstElement<T>(this IEnumerable<T> elements) where T : HNode
         {
             if (elements != null)
             {
                 var l = elements.FirstOrDefault(e => e != null);
                 if (l != null)
-                    return new HElement[] { l };
+                    return new T[] { l };
             }
-            return Enumerable.Empty<HElement>();
+            return Enumerable.Empty<T>();
         }
 
         #endregion
@@ -836,15 +836,15 @@ namespace HDoc
         /// <summary>
         /// Reduce the set of matched elements to the final one in the set.
         /// </summary>
-        public static IEnumerable<HElement> LastElement(this IEnumerable<HElement> elements)
+        public static IEnumerable<T> LastElement<T>(this IEnumerable<T> elements) where T : HNode
         {
             if (elements != null)
             {
                 var l = elements.LastOrDefault(e => e != null);
                 if (l != null)
-                    return new HElement[] { l };
+                    return new T[] { l };
             }
-            return Enumerable.Empty<HElement>();
+            return Enumerable.Empty<T>();
         }
 
         #endregion

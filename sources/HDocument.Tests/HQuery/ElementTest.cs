@@ -248,7 +248,7 @@ namespace HDoc.Tests.HQuery
             var content2 = new HElement("span", "Content2");
             var element = new HElement("div", "First Content");
 
-            var contents = new HNode[] { content1, null, content2 };
+            IEnumerable<HNode> contents = new HNode[] { content1, null, content2 };
             Assert.Same(contents, contents.AppendTo(element));
             Assert.Equal("<div>First Content<span>Content1</span><span>Content2</span></div>", element.ToString());
 
@@ -351,7 +351,7 @@ namespace HDoc.Tests.HQuery
             var content2 = new HElement("span", "Content2");
             var element = new HElement("div", "First Content");
 
-            var contents = new HNode[] { content1, null, content2 };
+            IEnumerable<HNode> contents = new HNode[] { content1, null, content2 };
             Assert.Same(contents, contents.PrependTo(element));
             Assert.Equal("<div><span>Content1</span><span>Content2</span>First Content</div>", element.ToString());
 
@@ -559,7 +559,7 @@ namespace HDoc.Tests.HQuery
             var n4 = new HText("Insertion1");
             var n5 = new HText("Insertion2");
 
-            var elements = new HNode[] { n4, n5 };
+            IEnumerable<HNode> elements = new HNode[] { n4, n5 };
             Assert.Same(elements, elements.InsertAfter(n2));
             Assert.Equal("<div>Content 1<span>Content 2</span>Insertion1Insertion2Content 3</div>", element.ToString());
         }
@@ -591,7 +591,7 @@ namespace HDoc.Tests.HQuery
             var n4 = new HText("Insertion1");
             var n5 = new HText("Insertion2");
 
-            var elements = new HNode[] { n4, n5 };
+            IEnumerable<HNode> elements = new HNode[] { n4, n5 };
             Assert.Same(elements, elements.InsertBefore(n2));
             Assert.Equal("<div>Content 1Insertion1Insertion2<span>Content 2</span>Content 3</div>", element.ToString());
         }
@@ -846,7 +846,7 @@ namespace HDoc.Tests.HQuery
             var n3 = new HElement("div", n1, n2);
             Assert.Equal("<div><span>Content 1</span><span>Content 2</span></div>", n3.ToString());
 
-            var elements = new HElement[] { n1, n2 };
+            IEnumerable<HElement> elements = new HElement[] { n1, n2 };
             Assert.Same(elements, elements.Wrap(new HElement("strong", new HElement("em"))));
             Assert.Equal("<div><strong><em><span>Content 1</span></em></strong><strong><em><span>Content 2</span></em></strong></div>", n3.ToString());
 
