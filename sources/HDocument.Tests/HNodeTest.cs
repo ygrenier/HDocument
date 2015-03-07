@@ -126,6 +126,12 @@ namespace HDoc.Tests
             Assert.Equal("No parent found.", ioe.Message);
         }
 
+        [Fact]
+        public void TestToString()
+        {
+            Assert.Equal("Text content", new HText("Text content").ToString());
+            Assert.Equal("<div class=\"content\">Text content</div>", new HElement("div", new HText("Text content")).Attr(new { @class = "content" }).ToString());
+        }
 
     }
 }
