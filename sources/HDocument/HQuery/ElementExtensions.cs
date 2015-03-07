@@ -772,5 +772,40 @@ namespace HDoc
 
         #endregion
 
+        #region NextAll()
+
+        /// <summary>
+        /// Get all next siblings of the element
+        /// </summary>
+        public static IEnumerable<HElement> NextAll(this HNode element)
+        {
+            if (element != null)
+            {
+                var p = element.NextNode;
+                while (p != null)
+                {
+                    if (p is HElement)
+                        yield return (HElement)p;
+                    p = p.NextNode;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Get all next siblings of each element in the set.
+        /// </summary>
+        public static IEnumerable<HElement> NextAll(this IEnumerable<HNode> elements)
+        {
+            if (elements != null)
+            {
+                return elements
+                    .SelectMany(e => e.NextAll())
+                    .Distinct();
+            }
+            return Enumerable.Empty<HElement>();
+        }
+
+        #endregion
+
     }
 }
