@@ -22,20 +22,21 @@ namespace HDoc.Tests
             Assert.Equal(0, container.Nodes().Count());
 
             container.Add(123.45);
+            String s = (123.45).ToString();
             Assert.Equal(1, container.Nodes().Count());
-            Assert.Equal("<div>123,45</div>", container.ToString());
+            Assert.Equal("<div>" + s + "</div>", container.ToString());
 
             container.Add(null);
             Assert.Equal(1, container.Nodes().Count());
-            Assert.Equal("<div>123,45</div>", container.ToString());
+            Assert.Equal("<div>" + s + "</div>", container.ToString());
 
             container.Add("Other Content");
             Assert.Equal(1, container.Nodes().Count());
-            Assert.Equal("<div>123,45Other Content</div>", container.ToString());
+            Assert.Equal("<div>" + s + "Other Content</div>", container.ToString());
 
             container.Add(new HElement("span", "SPAN"));
             Assert.Equal(2, container.Nodes().Count());
-            Assert.Equal("<div>123,45Other Content<span>SPAN</span></div>", container.ToString());
+            Assert.Equal("<div>" + s + "Other Content<span>SPAN</span></div>", container.ToString());
 
         }
 
