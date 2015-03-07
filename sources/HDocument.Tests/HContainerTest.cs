@@ -14,15 +14,28 @@ namespace HDoc.Tests
         [Fact]
         public void TestAdd()
         {
-            HContainer container = new HDocument();
+            HContainer container = new HElement("div");
 
             // Nothing appening
             container.Add(null);
 
-            
-            //Assert.Throws<NotImplementedException>(() => container.Add(123.45));
+            Assert.Equal(0, container.Nodes().Count());
 
-            //Assert.Throws<NotImplementedException>(() => container.Add(DateTime.Now));
+            container.Add(123.45);
+            Assert.Equal(1, container.Nodes().Count());
+            Assert.Equal("<div>123,45</div>", container.ToString());
+
+            container.Add(null);
+            Assert.Equal(1, container.Nodes().Count());
+            Assert.Equal("<div>123,45</div>", container.ToString());
+
+            container.Add("Other Content");
+            Assert.Equal(1, container.Nodes().Count());
+            Assert.Equal("<div>123,45Other Content</div>", container.ToString());
+
+            container.Add(new HElement("span", "SPAN"));
+            Assert.Equal(2, container.Nodes().Count());
+            Assert.Equal("<div>123,45Other Content<span>SPAN</span></div>", container.ToString());
 
         }
 

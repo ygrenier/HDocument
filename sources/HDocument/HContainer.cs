@@ -15,6 +15,11 @@ namespace HDoc
     public abstract class HContainer : HNode
     {
         /// <summary>
+        /// Dummy node to reference first node
+        /// </summary>
+        protected static readonly HNode FirstNodeRef = new HText("");
+
+        /// <summary>
         /// Content
         /// </summary>
         internal object content;
@@ -91,11 +96,29 @@ namespace HDoc
             IEnumerable e = content as IEnumerable;
             if (e != null)
             {
-                foreach (object obj in e)
-                    Insert(insert, obj);
+                if (insert == FirstNodeRef)
+                {
+                    foreach (object obj in e.Cast<Object>().Reverse())
+                    {
+                        Insert(insert, obj);
+                    }
+                }
+                else
+                {
+                    foreach (object obj in e)
+                        Insert(insert, obj);
+                }
                 return;
             }
             InsertString(insert, content.ToString());
+        }
+
+        /// <summary>
+        /// Insert a content at the beginning of the list
+        /// </summary>
+        internal void InsertFirst(object content)
+        {
+            Insert(FirstNodeRef, content);
         }
 
         /// <summary>
@@ -141,6 +164,27 @@ namespace HDoc
                         }
                     }
                 }
+                else if (before == FirstNodeRef)
+                {
+                    // If the content is a string, we concat them
+                    if (content is string)
+                    {
+                        content = s + (string)content;
+                    }
+                    else
+                    {
+                        // If the content is an HText node the we adding the string to the node
+                        HText tn = content as HText;
+                        if (tn != null && !(tn is HCData))
+                        {
+                            tn.value = s + tn.value;
+                        }
+                        else
+                        {
+                            InsertNode(FirstNodeRef, new HText(s));
+                        }
+                    }
+                }
                 else
                 {
                     InsertNode(before, new HText(s));
@@ -152,8 +196,7 @@ namespace HDoc
         /// Insert <paramref name="node"/> before the <paramref name="before"/> node.
         /// </summary>
         /// <remarks>
-        /// If previous is null then insert the node at the beginning of the list.
-        /// If previous is current content, then the node is added at the end.
+        /// If previous is null then insert the node at the end of the list.
         /// </remarks>
         void InsertNode(HNode before, HNode node)
         {
@@ -186,6 +229,13 @@ namespace HDoc
                 node.nextNode = ((HNode)content).nextNode;
                 ((HNode)content).nextNode = node;
                 content = node;
+            }
+            else if (before == FirstNodeRef)
+            {
+                ConvertContentTextToNode();
+                // Add at the beginning of the list
+                node.nextNode = ((HNode)content).nextNode;
+                ((HNode)content).nextNode = node;
             }
             else
             {
