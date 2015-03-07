@@ -11,6 +11,14 @@ namespace HDoc.Tests
     public class HSerializerTest
     {
 
+        [Fact]
+        public void TestDefaultSerializer()
+        {
+            var ser = HSerializer.DefaultSerializer;
+            Assert.NotNull(ser);
+            Assert.Same(ser, HSerializer.DefaultSerializer);
+        }
+
         #region Serialization
 
         [Fact]
@@ -61,6 +69,18 @@ namespace HDoc.Tests
 
             Assert.Throws<ArgumentNullException>(() => serializer.Serialize(null, null));
             Assert.Throws<ArgumentNullException>(() => serializer.Serialize(doc, null));
+
+        }
+
+        [Fact]
+        public void TestSerializeNode()
+        {
+            var serializer = new HSerializer();
+
+            Assert.Equal("Text content", serializer.SerializeNode(new HText("Text content")));
+            Assert.Equal("<div class=\"content\">Text content</div>", serializer.SerializeNode(new HElement("div", new HText("Text content")).Attr(new { @class = "content" })));
+
+            Assert.Throws<ArgumentNullException>(() => serializer.SerializeNode(null));
 
         }
 
