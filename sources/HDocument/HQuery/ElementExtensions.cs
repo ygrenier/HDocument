@@ -753,5 +753,24 @@ namespace HDoc
 
         #endregion
 
+        #region Next()
+
+        /// <summary>
+        /// Get the immediate next element
+        /// </summary>
+        public static IEnumerable<HElement> Next(this IEnumerable<HNode> elements)
+        {
+            if (elements != null)
+            {
+                return elements
+                    .Where(e => e != null)
+                    .Select(e => e.NextNode as HElement)
+                    .Where(p => p != null);
+            }
+            return Enumerable.Empty<HElement>();
+        }
+
+        #endregion
+
     }
 }
