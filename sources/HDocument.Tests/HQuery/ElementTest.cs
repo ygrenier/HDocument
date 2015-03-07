@@ -708,5 +708,26 @@ namespace HDoc.Tests.HQuery
 
         #endregion
 
+        #region Remove()
+
+        [Fact]
+        public void TestRemove()
+        {
+            var n1 = new HText("Content");
+            var n2 = new HElement("span", n1);
+            var n3 = new HElement("span", "Another content");
+            var n4 = new HElement("div", n2, n3);
+
+            var elements = new HNode[] { n3, n1 };
+            Assert.Same(elements, elements.Remove());
+            Assert.Equal("<div><span></span></div>", n4.ToString());
+
+            elements = null;
+            Assert.Null(elements.Remove());
+
+        }
+
+        #endregion
+
     }
 }
