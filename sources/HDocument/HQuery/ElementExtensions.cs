@@ -699,5 +699,24 @@ namespace HDoc
 
         #endregion
 
+        #region Prev()
+
+        /// <summary>
+        /// Get the immediate previous element
+        /// </summary>
+        public static IEnumerable<HElement> Prev(this IEnumerable<HNode> elements)
+        {
+            if (elements != null)
+            {
+                return elements
+                    .Where(e => e != null)
+                    .Select(e => e.PreviousNode as HElement)
+                    .Where(p => p != null);
+            }
+            return Enumerable.Empty<HElement>();
+        }
+
+        #endregion
+
     }
 }
