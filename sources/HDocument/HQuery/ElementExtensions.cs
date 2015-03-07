@@ -843,5 +843,29 @@ namespace HDoc
 
         #endregion
 
+        #region Contents()
+
+        /// <summary>
+        /// Get the contents of the element
+        /// </summary>
+        public static IEnumerable<HNode> Contents(this HElement element)
+        {
+            if (element != null)
+                return element.Nodes();
+            return Enumerable.Empty<HNode>();
+        }
+
+        /// <summary>
+        /// Get the contents of each element of the set
+        /// </summary>
+        public static IEnumerable<HNode> Contents(this IEnumerable<HElement> elements)
+        {
+            if (elements != null)
+                return elements.Where(e => e != null).SelectMany(e => e.Nodes());
+            return Enumerable.Empty<HNode>();
+        }
+
+        #endregion
+
     }
 }
