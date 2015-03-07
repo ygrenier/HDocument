@@ -992,5 +992,42 @@ namespace HDoc.Tests.HQuery
 
         #endregion
 
+        #region Siblings()
+
+        [Fact]
+        public void TestSiblingsElement()
+        {
+            var n1 = new HElement("div", "Content 1");
+            var n2 = new HElement("div", "Content 2");
+            var n3 = new HElement("div", "Content 3");
+            var n4 = new HElement("div", "Content 4");
+            var n5 = new HElement("div", "Content 5");
+            var root = new HElement("div", n1, n2, n3, n4, n5);
+
+            Assert.Equal(new HElement[] { n1, n3, n4, n5 }, n2.Siblings().ToArray());
+
+            n2 = null;
+            Assert.Equal(0, n2.Siblings().Count());
+        }
+
+        [Fact]
+        public void TestSiblingsElements()
+        {
+            var n1 = new HElement("div", "Content 1");
+            var n2 = new HElement("div", "Content 2");
+            var n3 = new HElement("div", "Content 3");
+            var n4 = new HElement("div", "Content 4");
+            var n5 = new HElement("div", "Content 5");
+            var root = new HElement("div", n1, n2, n3, n4, n5);
+
+            var elements = new HElement[] { n2, n4 };
+            Assert.Equal(new HElement[] { n1, n3, n4, n5, n2 }, elements.Siblings().ToArray());
+
+            elements = null;
+            Assert.Equal(0, elements.Siblings().Count());
+        }
+
+        #endregion
+
     }
 }
