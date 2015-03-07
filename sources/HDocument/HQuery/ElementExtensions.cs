@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -964,6 +965,78 @@ namespace HDoc
                 {
                     element.Text(getText != null ? getText(element, idx++) ?? String.Empty : String.Empty);
                 }
+            }
+            return elements;
+        }
+
+        #endregion
+
+        #region Html()
+
+        /// <summary>
+        /// Get the HTML content of an element
+        /// </summary>
+        public static String Html(this HElement element)
+        {
+            if (element != null)
+            {
+                HSerializer ser = new HSerializer();
+                StringBuilder result = new StringBuilder();
+                foreach (var content in element.Nodes())
+                {
+                    result.Append(ser.SerializeNode(content));
+                }
+                return result.ToString();
+            }
+            return String.Empty;
+        }
+
+        /// <summary>
+        /// Get the html of the first element of the set
+        /// </summary>
+        public static String Html(this IEnumerable<HElement> elements)
+        {
+            return elements.FirstOrDefault().Html();
+        }
+
+        /// <summary>
+        /// Set the HTML content of the element.
+        /// </summary>
+        public static HElement Html(this HElement element, String html)
+        {
+            if (element != null)
+            {
+                HSerializer ser = new HSerializer();
+                element.ReplaceWith(ser.Deserialize(new StringReader(html ?? String.Empty)).ToArray());
+            }
+            return element;
+        }
+
+        /// <summary>
+        /// Set the HTML content of each element in the set.
+        /// </summary>
+        public static IEnumerable<HElement> Html(this IEnumerable<HElement> elements, String html)
+        {
+            if (elements != null)
+            {
+                HSerializer ser = new HSerializer();
+                elements.ReplaceWith(ser.Deserialize(new StringReader(html ?? String.Empty)).ToArray());
+            }
+            return elements;
+        }
+
+        /// <summary>
+        /// Set the HTML content returned by a callback of each element in the set.
+        /// </summary>
+        public static IEnumerable<HElement> Html(this IEnumerable<HElement> elements, Func<HElement, int, String> getHtml)
+        {
+            if (elements != null)
+            {
+                HSerializer ser = new HSerializer();
+                elements.ReplaceWith((e, i) => {
+                    String html = getHtml != null ? getHtml(e, i) ?? String.Empty : String.Empty;
+                    return ser.Deserialize(new StringReader(html));
+                });
             }
             return elements;
         }

@@ -109,7 +109,7 @@ namespace HDoc
         /// <summary>
         /// Serialize a node
         /// </summary>
-        protected String SerializeNode(HNode node)
+        public String SerializeNode(HNode node)
         {
             if (node == null) throw new ArgumentNullException("node");
             StringBuilder html = new StringBuilder();
