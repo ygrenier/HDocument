@@ -17,7 +17,7 @@ namespace HDoc
         /// <summary>
         /// Add content after the element
         /// </summary>
-        public static HElement After(this HElement element, params HElement[] content)
+        public static HElement After(this HElement element, params HNode[] content)
         {
             if (element != null && content != null)
             {
@@ -29,7 +29,7 @@ namespace HDoc
         /// <summary>
         /// Add content after each element of a set of elements
         /// </summary>
-        public static IEnumerable<HElement> After(this IEnumerable<HElement> elements, params HElement[] content)
+        public static IEnumerable<HElement> After(this IEnumerable<HElement> elements, params HNode[] content)
         {
             if (elements != null && content != null)
             {
@@ -44,7 +44,7 @@ namespace HDoc
         /// <summary>
         /// Add content from a callback after each element of a set of elements
         /// </summary>
-        public static IEnumerable<HElement> After(this IEnumerable<HElement> elements, Func<HElement, int, IEnumerable<HElement>> getContent)
+        public static IEnumerable<HElement> After(this IEnumerable<HElement> elements, Func<HElement, int, IEnumerable<HNode>> getContent)
         {
             if (elements != null && getContent != null)
             {
@@ -64,7 +64,7 @@ namespace HDoc
         /// <summary>
         /// Add content before the element
         /// </summary>
-        public static HElement Before(this HElement element, params HElement[] content)
+        public static HElement Before(this HElement element, params HNode[] content)
         {
             if (element != null && content != null)
             {
@@ -76,7 +76,7 @@ namespace HDoc
         /// <summary>
         /// Add content before each element of a set of elements
         /// </summary>
-        public static IEnumerable<HElement> Before(this IEnumerable<HElement> elements, params HElement[] content)
+        public static IEnumerable<HElement> Before(this IEnumerable<HElement> elements, params HNode[] content)
         {
             if (elements != null && content != null)
             {
@@ -91,7 +91,7 @@ namespace HDoc
         /// <summary>
         /// Add content from a callback before each element of a set of elements
         /// </summary>
-        public static IEnumerable<HElement> Before(this IEnumerable<HElement> elements, Func<HElement, int, IEnumerable<HElement>> getContent)
+        public static IEnumerable<HElement> Before(this IEnumerable<HElement> elements, Func<HElement, int, IEnumerable<HNode>> getContent)
         {
             if (elements != null && getContent != null)
             {
@@ -111,7 +111,7 @@ namespace HDoc
         /// <summary>
         /// Insert element after the target
         /// </summary>
-        public static HElement InsertAfter(this HElement element, HElement target)
+        public static HNode InsertAfter(this HNode element, HElement target)
         {
             if (element != null && target != null)
             {
@@ -123,7 +123,7 @@ namespace HDoc
         /// <summary>
         /// Insert the set of elements after the target
         /// </summary>
-        public static IEnumerable<HElement> InsertAfter(this IEnumerable<HElement> elements, HElement target)
+        public static IEnumerable<HNode> InsertAfter(this IEnumerable<HNode> elements, HElement target)
         {
             if (elements != null && target != null)
             {
@@ -139,7 +139,7 @@ namespace HDoc
         /// <summary>
         /// Insert element before the target
         /// </summary>
-        public static HElement InsertBefore(this HElement element, HElement target)
+        public static HNode InsertBefore(this HNode element, HElement target)
         {
             if (element != null && target != null)
             {
@@ -151,7 +151,7 @@ namespace HDoc
         /// <summary>
         /// Insert the set of elements before the target
         /// </summary>
-        public static IEnumerable<HElement> InsertBefore(this IEnumerable<HElement> elements, HElement target)
+        public static IEnumerable<HNode> InsertBefore(this IEnumerable<HNode> elements, HElement target)
         {
             if (elements != null && target != null)
             {
@@ -376,7 +376,7 @@ namespace HDoc
         /// <summary>
         /// Replace the element by a new content
         /// </summary>
-        public static HElement ReplaceWith(this HElement element, params HElement[] content)
+        public static HElement ReplaceWith(this HElement element, params HNode[] content)
         {
             if (element != null)
             {
@@ -389,7 +389,7 @@ namespace HDoc
         /// <summary>
         /// Replace each element of the set by a new content
         /// </summary>
-        public static IEnumerable<HElement> ReplaceWith(this IEnumerable<HElement> elements, params HElement[] content)
+        public static IEnumerable<HElement> ReplaceWith(this IEnumerable<HElement> elements, params HNode[] content)
         {
             if (elements != null)
             {
@@ -404,14 +404,14 @@ namespace HDoc
         /// <summary>
         /// Replace each element of the set by a new content returned by a callback
         /// </summary>
-        public static IEnumerable<HElement> ReplaceWith(this IEnumerable<HElement> elements, Func<HElement, int, IEnumerable<HElement>> getContent)
+        public static IEnumerable<HElement> ReplaceWith(this IEnumerable<HElement> elements, Func<HElement, int, IEnumerable<HNode>> getContent)
         {
             if (elements != null)
             {
                 int idx = 0;
                 foreach (var element in elements)
                 {
-                    IEnumerable<HElement> content = getContent != null ? getContent(element, idx++) : null;
+                    IEnumerable<HNode> content = getContent != null ? getContent(element, idx++) : null;
                     if (content != null)
                         element.ReplaceWith(content.ToArray());
                     else
@@ -555,6 +555,48 @@ namespace HDoc
                 foreach (var element in elements)
                 {
                     element.WrapInner(getWrappingElement(element, idx++));
+                }
+            }
+            return elements;
+        }
+
+        #endregion
+
+        #region Unwrap()
+
+        /// <summary>
+        /// Remove the parent of the element
+        /// </summary>
+        public static HElement Unwrap(this HElement element)
+        {
+            if (element != null && element.Parent != null)
+            {
+                var grandParent = element.Parent.Parent;
+                if (grandParent != null)
+                {
+                    var parentContent = element.Parent.Nodes().ToArray();
+                    element.Parent.ReplaceWith(parentContent);
+                }
+            }
+            return element;
+        }
+
+        /// <summary>
+        /// Remove the parent of the set
+        /// </summary>
+        public static IEnumerable<HElement> Unwrap(this IEnumerable<HElement> elements)
+        {
+            if (elements != null)
+            {
+                var parents = elements.Where(e => e != null && e.Parent != null).Select(e => e.Parent).Distinct();
+                foreach (var parent in parents)
+                {
+                    var grandParent = parent.Parent;
+                    if (grandParent != null)
+                    {
+                        var parentContent = parent.Nodes().ToArray();
+                        parent.ReplaceWith(parentContent);
+                    }
                 }
             }
             return elements;
