@@ -406,6 +406,27 @@ namespace HDoc.Tests.HQuery
 
         #endregion
 
+        #region LastElement()
+
+        [Fact]
+        public void TestLastElement()
+        {
+            var element1 = new HElement("div", "Content");
+            var element2 = new HElement("div", "Content2");
+
+            var elements = new HElement[] { element1, element2, null };
+            Assert.Same(element2, elements.LastElement().Single());
+
+            elements = new HElement[] { null };
+            Assert.Equal(0, elements.LastElement().Count());
+
+            elements = null;
+            Assert.Equal(0, elements.LastElement().Count());
+
+        }
+
+        #endregion
+
         #region Html()
 
         [Fact]
