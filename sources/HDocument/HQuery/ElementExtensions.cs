@@ -262,7 +262,7 @@ namespace HDoc
         {
             if (element != null)
             {
-                element.Insert(null, content);
+                element.InsertFirst(content);
             }
             return element;
         }
