@@ -371,5 +371,57 @@ namespace HDoc
 
         #endregion
 
+        #region ReplaceWith()
+
+        /// <summary>
+        /// Replace the element by a new content
+        /// </summary>
+        public static HElement ReplaceWith(this HElement element, params HElement[] content)
+        {
+            if (element != null)
+            {
+                element.Before(content);
+                element.Remove();
+            }
+            return element;
+        }
+
+        /// <summary>
+        /// Replace each element of the set by a new content
+        /// </summary>
+        public static IEnumerable<HElement> ReplaceWith(this IEnumerable<HElement> elements, params HElement[] content)
+        {
+            if (elements != null)
+            {
+                foreach (var element in elements)
+                {
+                    element.ReplaceWith(content);
+                }
+            }
+            return elements;
+        }
+
+        /// <summary>
+        /// Replace each element of the set by a new content returned by a callback
+        /// </summary>
+        public static IEnumerable<HElement> ReplaceWith(this IEnumerable<HElement> elements, Func<HElement, int, IEnumerable<HElement>> getContent)
+        {
+            if (elements != null)
+            {
+                int idx = 0;
+                foreach (var element in elements)
+                {
+                    IEnumerable<HElement> content = getContent != null ? getContent(element, idx++) : null;
+                    if (content != null)
+                        element.ReplaceWith(content.ToArray());
+                    else
+                        elements.ReplaceWith();
+                }
+            }
+            return elements;
+        }
+
+        #endregion
+
     }
 }
