@@ -705,16 +705,16 @@ namespace HDoc
         /// <summary>
         /// Get the immediate previous element
         /// </summary>
-        public static IEnumerable<HElement> Prev(this IEnumerable<HNode> elements)
+        public static IEnumerable<HNode> Prev(this IEnumerable<HNode> elements)
         {
             if (elements != null)
             {
                 return elements
                     .Where(e => e != null)
-                    .Select(e => e.PreviousNode as HElement)
+                    .Select(e => e.PreviousNode)
                     .Where(p => p != null);
             }
-            return Enumerable.Empty<HElement>();
+            return Enumerable.Empty<HNode>();
         }
 
         #endregion
@@ -724,15 +724,14 @@ namespace HDoc
         /// <summary>
         /// Get all precedings siblings of the element
         /// </summary>
-        public static IEnumerable<HElement> PrevAll(this HNode element)
+        public static IEnumerable<HNode> PrevAll(this HNode element)
         {
             if (element != null)
             {
                 var p = element.PreviousNode;
                 while (p != null)
                 {
-                    if (p is HElement)
-                        yield return (HElement)p;
+                    yield return p;
                     p = p.PreviousNode;
                 }
             }
@@ -741,7 +740,7 @@ namespace HDoc
         /// <summary>
         /// Get all precedings siblings of each element in the set.
         /// </summary>
-        public static IEnumerable<HElement> PrevAll(this IEnumerable<HNode> elements)
+        public static IEnumerable<HNode> PrevAll(this IEnumerable<HNode> elements)
         {
             if (elements != null)
             {
@@ -749,7 +748,7 @@ namespace HDoc
                     .SelectMany(e => e.PrevAll())
                     .Distinct();
             }
-            return Enumerable.Empty<HElement>();
+            return Enumerable.Empty<HNode>();
         }
 
         #endregion
@@ -759,16 +758,16 @@ namespace HDoc
         /// <summary>
         /// Get the immediate next element
         /// </summary>
-        public static IEnumerable<HElement> Next(this IEnumerable<HNode> elements)
+        public static IEnumerable<HNode> Next(this IEnumerable<HNode> elements)
         {
             if (elements != null)
             {
                 return elements
                     .Where(e => e != null)
-                    .Select(e => e.NextNode as HElement)
+                    .Select(e => e.NextNode)
                     .Where(p => p != null);
             }
-            return Enumerable.Empty<HElement>();
+            return Enumerable.Empty<HNode>();
         }
 
         #endregion
@@ -778,15 +777,14 @@ namespace HDoc
         /// <summary>
         /// Get all next siblings of the element
         /// </summary>
-        public static IEnumerable<HElement> NextAll(this HNode element)
+        public static IEnumerable<HNode> NextAll(this HNode element)
         {
             if (element != null)
             {
                 var p = element.NextNode;
                 while (p != null)
                 {
-                    if (p is HElement)
-                        yield return (HElement)p;
+                    yield return p;
                     p = p.NextNode;
                 }
             }
@@ -795,15 +793,16 @@ namespace HDoc
         /// <summary>
         /// Get all next siblings of each element in the set.
         /// </summary>
-        public static IEnumerable<HElement> NextAll(this IEnumerable<HNode> elements)
+        public static IEnumerable<HNode> NextAll(this IEnumerable<HNode> elements)
         {
             if (elements != null)
             {
                 return elements
+                    .Where(e => e != null)
                     .SelectMany(e => e.NextAll())
                     .Distinct();
             }
-            return Enumerable.Empty<HElement>();
+            return Enumerable.Empty<HNode>();
         }
 
         #endregion

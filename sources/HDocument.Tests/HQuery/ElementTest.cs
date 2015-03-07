@@ -559,5 +559,77 @@ namespace HDoc.Tests.HQuery
 
         #endregion
 
+        #region Next()
+
+        [Fact]
+        public void TestNext()
+        {
+            var n1 = new HText("Content 1");
+            var n2 = new HElement("span", "Content 2");
+            var n3 = new HElement("span", "Content 3");
+            var n4 = new HText("Content 4");
+            var element = new HElement("div", n1, n2, n3, n4);
+
+            Assert.Equal(new HNode[] { n3, n4 }, new HNode[] { n2, n3, n4 }.Next().ToArray());
+            Assert.Equal(new HNode[] { }, ((HNode[])null).Next().ToArray());
+        }
+
+        #endregion
+
+        #region NextAll()
+
+        [Fact]
+        public void TestNextAll()
+        {
+            var n1 = new HText("Content 1");
+            var n2 = new HElement("span", "Content 2");
+            var n3 = new HElement("span", "Content 3");
+            var n4 = new HText("Content 4");
+            var element = new HElement("div", n1, n2, n3, n4);
+
+            Assert.Equal(new HNode[] { n3, n4 }, n2.NextAll().ToArray());
+            Assert.Equal(new HNode[] { n2, n3, n4 }, new HNode[] { n1, n3, n4 }.NextAll().ToArray());
+
+            Assert.Equal(new HNode[] { }, ((HNode[])null).NextAll().ToArray());
+        }
+
+        #endregion
+
+        #region Prev()
+
+        [Fact]
+        public void TestPrev()
+        {
+            var n1 = new HText("Content 1");
+            var n2 = new HElement("span", "Content 2");
+            var n3 = new HElement("span", "Content 3");
+            var n4 = new HText("Content 4");
+            var element = new HElement("div", n1, n2, n3, n4);
+
+            Assert.Equal(new HNode[] { n1, n3 }, new HNode[] { n1, n2, n4 }.Prev().ToArray());
+            Assert.Equal(new HNode[] { }, ((HNode[])null).Prev().ToArray());
+        }
+
+        #endregion
+
+        #region PrevAll()
+
+        [Fact]
+        public void TestPrevAll()
+        {
+            var n1 = new HText("Content 1");
+            var n2 = new HElement("span", "Content 2");
+            var n3 = new HElement("span", "Content 3");
+            var n4 = new HText("Content 4");
+            var element = new HElement("div", n1, n2, n3, n4);
+
+            Assert.Equal(new HNode[] { n2, n1 }, n3.PrevAll().ToArray());
+            Assert.Equal(new HNode[] { n2, n1, n3 }, new HNode[] { n1, n3, n4 }.PrevAll().ToArray());
+
+            Assert.Equal(new HNode[] { }, ((HNode[])null).PrevAll().ToArray());
+        }
+
+        #endregion
+
     }
 }
