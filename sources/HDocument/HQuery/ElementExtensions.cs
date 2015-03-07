@@ -939,7 +939,7 @@ namespace HDoc
         public static HElement Text(this HElement element, String text)
         {
             if (element != null)
-                element.ReplaceWith(new HText(text ?? String.Empty));
+                element.Empty().Append(new HText(text ?? String.Empty));
             return element;
         }
 

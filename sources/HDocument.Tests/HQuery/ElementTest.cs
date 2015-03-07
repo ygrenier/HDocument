@@ -1060,5 +1060,95 @@ namespace HDoc.Tests.HQuery
 
         #endregion
 
+        #region Text()
+
+        [Fact]
+        public void TestGetTextElement()
+        {
+            var n1 = new HElement("div", "Content 1");
+            var n2 = new HElement("div", "Content 2");
+            var n3 = new HElement("div", "Content 3");
+            var n4 = new HElement("div", "Content 4");
+            var n5 = new HElement("div", "Content 5");
+            var root = new HElement("div", n1, n2, n3, n4, n5);
+
+            Assert.Equal("Content 1Content 2Content 3Content 4Content 5", root.Text());
+
+            root = null;
+            Assert.Equal("", root.Text());
+        }
+
+        [Fact]
+        public void TestGetTextElements()
+        {
+            var n1 = new HElement("div", "Content 1");
+            var n2 = new HElement("div", "Content 2");
+            var n3 = new HElement("div", "Content 3");
+            var n4 = new HElement("div", "Content 4");
+            var n5 = new HElement("div", "Content 5");
+            var root = new HElement("div", n1, n2, n3, n4, n5);
+
+            var elements = new HElement[] { n2, null, n4, root };
+            Assert.Equal("Content 2Content 4Content 1Content 2Content 3Content 4Content 5", elements.Text());
+
+            elements = null;
+            Assert.Equal("", elements.Text());
+        }
+
+        [Fact]
+        public void TestSetTextElement()
+        {
+            var n1 = new HElement("div", "Content 1");
+            var n2 = new HElement("div", "Content 2");
+            var n3 = new HElement("div", "Content 3");
+            var n4 = new HElement("div", "Content 4");
+            var n5 = new HElement("div", "Content 5");
+            var root = new HElement("div", n1, n2, n3, n4, n5);
+
+            Assert.Same(root, root.Text("Test Content"));
+            Assert.Equal("<div>Test Content</div>", root.ToString());
+
+            root = null;
+            Assert.Equal(null, root.Text("Other content"));
+        }
+
+        [Fact]
+        public void TestSetTextElements()
+        {
+            var n1 = new HElement("div", "Content 1");
+            var n2 = new HElement("div", "Content 2");
+            var n3 = new HElement("div", "Content 3");
+            var n4 = new HElement("div", "Content 4");
+            var n5 = new HElement("div", "Content 5");
+            var root = new HElement("div", n1, n2, n3, n4, n5);
+
+            var elements = new HElement[] { n2, null, n4 };
+            Assert.Same(elements, elements.Text("Test Content"));
+            Assert.Equal("<div><div>Content 1</div><div>Test Content</div><div>Content 3</div><div>Test Content</div><div>Content 5</div></div>", root.ToString());
+
+            elements = null;
+            Assert.Equal(null, elements.Text("Other content"));
+        }
+
+        [Fact]
+        public void TestSetTextElementsByCallback()
+        {
+            var n1 = new HElement("div", "Content 1");
+            var n2 = new HElement("div", "Content 2");
+            var n3 = new HElement("div", "Content 3");
+            var n4 = new HElement("div", "Content 4");
+            var n5 = new HElement("div", "Content 5");
+            var root = new HElement("div", n1, n2, n3, n4, n5);
+
+            var elements = new HElement[] { n2, null, n4 };
+            Assert.Same(elements, elements.Text((e, i) => "New Content " + i.ToString()));
+            Assert.Equal("<div><div>Content 1</div><div>New Content 0</div><div>Content 3</div><div>New Content 2</div><div>Content 5</div></div>", root.ToString());
+
+            elements = null;
+            Assert.Equal(null, elements.Text((e, i) => "New Content " + i.ToString()));
+        }
+
+        #endregion
+
     }
 }
