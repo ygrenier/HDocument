@@ -618,5 +618,25 @@ namespace HDoc
 
         #endregion
 
+        #region Parents()
+
+        /// <summary>
+        /// Get the ancestors of each element in the set
+        /// </summary>
+        public static IEnumerable<HElement> Parents(this IEnumerable<HNode> elements)
+        {
+            if (elements != null)
+            {
+                return elements
+                    .Where(e => e != null)
+                    .SelectMany(e => e.Parents())
+                    .Where(p => p != null)
+                    .Distinct();
+            }
+            return Enumerable.Empty<HElement>();
+        }
+
+        #endregion
+
     }
 }
