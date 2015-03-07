@@ -487,5 +487,26 @@ namespace HDoc
 
         #endregion
 
+        #region WrapAll()
+
+        /// <summary>
+        /// Wrap <paramref name="wrappingElement"/> around all elements of the set.
+        /// </summary>
+        public IEnumerable<HElement> WrapAll(this IEnumerable<HElement> elements, HElement wrappingElement)
+        {
+            if (elements != null)
+            {
+                var first = elements.FirstOrDefault(e => e != null);
+                first.ReplaceWith(wrappingElement);
+                var dp = wrappingElement;
+                while (dp.HasElements) dp = dp.Elements().First();
+                elements.Remove();
+                dp.Append(elements);
+            }
+            return elements;
+        }
+
+        #endregion
+
     }
 }
