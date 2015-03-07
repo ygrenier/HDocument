@@ -980,11 +980,10 @@ namespace HDoc
         {
             if (element != null)
             {
-                HSerializer ser = new HSerializer();
                 StringBuilder result = new StringBuilder();
                 foreach (var content in element.Nodes())
                 {
-                    result.Append(ser.SerializeNode(content));
+                    result.Append(HSerializer.DefaultSerializer.SerializeNode(content));
                 }
                 return result.ToString();
             }
@@ -1006,8 +1005,7 @@ namespace HDoc
         {
             if (element != null)
             {
-                HSerializer ser = new HSerializer();
-                element.ReplaceWith(ser.Deserialize(new StringReader(html ?? String.Empty)).ToArray());
+                element.ReplaceWith(HSerializer.DefaultSerializer.Deserialize(new StringReader(html ?? String.Empty)).ToArray());
             }
             return element;
         }
@@ -1019,8 +1017,7 @@ namespace HDoc
         {
             if (elements != null)
             {
-                HSerializer ser = new HSerializer();
-                elements.ReplaceWith(ser.Deserialize(new StringReader(html ?? String.Empty)).ToArray());
+                elements.ReplaceWith(HSerializer.DefaultSerializer.Deserialize(new StringReader(html ?? String.Empty)).ToArray());
             }
             return elements;
         }
@@ -1032,10 +1029,9 @@ namespace HDoc
         {
             if (elements != null)
             {
-                HSerializer ser = new HSerializer();
                 elements.ReplaceWith((e, i) => {
                     String html = getHtml != null ? getHtml(e, i) ?? String.Empty : String.Empty;
-                    return ser.Deserialize(new StringReader(html));
+                    return HSerializer.DefaultSerializer.Deserialize(new StringReader(html));
                 });
             }
             return elements;
