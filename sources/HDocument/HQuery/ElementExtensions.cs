@@ -331,7 +331,7 @@ namespace HDoc
         /// <summary>
         /// Append the element to the beginning of the content of the target
         /// </summary>
-        public static T PrependTo<T>(this T element, HElement target)
+        public static HNode PrependTo(this HNode element, HElement target)
         {
             if (element != null && target != null)
             {
@@ -343,7 +343,7 @@ namespace HDoc
         /// <summary>
         /// Append the set of elements to the beginning of the content of the target
         /// </summary>
-        public static IEnumerable<T> PrependTo<T>(this IEnumerable<T> content, HElement target)
+        public static IEnumerable<HNode> PrependTo(this IEnumerable<HNode> content, HElement target)
         {
             if (content != null && target != null)
                 target.Prepend(content);
