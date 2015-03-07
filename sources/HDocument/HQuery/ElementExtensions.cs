@@ -112,11 +112,11 @@ namespace HDoc
         /// <summary>
         /// Insert element after the target
         /// </summary>
-        public static HNode InsertAfter(this HNode element, HElement target)
+        public static HNode InsertAfter(this HNode element, HNode target)
         {
             if (element != null && target != null)
             {
-                target.After(element);
+                target.AddAfter(element);
             }
             return element;
         }
@@ -124,11 +124,11 @@ namespace HDoc
         /// <summary>
         /// Insert the set of elements after the target
         /// </summary>
-        public static IEnumerable<HNode> InsertAfter(this IEnumerable<HNode> elements, HElement target)
+        public static IEnumerable<HNode> InsertAfter(this IEnumerable<HNode> elements, HNode target)
         {
             if (elements != null && target != null)
             {
-                target.After(elements.ToArray());
+                target.AddAfter(elements.ToArray());
             }
             return elements;
         }

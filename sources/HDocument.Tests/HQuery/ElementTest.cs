@@ -474,5 +474,69 @@ namespace HDoc.Tests.HQuery
 
         #endregion
 
+        #region InsertAfter()
+
+        [Fact]
+        public void TestInsertAfterElement()
+        {
+            var n1 = new HText("Content 1");
+            var n2 = new HElement("span", "Content 2");
+            var n3 = new HText("Content 3");
+            var element = new HElement("div", n1, n2, n3);
+            var n4 = new HText("Insertion");
+
+            Assert.Same(n4, n4.InsertAfter(n2));
+            Assert.Equal("<div>Content 1<span>Content 2</span>InsertionContent 3</div>", element.ToString());
+        }
+
+        [Fact]
+        public void TestInsertAfterElements()
+        {
+            var n1 = new HText("Content 1");
+            var n2 = new HElement("span", "Content 2");
+            var n3 = new HText("Content 3");
+            var element = new HElement("div", n1, n2, n3);
+            var n4 = new HText("Insertion1");
+            var n5 = new HText("Insertion2");
+
+            var elements = new HNode[] { n4, n5 };
+            Assert.Same(elements, elements.InsertAfter(n2));
+            Assert.Equal("<div>Content 1<span>Content 2</span>Insertion1Insertion2Content 3</div>", element.ToString());
+        }
+
+        #endregion
+
+        #region InsertBefore()
+
+        [Fact]
+        public void TestInsertBeforeElement()
+        {
+            var n1 = new HText("Content 1");
+            var n2 = new HElement("span", "Content 2");
+            var n3 = new HText("Content 3");
+            var element = new HElement("div", n1, n2, n3);
+            var n4 = new HText("Insertion");
+
+            Assert.Same(n4, n4.InsertBefore(n2));
+            Assert.Equal("<div>Content 1Insertion<span>Content 2</span>Content 3</div>", element.ToString());
+        }
+
+        [Fact]
+        public void TestInsertBeforeElements()
+        {
+            var n1 = new HText("Content 1");
+            var n2 = new HElement("span", "Content 2");
+            var n3 = new HText("Content 3");
+            var element = new HElement("div", n1, n2, n3);
+            var n4 = new HText("Insertion1");
+            var n5 = new HText("Insertion2");
+
+            var elements = new HNode[] { n4, n5 };
+            Assert.Same(elements, elements.InsertBefore(n2));
+            Assert.Equal("<div>Content 1Insertion1Insertion2<span>Content 2</span>Content 3</div>", element.ToString());
+        }
+
+        #endregion
+
     }
 }
