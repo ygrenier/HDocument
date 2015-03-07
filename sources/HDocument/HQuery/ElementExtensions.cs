@@ -492,7 +492,7 @@ namespace HDoc
         /// <summary>
         /// Wrap <paramref name="wrappingElement"/> around all elements of the set.
         /// </summary>
-        public IEnumerable<HElement> WrapAll(this IEnumerable<HElement> elements, HElement wrappingElement)
+        public static IEnumerable<HElement> WrapAll(this IEnumerable<HElement> elements, HElement wrappingElement)
         {
             if (elements != null)
             {
@@ -502,6 +502,60 @@ namespace HDoc
                 while (dp.HasElements) dp = dp.Elements().First();
                 elements.Remove();
                 dp.Append(elements);
+            }
+            return elements;
+        }
+
+        #endregion
+
+        #region WrapInner()
+
+        /// <summary>
+        /// Wrap <paramref name="wrappingElement"/> around the content of the element
+        /// </summary>
+        public static HElement WrapInner(this HElement element, HElement wrappingElement)
+        {
+            if (element != null && wrappingElement != null)
+            {
+                if (element.HasElements)
+                {
+                    element.Elements().WrapAll(wrappingElement);
+                }
+                else
+                {
+                    element.Append(wrappingElement);
+                }
+            }
+            return element;
+        }
+
+        /// <summary>
+        /// Wrap <paramref name="wrappingElement"/> around the content of each element of the set
+        /// </summary>
+        public static IEnumerable<HElement> WrapInner(this IEnumerable<HElement> elements, HElement wrappingElement)
+        {
+            if (elements != null && wrappingElement != null)
+            {
+                foreach (var element in elements)
+                {
+                    element.WrapInner(wrappingElement);
+                }
+            }
+            return elements;
+        }
+
+        /// <summary>
+        /// Wrap a callback result around the content of each element of the set
+        /// </summary>
+        public static IEnumerable<HElement> WrapInner(this IEnumerable<HElement> elements, Func<HElement, int, HElement> getWrappingElement)
+        {
+            if (elements != null && getWrappingElement != null)
+            {
+                int idx = 0;
+                foreach (var element in elements)
+                {
+                    element.WrapInner(getWrappingElement(element, idx++));
+                }
             }
             return elements;
         }
