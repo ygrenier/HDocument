@@ -385,5 +385,26 @@ namespace HDoc.Tests.HQuery
 
         #endregion
 
+        #region FirstElement()
+
+        [Fact]
+        public void TestFirstElement()
+        {
+            var element1 = new HElement("div", "Content");
+            var element2 = new HElement("div", "Content2");
+
+            var elements=new HElement[]{null, element1,element2};
+            Assert.Same(element1, elements.FirstElement().Single());
+
+            elements = new HElement[] { null };
+            Assert.Equal(0, elements.FirstElement().Count());
+
+            elements = null;
+            Assert.Equal(0, elements.FirstElement().Count());
+
+        }
+
+        #endregion
+
     }
 }
