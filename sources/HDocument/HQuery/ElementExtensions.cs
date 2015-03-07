@@ -638,5 +638,38 @@ namespace HDoc
 
         #endregion
 
+        #region Slice()
+
+        /// <summary>
+        /// Reduce the set of elements
+        /// </summary>
+        public static IEnumerable<HElement> Slice(this IEnumerable<HElement> elements, int start)
+        {
+            if (elements != null)
+            {
+                if (start < 0) start = elements.Count() + start;
+                elements.Skip(start);
+            }
+            return Enumerable.Empty<HElement>();
+        }
+
+        /// <summary>
+        /// Reduce the set of elements
+        /// </summary>
+        public static IEnumerable<HElement> Slice(this IEnumerable<HElement> elements, int start, int end)
+        {
+            if (elements != null)
+            {
+                if (start < 0) start = elements.Count() + start;
+                if (end < 0) end = elements.Count() + end;
+                int count = end - start + 1;
+                if (count > 1)
+                    return elements.Skip(start).Take(count);
+            }
+            return Enumerable.Empty<HElement>();
+        }
+
+        #endregion
+
     }
 }
