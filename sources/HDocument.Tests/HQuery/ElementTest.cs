@@ -287,5 +287,43 @@ namespace HDoc.Tests.HQuery
 
         #endregion
 
+        #region AppendTo()
+
+        [Fact]
+        public void TestAppendToElement()
+        {
+            var content = new HElement("span", "Content");
+            var element = new HElement("div");
+
+            Assert.Same(content, content.AppendTo(element));
+            Assert.Equal("<div><span>Content</span></div>", element.ToString());
+
+            Assert.Same(content, content.AppendTo(null));
+
+            content = null;
+            Assert.Null(content.AppendTo(element));
+
+        }
+
+        [Fact]
+        public void TestAppendToElements()
+        {
+            var content1 = new HElement("span", "Content1");
+            var content2 = new HElement("span", "Content2");
+            var element = new HElement("div");
+
+            var contents = new HNode[] { content1, null, content2 };
+            Assert.Same(contents, contents.AppendTo(element));
+            Assert.Equal("<div><span>Content1</span><span>Content2</span></div>", element.ToString());
+
+            Assert.Same(contents, contents.AppendTo(null));
+
+            contents = null;
+            Assert.Null(contents.AppendTo(element));
+
+        }
+
+        #endregion
+
     }
 }

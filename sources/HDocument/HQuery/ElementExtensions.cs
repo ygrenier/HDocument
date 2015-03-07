@@ -305,19 +305,19 @@ namespace HDoc
         /// <summary>
         /// Append the element to the end of the content of the target
         /// </summary>
-        public static T AppendTo<T>(this T element, HElement target)
+        public static HNode AppendTo(this HNode content, HElement target)
         {
-            if (element != null && target != null)
+            if (content != null && target != null)
             {
-                target.Append(element);
+                target.Append(content);
             }
-            return element;
+            return content;
         }
 
         /// <summary>
         /// Append the set of elements to the end of the content of the target
         /// </summary>
-        public static IEnumerable<T> AppendTo<T>(this IEnumerable<T> content, HElement target)
+        public static IEnumerable<HNode> AppendTo(this IEnumerable<HNode> content, HElement target)
         {
             if (content != null && target != null)
                 target.Append(content);
