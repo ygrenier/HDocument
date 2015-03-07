@@ -1029,5 +1029,36 @@ namespace HDoc.Tests.HQuery
 
         #endregion
 
+        #region Slice()
+
+        [Fact]
+        public void TestSlice()
+        {
+            var n1 = new HElement("div", "Content 1");
+            var n2 = new HElement("div", "Content 2");
+            var n3 = new HElement("div", "Content 3");
+            var n4 = new HElement("div", "Content 4");
+            var n5 = new HElement("div", "Content 5");
+            var root = new HElement("div", n1, n2, n3, n4, n5);
+
+            IEnumerable<HElement> elements = root.Elements().ToArray();
+            Assert.Equal(new HElement[] { n1, n2, n3, n4, n5 }, elements.Slice(0).ToArray());
+            Assert.Equal(new HElement[] { n3, n4, n5 }, elements.Slice(2).ToArray());
+            Assert.Equal(new HElement[] { n4, n5 }, elements.Slice(-2).ToArray());
+
+            Assert.Equal(new HElement[] { n1, n2, n3, n4, n5 }, elements.Slice(0, 4).ToArray());
+            Assert.Equal(new HElement[] { n3, n4 }, elements.Slice(2, 3).ToArray());
+            Assert.Equal(new HElement[] { n3 }, elements.Slice(2, 2).ToArray());
+            Assert.Equal(new HElement[] { n4, n5 }, elements.Slice(-2, 4).ToArray());
+            Assert.Equal(new HElement[] { n4, n5 }, elements.Slice(-2, -1).ToArray());
+            Assert.Equal(new HElement[] { }, elements.Slice(-2, 2).ToArray());
+
+            elements = null;
+            Assert.Equal(0, elements.Slice(0).Count());
+            Assert.Equal(0, elements.Slice(0, 4).Count());
+        }
+
+        #endregion
+
     }
 }

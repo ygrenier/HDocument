@@ -655,7 +655,7 @@ namespace HDoc
             if (elements != null)
             {
                 if (start < 0) start = elements.Count() + start;
-                elements.Skip(start);
+                return elements.Skip(start);
             }
             return Enumerable.Empty<HElement>();
         }
@@ -670,7 +670,7 @@ namespace HDoc
                 if (start < 0) start = elements.Count() + start;
                 if (end < 0) end = elements.Count() + end;
                 int count = end - start + 1;
-                if (count > 1)
+                if (count > 0)
                     return elements.Skip(start).Take(count);
             }
             return Enumerable.Empty<HElement>();
