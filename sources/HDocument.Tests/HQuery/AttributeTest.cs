@@ -135,7 +135,25 @@ namespace HDoc.Tests.HQuery
             Assert.Equal("color-2", elements[2].Attr("style"));
 
         }
-        
+
+        [Fact]
+        public void TestRemoveAttr()
+        {
+            var element1 = new HElement("div").Attr(new { style = "style", @class = "class1" });
+            var element2 = new HElement("div").Attr(new { name = "name", @class = "class2" });
+
+            var elements = new HElement[] { element1, null, element2 };
+            Assert.Same(elements, elements.RemoveAttr("class"));
+
+            Assert.Equal(null, element1.Attr("class"));
+            Assert.Equal(null, element2.Attr("class"));
+            Assert.Equal("style", element1.Attr("style"));
+            Assert.Equal(null, element2.Attr("style"));
+            Assert.Equal(null, element1.Attr("name"));
+            Assert.Equal("name", element2.Attr("name"));
+
+        }
+
         #endregion
 
         #region Css
