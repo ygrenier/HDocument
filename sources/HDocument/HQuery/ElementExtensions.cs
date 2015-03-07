@@ -891,5 +891,84 @@ namespace HDoc
 
         #endregion
 
+        #region Text()
+
+        /// <summary>
+        /// Get the combined text contents of the element, including his descendants.
+        /// </summary>
+        public static String Text(this HElement element)
+        {
+            if (element != null)
+            {
+                return String.Concat(
+                    element
+                    .Nodes()
+                    .Select(n => (n is HText) ? ((HText)n).Value : (n is HElement) ? ((HElement)n).Text() : String.Empty)
+                    );
+            }
+            return String.Empty;
+        }
+
+        /// <summary>
+        /// Get the combined text contents of each element in the set, including their descendants.
+        /// </summary>
+        public static String Text(this IEnumerable<HElement> elements)
+        {
+            if (elements != null)
+            {
+                return String.Concat(
+                    elements
+                    .Where(e => e != null)
+                    //.Text() => Optimized by repeat HElement.Text() code.
+                    .SelectMany(e => e.Nodes())
+                    .Select(n => (n is HText) ? ((HText)n).Value : (n is HElement) ? ((HElement)n).Text() : String.Empty)
+                    );
+            }
+            return String.Empty;
+        }
+
+        /// <summary>
+        /// Set the content of the element to the specified text.
+        /// </summary>
+        public static HElement Text(this HElement element, String text)
+        {
+            if (element != null)
+                element.ReplaceWith(new HText(text ?? String.Empty));
+            return element;
+        }
+
+        /// <summary>
+        /// Set the content of each element of the set to the specified text.
+        /// </summary>
+        public static IEnumerable<HElement> Text(this IEnumerable<HElement> elements, String text)
+        {
+            if (elements != null)
+            {
+                foreach (var element in elements)
+                {
+                    element.Text(text);
+                }
+            }
+            return elements;
+        }
+
+        /// <summary>
+        /// Set the content of each element of the set to the returned text by the callback.
+        /// </summary>
+        public static IEnumerable<HElement> Text(this IEnumerable<HElement> elements, Func<HElement, int, String> getText)
+        {
+            if (elements != null)
+            {
+                int idx = 0;
+                foreach (var element in elements)
+                {
+                    element.Text(getText != null ? getText(element, idx++) ?? String.Empty : String.Empty);
+                }
+            }
+            return elements;
+        }
+
+        #endregion
+
     }
 }
