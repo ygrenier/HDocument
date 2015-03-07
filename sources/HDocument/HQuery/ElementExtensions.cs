@@ -995,7 +995,7 @@ namespace HDoc
         /// </summary>
         public static String Html(this IEnumerable<HElement> elements)
         {
-            return elements.FirstOrDefault().Html();
+            return elements.FirstElement().FirstOrDefault().Html();
         }
 
         /// <summary>
@@ -1005,7 +1005,9 @@ namespace HDoc
         {
             if (element != null)
             {
-                element.ReplaceWith(HSerializer.DefaultSerializer.Deserialize(new StringReader(html ?? String.Empty)).ToArray());
+                element
+                    .Empty()
+                    .Append(HSerializer.DefaultSerializer.Deserialize(new StringReader(html ?? String.Empty)).ToArray());
             }
             return element;
         }
@@ -1017,7 +1019,9 @@ namespace HDoc
         {
             if (elements != null)
             {
-                elements.ReplaceWith(HSerializer.DefaultSerializer.Deserialize(new StringReader(html ?? String.Empty)).ToArray());
+                elements
+                    .Empty()
+                    .Append(HSerializer.DefaultSerializer.Deserialize(new StringReader(html ?? String.Empty)).ToArray());
             }
             return elements;
         }
@@ -1029,7 +1033,7 @@ namespace HDoc
         {
             if (elements != null)
             {
-                elements.ReplaceWith((e, i) => {
+                elements.Empty().Append((e, i) => {
                     String html = getHtml != null ? getHtml(e, i) ?? String.Empty : String.Empty;
                     return HSerializer.DefaultSerializer.Deserialize(new StringReader(html));
                 });

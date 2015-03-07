@@ -406,5 +406,73 @@ namespace HDoc.Tests.HQuery
 
         #endregion
 
+        #region Html()
+
+        [Fact]
+        public void TestGetHtmlElement()
+        {
+            var element = new HElement("div", new HElement("span", "Content"));
+
+            Assert.Equal("<span>Content</span>", element.Html());
+
+            element = null;
+            Assert.Equal("", element.Html());
+
+        }
+
+        [Fact]
+        public void TestGetHtmlElements()
+        {
+            var element1 = new HElement("div", new HElement("span", "Content 1"));
+            var element2 = new HElement("div", new HElement("span", "Content 2"));
+
+            var elements = new HElement[] { element1, null, element2 };
+            Assert.Equal("<span>Content 1</span>", elements.Html());
+
+            elements = new HElement[] { null, element1, element2 };
+            Assert.Equal("<span>Content 1</span>", elements.Html());
+
+            elements = null;
+            Assert.Equal("", elements.Html());
+
+        }
+
+        [Fact]
+        public void TestSetHtmlElement()
+        {
+            var element = new HElement("div", new HElement("span", "Content"));
+
+            Assert.Same(element, element.Html("<strong>New Content</strong>"));
+            Assert.Equal("<strong>New Content</strong>", element.Html());
+        }
+
+        [Fact]
+        public void TestSetHtmlElements()
+        {
+            var element1 = new HElement("div", new HElement("span", "Content 1"));
+            var element2 = new HElement("div", new HElement("span", "Content 2"));
+
+            var elements = new HElement[] { element1, element2 };
+            Assert.Same(elements, elements.Html("<strong>New Content</strong>"));
+            Assert.Equal("<strong>New Content</strong>", element1.Html());
+            Assert.Equal("<strong>New Content</strong>", element2.Html());
+        }
+
+        [Fact]
+        public void TestSetHtmlElementsByCallback()
+        {
+            var element1 = new HElement("div", new HElement("span", "Content 1"));
+            var element2 = new HElement("div", new HElement("span", "Content 2"));
+
+            var elements = new HElement[] { element1, null, element2 };
+            Assert.Same(elements, elements.Html((e, i) => {
+                return String.Format("<strong>New Content {0}</strong>", i);
+            }));
+            Assert.Equal("<strong>New Content 0</strong>", element1.Html());
+            Assert.Equal("<strong>New Content 2</strong>", element2.Html());
+        }
+
+        #endregion
+
     }
 }
