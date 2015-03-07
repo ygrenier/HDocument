@@ -423,5 +423,19 @@ namespace HDoc
 
         #endregion
 
+        #region ReplaceAll()
+
+        /// <summary>
+        /// Replace each target element with the set of elements
+        /// </summary>
+        public static IEnumerable<HElement> ReplaceAll(this IEnumerable<HElement> elements, params HElement[] target)
+        {
+            if (elements != null)
+                target.ReplaceWith(elements.ToArray());
+            return elements;
+        }
+
+        #endregion
+
     }
 }
