@@ -567,6 +567,15 @@ namespace HDoc
 
         #endregion
 
+        /// <summary>
+        /// Get the default serializer
+        /// </summary>
+        public static HSerializer DefaultSerializer
+        {
+            get { return _DefaultSerializer ?? (_DefaultSerializer = new HSerializer()); }
+        }
+        static HSerializer _DefaultSerializer;
+
     }
 
 }

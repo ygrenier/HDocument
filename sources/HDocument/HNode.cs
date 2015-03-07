@@ -61,6 +61,14 @@ namespace HDoc
 
         #endregion
 
+        /// <summary>
+        /// Returns the HTML of the node
+        /// </summary>
+        public override string ToString()
+        {
+            return HSerializer.DefaultSerializer.SerializeNode(this);
+        }
+
         #region Properties
 
         /// <summary>
