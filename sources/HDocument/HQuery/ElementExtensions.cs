@@ -807,12 +807,30 @@ namespace HDoc
 
         #endregion
 
-        #region Last()
+        #region FirstElement()
+
+        /// <summary>
+        /// Reduce the set of matched elements to the first one in the set.
+        /// </summary>
+        public static IEnumerable<HElement> FirstElement(this IEnumerable<HElement> elements)
+        {
+            if (elements != null)
+            {
+                var l = elements.FirstOrDefault(e => e != null);
+                if (l != null)
+                    return new HElement[] { l };
+            }
+            return Enumerable.Empty<HElement>();
+        }
+
+        #endregion
+
+        #region LastElement()
 
         /// <summary>
         /// Reduce the set of matched elements to the final one in the set.
         /// </summary>
-        public IEnumerable<HElement> Last(this IEnumerable<HElement> elements)
+        public static IEnumerable<HElement> LastElement(this IEnumerable<HElement> elements)
         {
             if (elements != null)
             {
