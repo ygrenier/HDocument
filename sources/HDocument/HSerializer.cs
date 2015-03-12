@@ -411,7 +411,6 @@ namespace HDoc
             Stack<HElement> opened = new Stack<HElement>();
             HXmlDeclaration currentXDecl = null;
             String tag;
-            bool inTag = false;
             HNode tokenToReturns = null;
             while (token != null)
             {
@@ -440,13 +439,11 @@ namespace HDoc
                         break;
                     case ParsedTokenType.OpenTag:
                         opened.Push(new HElement(((ParsedTag)token).TagName));
-                        inTag = true;
                         break;
                     case ParsedTokenType.AutoClosedTag:
                         System.Diagnostics.Debug.Assert(opened.Count > 0, "Opened tags are empty when receiving AutoClosedTag.");
                         System.Diagnostics.Debug.Assert(opened.Peek().Name == ((ParsedTag)token).TagName, "AutoClosedTag and opened element are not same tag name.");
                         var actag = opened.Pop();
-                        inTag = false;
                         if (opened.Count > 0)
                             ProtectAddOnPeek(opened, actag, errorHandler);
                         else
@@ -456,7 +453,6 @@ namespace HDoc
                         System.Diagnostics.Debug.Assert(opened.Count > 0, "Opened tags are empty when receiving CloseTag.");
                         System.Diagnostics.Debug.Assert(opened.Peek().Name == ((ParsedTag)token).TagName, "CloseTag and opened element are not same tag name.");
                         // Tag with text content
-                        inTag = false;
                         String tagName = opened.Peek().Name;
                         if (IsRawElement(tagName) || IsEscapableRawElement(tagName))
                         {
@@ -501,7 +497,6 @@ namespace HDoc
                             ProcessError(new ParseError(String.Format("Unexpected '{0}' process instruction.", tag)), errorHandler);
                         }
                         currentXDecl = new HXmlDeclaration(null, null, null);
-                        inTag = true;
                         break;
                     case ParsedTokenType.CloseProcessInstruction:
                         if (currentXDecl == null)
@@ -515,7 +510,6 @@ namespace HDoc
                             else
                                 tokenToReturns = currentXDecl;
                         }
-                        inTag = false;
                         currentXDecl = null;
                         break;
                     case ParsedTokenType.Doctype:

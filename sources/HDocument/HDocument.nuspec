@@ -17,6 +17,6 @@ Version 1.1.0 :
     <tags>HDocument</tags>
   </metadata>
   <files>
-    <file src="bin\Release\HDocument.dll" target="lib\portable-net45+netcore45+wp8+win8+wpa81+MonoTouch+MonoAndroid\" />
+    <file src="bin\Release\HDocument.dll" target="lib\portable-net4+netcore45+wp8+win8+wpa81+MonoTouch+MonoAndroid\" />
   </files>
 </package>
