@@ -2,13 +2,16 @@
 <package >
   <metadata>
     <id>HDocument</id>
-    <version>1.1.0</version>
+    <version>1.1.1</version>
     <authors>Yan Grenier</authors>
     <owners>ygrenier</owners>
     <licenseUrl>https://github.com/ygrenier/HDocument/blob/master/LICENSE</licenseUrl>
     <projectUrl>https://github.com/ygrenier/HDocument/</projectUrl>
     <description>A C# library for HTML DOM manipulations.</description>
     <releaseNotes>
+Version 1.1.1 :
+ - Change target PCL from .Net 4.5 to .Net 4.0.
+
 Version 1.1.0 : 
  - Implements all methods like jQuery methods.
  
