@@ -876,9 +876,9 @@ namespace HDoc
         #region Children()
 
         /// <summary>
-        /// Get te children elements of the elements
+        /// Get the children elements of the element
         /// </summary>
-        public static IEnumerable<HElement> Children(this HElement element)
+        public static IEnumerable<HElement> Children(this HContainer element)
         {
             if (element != null)
                 return element.Elements();
@@ -886,12 +886,76 @@ namespace HDoc
         }
 
         /// <summary>
+        /// Get the children elements of the element with a selector
+        /// </summary>
+        public static IEnumerable<HElement> Children(this HContainer element, String selector)
+        {
+            if (element != null)
+                return element.Elements(selector);
+            return Enumerable.Empty<HElement>();
+        }
+
+        /// <summary>
         /// Get the children elements of each element of the set
         /// </summary>
-        public static IEnumerable<HElement> Children(this IEnumerable<HElement> elements)
+        public static IEnumerable<HElement> Children(this IEnumerable<HContainer> elements)
         {
             if (elements != null)
                 return elements.Where(e => e != null).SelectMany(e => e.Elements());
+            return Enumerable.Empty<HElement>();
+        }
+
+        /// <summary>
+        /// Get the children elements of each element of the set with a selector
+        /// </summary>
+        public static IEnumerable<HElement> Children(this IEnumerable<HContainer> elements, String selector)
+        {
+            if (elements != null)
+                return elements.Where(e => e != null).SelectMany(e => e.Elements(selector));
+            return Enumerable.Empty<HElement>();
+        }
+
+        #endregion
+
+        #region Find()
+
+        /// <summary>
+        /// Get the descendants elements of the element
+        /// </summary>
+        public static IEnumerable<HElement> Find(this HContainer element)
+        {
+            if (element != null)
+                return element.Descendants();
+            return Enumerable.Empty<HElement>();
+        }
+
+        /// <summary>
+        /// Get the descendants elements of the element with a selector
+        /// </summary>
+        public static IEnumerable<HElement> Find(this HContainer element, String selector)
+        {
+            if (element != null)
+                return element.Descendants(selector);
+            return Enumerable.Empty<HElement>();
+        }
+
+        /// <summary>
+        /// Get the fescendants elements of each element of the set
+        /// </summary>
+        public static IEnumerable<HElement> Find(this IEnumerable<HContainer> elements)
+        {
+            if (elements != null)
+                return elements.Where(e => e != null).SelectMany(e => e.Descendants());
+            return Enumerable.Empty<HElement>();
+        }
+
+        /// <summary>
+        /// Get the descendants elements of each element of the set with a selector
+        /// </summary>
+        public static IEnumerable<HElement> Find(this IEnumerable<HContainer> elements, String selector)
+        {
+            if (elements != null)
+                return elements.Where(e => e != null).SelectMany(e => e.Descendants(selector));
             return Enumerable.Empty<HElement>();
         }
 
