@@ -1199,5 +1199,92 @@ namespace HDoc
 
         #endregion
 
+        #region Filter()
+
+        /// <summary>
+        /// Reduce the set of matched elements 
+        /// </summary>
+        public static IEnumerable<HElement> Filter(this HContainer element, String selection)
+        {
+            if (element != null)
+                return element.Descendants().Filter(selection);
+            return Enumerable.Empty<HElement>();
+        }
+
+        /// <summary>
+        /// Reduce the set of matched elements 
+        /// </summary>
+        public static IEnumerable<T> Filter<T>(this IEnumerable<T> elements, String selection) where T : HNode
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Reduce the set of matched elements 
+        /// </summary>
+        public static IEnumerable<HElement> Filter(this HContainer element, params HElement[] selection)
+        {
+            if (element != null)
+                return element.Descendants().Filter(selection);
+            return Enumerable.Empty<HElement>();
+        }
+
+        /// <summary>
+        /// Reduce the set of matched elements 
+        /// </summary>
+        public static IEnumerable<T> Filter<T>(this IEnumerable<T> elements, params T[] selection) where T : HNode
+        {
+            if (elements != null && selection != null)
+                return Filter(elements, (IEnumerable<T>)selection);
+            return elements;
+        }
+
+        /// <summary>
+        /// Reduce the set of matched elements 
+        /// </summary>
+        public static IEnumerable<HElement> Filter(this HContainer element, IEnumerable<HElement> selection)
+        {
+            if (element != null)
+                return element.Descendants().Filter(selection);
+            return Enumerable.Empty<HElement>();
+        }
+
+        /// <summary>
+        /// Reduce the set of matched elements 
+        /// </summary>
+        public static IEnumerable<T> Filter<T>(this IEnumerable<T> elements, IEnumerable<T> selection) where T : HNode
+        {
+            if (elements != null && selection != null)
+            {
+                return elements.Where(e => selection.Any(s => s == e));
+            }
+            return elements;
+        }
+
+        /// <summary>
+        /// Reduce the set of matched elements 
+        /// </summary>
+        public static IEnumerable<HElement> Filter(this HContainer element, Func<int, HElement, bool> selection)
+        {
+            if (element != null)
+                return element.Descendants().Filter(selection);
+            return Enumerable.Empty<HElement>();
+        }
+
+        /// <summary>
+        /// Reduce the set of matched elements 
+        /// </summary>
+        public static IEnumerable<T> Filter<T>(this IEnumerable<T> elements, Func<int, T, bool> selection) where T : HNode
+        {
+            if (elements != null && selection != null)
+            {
+                int idx = 0;
+                return elements.Where(e => selection(idx++, e));
+            }
+            return elements;
+        }
+
+        #endregion
+
     }
 }
