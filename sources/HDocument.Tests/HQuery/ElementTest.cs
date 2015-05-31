@@ -1150,5 +1150,92 @@ namespace HDoc.Tests.HQuery
 
         #endregion
 
+        #region Not()
+
+        [Fact]
+        public void TestNotFromSelector()
+        {
+            var n1 = new HElement("div", "Content 1");
+            var n2 = new HElement("div", "Content 2");
+            var n3 = new HElement("div", "Content 3");
+            var n4 = new HElement("div", "Content 4");
+            var n5 = new HElement("div", "Content 5");
+            var root = new HElement("div", n1, n2, n3, n4, n5);
+            var nodes = new HElement[] { n1, n2, n3, n4, n5 };
+
+            Assert.Throws<NotImplementedException>(() => root.Not(String.Empty));
+            Assert.Throws<NotImplementedException>(() => nodes.Not(String.Empty));
+
+            root = null;
+            Assert.Equal(new HElement[0], root.Not(String.Empty));
+            nodes = null;
+            Assert.Throws<NotImplementedException>(() => nodes.Not(String.Empty));
+        }
+
+        [Fact]
+        public void TestNotFromParams()
+        {
+            var n1 = new HElement("div", "Content 1");
+            var n2 = new HElement("div", "Content 2");
+            var n3 = new HElement("div", "Content 3");
+            var n4 = new HElement("div", "Content 4");
+            var n5 = new HElement("div", "Content 5");
+            var root = new HElement("div", n1, n2, n3, n4, n5);
+            var nodes = new HElement[] { n1, n2, n3, n4, n5 };
+
+            Assert.Equal(new HElement[] { n1, n3, n5 }, root.Not(n2, n4));
+            Assert.Equal(new HElement[] { n1, n3, n5 }, nodes.Not(n2, n4));
+
+            root = null;
+            Assert.Equal(new HElement[0], root.Not(n2, n4));
+            nodes = null;
+            Assert.Equal(null, nodes.Not(n2, n4));
+        }
+
+        [Fact]
+        public void TestNotFromEnumerable()
+        {
+            var n1 = new HElement("div", "Content 1");
+            var n2 = new HElement("div", "Content 2");
+            var n3 = new HElement("div", "Content 3");
+            var n4 = new HElement("div", "Content 4");
+            var n5 = new HElement("div", "Content 5");
+            var root = new HElement("div", n1, n2, n3, n4, n5);
+            var nodes = new HElement[] { n1, n2, n3, n4, n5 };
+
+            IEnumerable<HElement> selection = new HElement[] { n2, n4 };
+            Assert.Equal(new HElement[] { n1, n3, n5 }, root.Not(selection));
+            Assert.Equal(new HElement[] { n1, n3, n5 }, nodes.Not(selection));
+
+            root = null;
+            Assert.Equal(new HElement[0], root.Not(selection));
+            nodes = null;
+            Assert.Equal(null, nodes.Not(selection));
+        }
+
+        [Fact]
+        public void TestNotFromFunction()
+        {
+            var n1 = new HElement("div", "Content 1");
+            var n2 = new HElement("div", "Content 2");
+            var n3 = new HElement("div", "Content 3");
+            var n4 = new HElement("div", "Content 4");
+            var n5 = new HElement("div", "Content 5");
+            var root = new HElement("div", n1, n2, n3, n4, n5);
+            var nodes = new HElement[] { n1, n2, n3, n4, n5 };
+
+            Func<int, HElement, Boolean> selection = (i, e) => e == n2 || e == n4;
+
+            Assert.Equal(new HElement[] { n1, n3, n5 }, root.Not(selection));
+            Assert.Equal(new HElement[] { n1, n3, n5 }, nodes.Not(selection));
+
+            root = null;
+            Assert.Equal(new HElement[0], root.Not(selection));
+            nodes = null;
+            Assert.Equal(null, nodes.Not(selection));
+        }
+
+        #endregion
+
     }
 }

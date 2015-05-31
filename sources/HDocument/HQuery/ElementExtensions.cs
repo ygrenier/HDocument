@@ -1112,5 +1112,92 @@ namespace HDoc
 
         #endregion
 
+        #region Not()
+
+        /// <summary>
+        /// Remove elements from the set of elements
+        /// </summary>
+        public static IEnumerable<HElement> Not(this HContainer element, String selection)
+        {
+            if (element != null)
+                return element.Descendants().Not(selection);
+            return Enumerable.Empty<HElement>();
+        }
+
+        /// <summary>
+        /// Remove elements from the set of elements
+        /// </summary>
+        public static IEnumerable<T> Not<T>(this IEnumerable<T> elements, String selection) where T : HNode
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Remove elements from the set of elements
+        /// </summary>
+        public static IEnumerable<HElement> Not(this HContainer element, params HElement[] selection)
+        {
+            if (element != null)
+                return element.Descendants().Not(selection);
+            return Enumerable.Empty<HElement>();
+        }
+
+        /// <summary>
+        /// Remove elements from the set of elements
+        /// </summary>
+        public static IEnumerable<T> Not<T>(this IEnumerable<T> elements, params T[] selection) where T : HNode
+        {
+            if (elements != null && selection != null)
+                return Not(elements, (IEnumerable<T>)selection);
+            return elements;
+        }
+
+        /// <summary>
+        /// Remove elements from the set of elements
+        /// </summary>
+        public static IEnumerable<HElement> Not(this HContainer element, IEnumerable<HElement> selection)
+        {
+            if (element != null)
+                return element.Descendants().Not(selection);
+            return Enumerable.Empty<HElement>();
+        }
+
+        /// <summary>
+        /// Remove elements from the set of elements
+        /// </summary>
+        public static IEnumerable<T> Not<T>(this IEnumerable<T> elements, IEnumerable<T> selection) where T : HNode
+        {
+            if (elements != null && selection != null)
+            {
+                return elements.Where(e => !selection.Any(s => s == e));
+            }
+            return elements;
+        }
+
+        /// <summary>
+        /// Remove elements from the set of elements
+        /// </summary>
+        public static IEnumerable<HElement> Not(this HContainer element, Func<int, HElement, bool> selection)
+        {
+            if (element != null)
+                return element.Descendants().Not(selection);
+            return Enumerable.Empty<HElement>();
+        }
+
+        /// <summary>
+        /// Remove elements from the set of elements
+        /// </summary>
+        public static IEnumerable<T> Not<T>(this IEnumerable<T> elements, Func<int, T, bool> selection) where T : HNode
+        {
+            if (elements != null && selection != null)
+            {
+                int idx = 0;
+                return elements.Where(e => !selection(idx++, e));
+            }
+            return elements;
+        }
+
+        #endregion
+
     }
 }
