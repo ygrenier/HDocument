@@ -2314,7 +2314,7 @@ namespace HDoc
         /// <summary>
         /// Decode all entities in a text.
         /// </summary>
-        public static String HtmlDecode(String value)
+        public static String HtmlDecode(String value, bool removeUnknownOrInvalidEntities = false)
         {
             // If nothing to decode returns
             if (String.IsNullOrEmpty(value)) return value;
@@ -2370,7 +2370,8 @@ namespace HDoc
                                     }
                                     catch
                                     {
-                                        result.Append("&").Append(name).Append(";");
+                                        if (!removeUnknownOrInvalidEntities)
+                                            result.Append("&").Append(name).Append(";");
                                     }
                                 }
                                 else
@@ -2378,7 +2379,7 @@ namespace HDoc
                                     var ent = FindEntityByName(name);
                                     if (ent != null)
                                         result.Append(ent.ToString());
-                                    else
+                                    else if (!removeUnknownOrInvalidEntities)
                                         result.Append("&").Append(name).Append(";");
                                 }
                                 sPos = pos + 1;

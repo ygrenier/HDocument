@@ -9,6 +9,10 @@
     <projectUrl>https://github.com/ygrenier/HDocument/</projectUrl>
     <description>A C# library for HTML DOM manipulations.</description>
     <releaseNotes>
+Version 1.1.2 :
+ - More HQuery methods.
+ - Option in HParser and HSerializer to remove the entities when there are unknown or invalids.
+
 Version 1.1.1 :
  - Change target PCL from .Net 4.5 to .Net 4.0.
 

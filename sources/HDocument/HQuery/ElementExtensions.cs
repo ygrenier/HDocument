@@ -876,9 +876,9 @@ namespace HDoc
         #region Children()
 
         /// <summary>
-        /// Get te children elements of the elements
+        /// Get the children elements of the element
         /// </summary>
-        public static IEnumerable<HElement> Children(this HElement element)
+        public static IEnumerable<HElement> Children(this HContainer element)
         {
             if (element != null)
                 return element.Elements();
@@ -886,12 +886,76 @@ namespace HDoc
         }
 
         /// <summary>
+        /// Get the children elements of the element with a selector
+        /// </summary>
+        public static IEnumerable<HElement> Children(this HContainer element, String selector)
+        {
+            if (element != null)
+                return element.Elements(selector);
+            return Enumerable.Empty<HElement>();
+        }
+
+        /// <summary>
         /// Get the children elements of each element of the set
         /// </summary>
-        public static IEnumerable<HElement> Children(this IEnumerable<HElement> elements)
+        public static IEnumerable<HElement> Children(this IEnumerable<HContainer> elements)
         {
             if (elements != null)
                 return elements.Where(e => e != null).SelectMany(e => e.Elements());
+            return Enumerable.Empty<HElement>();
+        }
+
+        /// <summary>
+        /// Get the children elements of each element of the set with a selector
+        /// </summary>
+        public static IEnumerable<HElement> Children(this IEnumerable<HContainer> elements, String selector)
+        {
+            if (elements != null)
+                return elements.Where(e => e != null).SelectMany(e => e.Elements(selector));
+            return Enumerable.Empty<HElement>();
+        }
+
+        #endregion
+
+        #region Find()
+
+        /// <summary>
+        /// Get the descendants elements of the element
+        /// </summary>
+        public static IEnumerable<HElement> Find(this HContainer element)
+        {
+            if (element != null)
+                return element.Descendants();
+            return Enumerable.Empty<HElement>();
+        }
+
+        /// <summary>
+        /// Get the descendants elements of the element with a selector
+        /// </summary>
+        public static IEnumerable<HElement> Find(this HContainer element, String selector)
+        {
+            if (element != null)
+                return element.Descendants(selector);
+            return Enumerable.Empty<HElement>();
+        }
+
+        /// <summary>
+        /// Get the fescendants elements of each element of the set
+        /// </summary>
+        public static IEnumerable<HElement> Find(this IEnumerable<HContainer> elements)
+        {
+            if (elements != null)
+                return elements.Where(e => e != null).SelectMany(e => e.Descendants());
+            return Enumerable.Empty<HElement>();
+        }
+
+        /// <summary>
+        /// Get the descendants elements of each element of the set with a selector
+        /// </summary>
+        public static IEnumerable<HElement> Find(this IEnumerable<HContainer> elements, String selector)
+        {
+            if (elements != null)
+                return elements.Where(e => e != null).SelectMany(e => e.Descendants(selector));
             return Enumerable.Empty<HElement>();
         }
 
@@ -1042,6 +1106,180 @@ namespace HDoc
                     String html = getHtml != null ? getHtml(e, i) ?? String.Empty : String.Empty;
                     return HSerializer.DefaultSerializer.Deserialize(new StringReader(html));
                 });
+            }
+            return elements;
+        }
+
+        #endregion
+
+        #region Not()
+
+        /// <summary>
+        /// Remove elements from the set of elements
+        /// </summary>
+        public static IEnumerable<HElement> Not(this HContainer element, String selection)
+        {
+            if (element != null)
+                return element.Descendants().Not(selection);
+            return Enumerable.Empty<HElement>();
+        }
+
+        /// <summary>
+        /// Remove elements from the set of elements
+        /// </summary>
+        public static IEnumerable<T> Not<T>(this IEnumerable<T> elements, String selection) where T : HNode
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Remove elements from the set of elements
+        /// </summary>
+        public static IEnumerable<HElement> Not(this HContainer element, params HElement[] selection)
+        {
+            if (element != null)
+                return element.Descendants().Not(selection);
+            return Enumerable.Empty<HElement>();
+        }
+
+        /// <summary>
+        /// Remove elements from the set of elements
+        /// </summary>
+        public static IEnumerable<T> Not<T>(this IEnumerable<T> elements, params T[] selection) where T : HNode
+        {
+            if (elements != null && selection != null)
+                return Not(elements, (IEnumerable<T>)selection);
+            return elements;
+        }
+
+        /// <summary>
+        /// Remove elements from the set of elements
+        /// </summary>
+        public static IEnumerable<HElement> Not(this HContainer element, IEnumerable<HElement> selection)
+        {
+            if (element != null)
+                return element.Descendants().Not(selection);
+            return Enumerable.Empty<HElement>();
+        }
+
+        /// <summary>
+        /// Remove elements from the set of elements
+        /// </summary>
+        public static IEnumerable<T> Not<T>(this IEnumerable<T> elements, IEnumerable<T> selection) where T : HNode
+        {
+            if (elements != null && selection != null)
+            {
+                return elements.Where(e => !selection.Any(s => s == e));
+            }
+            return elements;
+        }
+
+        /// <summary>
+        /// Remove elements from the set of elements
+        /// </summary>
+        public static IEnumerable<HElement> Not(this HContainer element, Func<int, HElement, bool> selection)
+        {
+            if (element != null)
+                return element.Descendants().Not(selection);
+            return Enumerable.Empty<HElement>();
+        }
+
+        /// <summary>
+        /// Remove elements from the set of elements
+        /// </summary>
+        public static IEnumerable<T> Not<T>(this IEnumerable<T> elements, Func<int, T, bool> selection) where T : HNode
+        {
+            if (elements != null && selection != null)
+            {
+                int idx = 0;
+                return elements.Where(e => !selection(idx++, e));
+            }
+            return elements;
+        }
+
+        #endregion
+
+        #region Filter()
+
+        /// <summary>
+        /// Reduce the set of matched elements 
+        /// </summary>
+        public static IEnumerable<HElement> Filter(this HContainer element, String selection)
+        {
+            if (element != null)
+                return element.Descendants().Filter(selection);
+            return Enumerable.Empty<HElement>();
+        }
+
+        /// <summary>
+        /// Reduce the set of matched elements 
+        /// </summary>
+        public static IEnumerable<T> Filter<T>(this IEnumerable<T> elements, String selection) where T : HNode
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Reduce the set of matched elements 
+        /// </summary>
+        public static IEnumerable<HElement> Filter(this HContainer element, params HElement[] selection)
+        {
+            if (element != null)
+                return element.Descendants().Filter(selection);
+            return Enumerable.Empty<HElement>();
+        }
+
+        /// <summary>
+        /// Reduce the set of matched elements 
+        /// </summary>
+        public static IEnumerable<T> Filter<T>(this IEnumerable<T> elements, params T[] selection) where T : HNode
+        {
+            if (elements != null && selection != null)
+                return Filter(elements, (IEnumerable<T>)selection);
+            return elements;
+        }
+
+        /// <summary>
+        /// Reduce the set of matched elements 
+        /// </summary>
+        public static IEnumerable<HElement> Filter(this HContainer element, IEnumerable<HElement> selection)
+        {
+            if (element != null)
+                return element.Descendants().Filter(selection);
+            return Enumerable.Empty<HElement>();
+        }
+
+        /// <summary>
+        /// Reduce the set of matched elements 
+        /// </summary>
+        public static IEnumerable<T> Filter<T>(this IEnumerable<T> elements, IEnumerable<T> selection) where T : HNode
+        {
+            if (elements != null && selection != null)
+            {
+                return elements.Where(e => selection.Any(s => s == e));
+            }
+            return elements;
+        }
+
+        /// <summary>
+        /// Reduce the set of matched elements 
+        /// </summary>
+        public static IEnumerable<HElement> Filter(this HContainer element, Func<int, HElement, bool> selection)
+        {
+            if (element != null)
+                return element.Descendants().Filter(selection);
+            return Enumerable.Empty<HElement>();
+        }
+
+        /// <summary>
+        /// Reduce the set of matched elements 
+        /// </summary>
+        public static IEnumerable<T> Filter<T>(this IEnumerable<T> elements, Func<int, T, bool> selection) where T : HNode
+        {
+            if (elements != null && selection != null)
+            {
+                int idx = 0;
+                return elements.Where(e => selection(idx++, e));
             }
             return elements;
         }

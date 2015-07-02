@@ -405,7 +405,7 @@ namespace HDoc.Tests
         {
             var serializer = new HSerializer();
 
-            var hdoc = serializer.DeserializeDocument(new StringReader("<html><body><h1>Document</h1><p>Content &amp; more.</p></body></html>"));
+            var hdoc = serializer.DeserializeDocument(new StringReader("<html><body><h1>Document</h1><p>Content &amp; more &entity;.</p></body></html>"));
 
             Assert.Same(Encoding.UTF8, hdoc.Encoding);
 
@@ -434,15 +434,22 @@ namespace HDoc.Tests
             Assert.Equal("p", elms[1].Name);
             Assert.Equal(1, elms[1].Nodes().Count());
             Assert.IsType<HText>(elms[1].FirstNode);
-            Assert.Equal("Content & more.", ((HText)elms[1].FirstNode).Value);
+            Assert.Equal("Content & more &entity;.", ((HText)elms[1].FirstNode).Value);
 
             // Test from stream
-            using (var ms = new MemoryStream(Encoding.ASCII.GetBytes("<html><body><h1>Document</h1><p>Content &amp; more.</p></body></html>")))
+            using (var ms = new MemoryStream(Encoding.ASCII.GetBytes("<html><body><h1>Document</h1><p>Content &amp; more &entity;.</p></body></html>")))
             {
+                serializer.RemoveUnknownOrInvalidEntities = true;
                 hdoc = serializer.DeserializeDocument(new StreamReader(ms, Encoding.ASCII));
                 Assert.Same(Encoding.ASCII, hdoc.Encoding);
                 Assert.Equal(6, hdoc.DescendantNodes().Count());
                 Assert.Equal(0, hdoc.ParseErrors.Length);
+
+                HElement elm = hdoc.Root.Elements("body").First().Elements().Last();
+                Assert.Equal("p", elm.Name);
+                Assert.Equal(1, elm.Nodes().Count());
+                Assert.IsType<HText>(elm.FirstNode);
+                Assert.Equal("Content & more .", ((HText)elm.FirstNode).Value);
             }
 
             Assert.Throws<ArgumentNullException>(() => serializer.DeserializeDocument(null));

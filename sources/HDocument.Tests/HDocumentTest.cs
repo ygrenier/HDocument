@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -171,6 +172,20 @@ namespace HDoc.Tests
             aex = Assert.Throws<ArgumentException>(() => hDoc.Add(new HDocumentType()));
             Assert.Equal("Can't add a document type after the root node.", aex.Message);
 
+        }
+
+        [Fact]
+        public void TestClone()
+        {
+            String html = "<html><body><h1>Document</h1></body></html>";
+            var hDoc = HSerializer.DefaultSerializer.DeserializeDocument(new StringReader(html));
+
+            Assert.Equal(html, hDoc.ToString());
+
+            var clone = hDoc.Clone();
+
+            Assert.NotSame(clone, hDoc);
+            Assert.Equal(html, clone.ToString());
         }
 
     }

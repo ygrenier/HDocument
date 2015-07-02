@@ -28,19 +28,19 @@ namespace HDoc.Tests
         [Fact]
         public void TestParse_Text()
         {
-            StringReader reader = new StringReader("Content");
+            StringReader reader = new StringReader("Content whith &euro; and &entity;.");
             HParser parser = new HParser(reader);
 
             var pres = parser.Parse();
             Assert.Same(pres, parser.LastParsed);
             Assert.Equal(new ParsePosition(), pres.Position);
-            Assert.Equal(new ParsePosition(7, 0, 7), parser.ReadPosition);
+            Assert.Equal(new ParsePosition(34, 0, 34), parser.ReadPosition);
             Assert.IsType<ParsedText>(pres);
             Assert.Equal(ParsedTokenType.Text, pres.TokenType);
-            Assert.Equal("Content", ((ParsedContent)pres).Text);
+            Assert.Equal("Content whith &euro; and &entity;.", ((ParsedContent)pres).Text);
 
             pres = parser.Parse();
-            Assert.Equal(new ParsePosition(7, 0, 7), parser.ReadPosition);
+            Assert.Equal(new ParsePosition(34, 0, 34), parser.ReadPosition);
             Assert.Null(pres);
             Assert.True(parser.EOF);
         }
@@ -48,7 +48,7 @@ namespace HDoc.Tests
         [Fact]
         public void TestParse_Comment()
         {
-            StringReader reader = new StringReader("Start<!-- Comments -->End");
+            StringReader reader = new StringReader("Start<!-- Comments whith &euro; and &entity;. -->End");
             HParser parser = new HParser(reader);
 
             var pres = parser.Parse();
@@ -62,19 +62,19 @@ namespace HDoc.Tests
             pres = parser.Parse();
             Assert.IsType<ParsedComment>(pres);
             Assert.Equal(new ParsePosition(5, 0, 5), pres.Position);
-            Assert.Equal(new ParsePosition(22, 0, 22), parser.ReadPosition);
+            Assert.Equal(new ParsePosition(49, 0, 49), parser.ReadPosition);
             Assert.Equal(ParsedTokenType.Comment, pres.TokenType);
-            Assert.Equal("Comments", ((ParsedContent)pres).Text);
+            Assert.Equal("Comments whith &euro; and &entity;.", ((ParsedContent)pres).Text);
 
             pres = parser.Parse();
             Assert.IsType<ParsedText>(pres);
-            Assert.Equal(new ParsePosition(22, 0, 22), pres.Position);
-            Assert.Equal(new ParsePosition(25, 0, 25), parser.ReadPosition);
+            Assert.Equal(new ParsePosition(49, 0, 49), pres.Position);
+            Assert.Equal(new ParsePosition(52, 0, 52), parser.ReadPosition);
             Assert.Equal(ParsedTokenType.Text, pres.TokenType);
             Assert.Equal("End", ((ParsedContent)pres).Text);
 
             pres = parser.Parse();
-            Assert.Equal(new ParsePosition(25, 0, 25), parser.ReadPosition);
+            Assert.Equal(new ParsePosition(52, 0, 52), parser.ReadPosition);
             Assert.Null(pres);
             Assert.True(parser.EOF);
 
@@ -390,7 +390,7 @@ namespace HDoc.Tests
         public void TestParse_TagAttribute()
         {
             // Attributes
-            StringReader reader = new StringReader("<div attr1  attr2 = value2 attr3=\"val&amp;ue\" attr4 = 'value' >");
+            StringReader reader = new StringReader("<div attr1  attr2 = value2 attr3=\"val&amp;ue&test;\" attr4 = 'value' >");
             HParser parser = new HParser(reader);
 
             var pres = parser.Parse();
@@ -422,16 +422,16 @@ namespace HDoc.Tests
             pres = parser.Parse();
             Assert.IsType<ParsedAttribute>(pres);
             Assert.Equal(new ParsePosition(27, 0, 27), pres.Position);
-            Assert.Equal(new ParsePosition(45, 0, 45), parser.ReadPosition);
+            Assert.Equal(new ParsePosition(51, 0, 51), parser.ReadPosition);
             pAttr = (ParsedAttribute)pres;
             Assert.Equal("attr3", pAttr.Name);
-            Assert.Equal("val&ue", pAttr.Value);
+            Assert.Equal("val&ue&test;", pAttr.Value);
             Assert.Equal('"', pAttr.Quote);
 
             pres = parser.Parse();
             Assert.IsType<ParsedAttribute>(pres);
-            Assert.Equal(new ParsePosition(46, 0, 46), pres.Position);
-            Assert.Equal(new ParsePosition(61, 0, 61), parser.ReadPosition);
+            Assert.Equal(new ParsePosition(52, 0, 52), pres.Position);
+            Assert.Equal(new ParsePosition(67, 0, 67), parser.ReadPosition);
             pAttr = (ParsedAttribute)pres;
             Assert.Equal("attr4", pAttr.Name);
             Assert.Equal("value", pAttr.Value);
@@ -439,12 +439,72 @@ namespace HDoc.Tests
 
             pres = parser.Parse();
             Assert.IsType<ParsedTag>(pres);
-            Assert.Equal(new ParsePosition(62, 0, 62), pres.Position);
-            Assert.Equal(new ParsePosition(63, 0, 63), parser.ReadPosition);
+            Assert.Equal(new ParsePosition(68, 0, 68), pres.Position);
+            Assert.Equal(new ParsePosition(69, 0, 69), parser.ReadPosition);
             Assert.Equal(ParsedTokenType.CloseTag, pres.TokenType);
 
             pres = parser.Parse();
-            Assert.Equal(new ParsePosition(63, 0, 63), parser.ReadPosition);
+            Assert.Equal(new ParsePosition(69, 0, 69), parser.ReadPosition);
+            Assert.Null(pres);
+            Assert.True(parser.EOF);
+
+            // Attribute with remove entities option
+            reader = new StringReader("<div attr1  attr2 = value2 attr3=\"val&amp;ue&test;\" attr4 = 'value' >");
+            parser = new HParser(reader);
+            parser.RemoveUnknownOrInvalidEntities = true;
+
+            pres = parser.Parse();
+            Assert.IsType<ParsedTag>(pres);
+            Assert.Equal(new ParsePosition(0, 0, 0), pres.Position);
+            Assert.Equal(new ParsePosition(4, 0, 4), parser.ReadPosition);
+            Assert.Equal(ParsedTokenType.OpenTag, pres.TokenType);
+            Assert.Equal("div", ((ParsedTag)pres).TagName);
+
+            pres = parser.Parse();
+            Assert.IsType<ParsedAttribute>(pres);
+            Assert.Equal(new ParsePosition(5, 0, 5), pres.Position);
+            Assert.Equal(new ParsePosition(12, 0, 12), parser.ReadPosition);
+            pAttr = (ParsedAttribute)pres;
+            Assert.Equal("attr1", pAttr.Name);
+            Assert.Equal(null, pAttr.Value);
+            Assert.Equal('\0', pAttr.Quote);
+
+            pres = parser.Parse();
+            Assert.IsType<ParsedAttribute>(pres);
+            Assert.Equal(new ParsePosition(12, 0, 12), pres.Position);
+            Assert.Equal(new ParsePosition(26, 0, 26), parser.ReadPosition);
+            Assert.Equal(ParsedTokenType.Attribute, pres.TokenType);
+            pAttr = (ParsedAttribute)pres;
+            Assert.Equal("attr2", pAttr.Name);
+            Assert.Equal("value2", pAttr.Value);
+            Assert.Equal('\0', pAttr.Quote);
+
+            pres = parser.Parse();
+            Assert.IsType<ParsedAttribute>(pres);
+            Assert.Equal(new ParsePosition(27, 0, 27), pres.Position);
+            Assert.Equal(new ParsePosition(51, 0, 51), parser.ReadPosition);
+            pAttr = (ParsedAttribute)pres;
+            Assert.Equal("attr3", pAttr.Name);
+            Assert.Equal("val&ue", pAttr.Value);
+            Assert.Equal('"', pAttr.Quote);
+
+            pres = parser.Parse();
+            Assert.IsType<ParsedAttribute>(pres);
+            Assert.Equal(new ParsePosition(52, 0, 52), pres.Position);
+            Assert.Equal(new ParsePosition(67, 0, 67), parser.ReadPosition);
+            pAttr = (ParsedAttribute)pres;
+            Assert.Equal("attr4", pAttr.Name);
+            Assert.Equal("value", pAttr.Value);
+            Assert.Equal('\'', pAttr.Quote);
+
+            pres = parser.Parse();
+            Assert.IsType<ParsedTag>(pres);
+            Assert.Equal(new ParsePosition(68, 0, 68), pres.Position);
+            Assert.Equal(new ParsePosition(69, 0, 69), parser.ReadPosition);
+            Assert.Equal(ParsedTokenType.CloseTag, pres.TokenType);
+
+            pres = parser.Parse();
+            Assert.Equal(new ParsePosition(69, 0, 69), parser.ReadPosition);
             Assert.Null(pres);
             Assert.True(parser.EOF);
 

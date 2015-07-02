@@ -48,6 +48,14 @@ namespace HDoc
         }
 
         /// <summary>
+        /// Clone the document
+        /// </summary>
+        public HDocument Clone()
+        {
+            return (HDocument)CloneNode();
+        }
+
+        /// <summary>
         /// Find the node of a type
         /// </summary>
         /// <remarks>
