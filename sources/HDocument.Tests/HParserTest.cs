@@ -37,12 +37,30 @@ namespace HDoc.Tests
             Assert.Equal(new ParsePosition(34, 0, 34), parser.ReadPosition);
             Assert.IsType<ParsedText>(pres);
             Assert.Equal(ParsedTokenType.Text, pres.TokenType);
-            Assert.Equal("Content whith &euro; and &entity;.", ((ParsedContent)pres).Text);
+            Assert.Equal("Content whith € and &entity;.", ((ParsedContent)pres).Text);
 
             pres = parser.Parse();
             Assert.Equal(new ParsePosition(34, 0, 34), parser.ReadPosition);
             Assert.Null(pres);
             Assert.True(parser.EOF);
+
+            reader = new StringReader("Content whith &euro; and &entity;.");
+            parser = new HParser(reader);
+            parser.RemoveUnknownOrInvalidEntities = true;
+
+            pres = parser.Parse();
+            Assert.Same(pres, parser.LastParsed);
+            Assert.Equal(new ParsePosition(), pres.Position);
+            Assert.Equal(new ParsePosition(34, 0, 34), parser.ReadPosition);
+            Assert.IsType<ParsedText>(pres);
+            Assert.Equal(ParsedTokenType.Text, pres.TokenType);
+            Assert.Equal("Content whith € and .", ((ParsedContent)pres).Text);
+
+            pres = parser.Parse();
+            Assert.Equal(new ParsePosition(34, 0, 34), parser.ReadPosition);
+            Assert.Null(pres);
+            Assert.True(parser.EOF);
+
         }
 
         [Fact]
@@ -64,7 +82,39 @@ namespace HDoc.Tests
             Assert.Equal(new ParsePosition(5, 0, 5), pres.Position);
             Assert.Equal(new ParsePosition(49, 0, 49), parser.ReadPosition);
             Assert.Equal(ParsedTokenType.Comment, pres.TokenType);
-            Assert.Equal("Comments whith &euro; and &entity;.", ((ParsedContent)pres).Text);
+            Assert.Equal("Comments whith € and &entity;.", ((ParsedContent)pres).Text);
+
+            pres = parser.Parse();
+            Assert.IsType<ParsedText>(pres);
+            Assert.Equal(new ParsePosition(49, 0, 49), pres.Position);
+            Assert.Equal(new ParsePosition(52, 0, 52), parser.ReadPosition);
+            Assert.Equal(ParsedTokenType.Text, pres.TokenType);
+            Assert.Equal("End", ((ParsedContent)pres).Text);
+
+            pres = parser.Parse();
+            Assert.Equal(new ParsePosition(52, 0, 52), parser.ReadPosition);
+            Assert.Null(pres);
+            Assert.True(parser.EOF);
+
+            // Parse with remove unknown entities
+            reader = new StringReader("Start<!-- Comments whith &euro; and &entity;. -->End");
+            parser = new HParser(reader);
+            parser.RemoveUnknownOrInvalidEntities = true;
+
+            pres = parser.Parse();
+            Assert.Same(pres, parser.LastParsed);
+            Assert.Equal(new ParsePosition(), pres.Position);
+            Assert.Equal(new ParsePosition(5, 0, 5), parser.ReadPosition);
+            Assert.IsType<ParsedText>(pres);
+            Assert.Equal(ParsedTokenType.Text, pres.TokenType);
+            Assert.Equal("Start", ((ParsedContent)pres).Text);
+
+            pres = parser.Parse();
+            Assert.IsType<ParsedComment>(pres);
+            Assert.Equal(new ParsePosition(5, 0, 5), pres.Position);
+            Assert.Equal(new ParsePosition(49, 0, 49), parser.ReadPosition);
+            Assert.Equal(ParsedTokenType.Comment, pres.TokenType);
+            Assert.Equal("Comments whith € and .", ((ParsedContent)pres).Text);
 
             pres = parser.Parse();
             Assert.IsType<ParsedText>(pres);

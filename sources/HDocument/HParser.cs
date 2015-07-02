@@ -435,7 +435,7 @@ namespace HDoc
             // Returns parse result
             return new ParsedText() {
                 Position = _CurrentPosition,
-                Text = GetCurrentRead(true)
+                Text = HEntity.HtmlDecode(GetCurrentRead(true), RemoveUnknownOrInvalidEntities)
             };
         }
 
@@ -472,9 +472,10 @@ namespace HDoc
             ResetTagBuffer();
             // Returns comment
             String comment = GetCurrentRead(true);
+            comment = comment.Substring(4, comment.Length - 7).Trim();
             return new ParsedComment() {
                 Position = _CurrentPosition,
-                Text = comment.Substring(4, comment.Length - 7).Trim()
+                Text = HEntity.HtmlDecode(comment,RemoveUnknownOrInvalidEntities)
             };
         }
 
@@ -841,16 +842,17 @@ namespace HDoc
                     // Returns a non closed comment
                     case ParseState.Comment:
                         String comment = GetCurrentRead(true);
+                        comment = comment.Substring(4).TrimStart();
                         LastParsed = new ParsedComment() {
                             Position = _CurrentPosition,
-                            Text = comment.Substring(4).TrimStart()
+                            Text = HEntity.HtmlDecode(comment, RemoveUnknownOrInvalidEntities)
                         };
                         break;
                     // Returns a text
                     case ParseState.Content:
                         LastParsed = new ParsedText() {
                             Position = _CurrentPosition,
-                            Text = GetCurrentRead(true)
+                            Text = HEntity.HtmlDecode(GetCurrentRead(true), RemoveUnknownOrInvalidEntities)
                         };
                         break;
                     // Returns a text
@@ -1004,7 +1006,7 @@ namespace HDoc
             // Returns parse result
             LastParsed = new ParsedText() {
                 Position = start,
-                Text = GetCurrentRead(true)
+                Text = HEntity.HtmlDecode(GetCurrentRead(true), RemoveUnknownOrInvalidEntities)
             };
             return (ParsedText)LastParsed;
         }
