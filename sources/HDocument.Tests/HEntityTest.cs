@@ -94,6 +94,8 @@ namespace HDoc.Tests
 
             // Unknown entity
             Assert.Equal("&test;", HEntity.HtmlDecode("&test;"));
+            Assert.Equal("", HEntity.HtmlDecode("&test;", true));
+            Assert.Equal("&test;", HEntity.HtmlDecode("&test;", false));
 
             // Numeric entities
             Assert.Equal("&", HEntity.HtmlDecode("&#X26;"));
@@ -103,7 +105,9 @@ namespace HDoc.Tests
 
             // Invalid numeric
             Assert.Equal("&#X2Z6;", HEntity.HtmlDecode("&#X2Z6;"));
+            Assert.Equal("", HEntity.HtmlDecode("&#X2Z6;", true));
             Assert.Equal("&#3d8;test", HEntity.HtmlDecode("&#3d8;test"));
+            Assert.Equal("test", HEntity.HtmlDecode("&#3d8;test", true));
 
             // Non closed entities
             Assert.Equal("test&amp test&test", HEntity.HtmlDecode("test&amp test&amp;test"));

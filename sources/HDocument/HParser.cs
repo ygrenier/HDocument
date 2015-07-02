@@ -361,6 +361,7 @@ namespace HDoc
             this._CurrentRead = null;
             this._State = ParseState.Content;
             this._CurrentPosition = new ParsePosition();
+            this.RemoveUnknownOrInvalidEntities = false;
         }
 
         /// <summary>
@@ -780,7 +781,7 @@ namespace HDoc
                 _CurrentAttr = new ParsedAttribute() {
                     Position = attrPos,
                     Name = attrName,
-                    Value = HEntity.HtmlDecode(GetCurrentRead(true)),
+                    Value = HEntity.HtmlDecode(GetCurrentRead(true), RemoveUnknownOrInvalidEntities),
                     Quote = quote
                 };
                 if (c == CharInfo.EOF)
@@ -797,7 +798,7 @@ namespace HDoc
             return new ParsedAttribute() {
                 Position = attrPos,
                 Name = attrName,
-                Value = HEntity.HtmlDecode(GetCurrentRead(true)),
+                Value = HEntity.HtmlDecode(GetCurrentRead(true), RemoveUnknownOrInvalidEntities),
                 Quote = quote
             };
         }
@@ -1037,6 +1038,10 @@ namespace HDoc
         /// </summary>
         public bool EOF { get; private set; }
 
+        /// <summary>
+        /// Get or set flag to remove the entities when there are unknowns or invalids.
+        /// </summary>
+        public bool RemoveUnknownOrInvalidEntities { get; set; }
     }
 
 }

@@ -13,6 +13,13 @@ namespace HDoc
     /// </summary>
     public class HSerializer
     {
+        /// <summary>
+        /// New serializer
+        /// </summary>
+        public HSerializer()
+        {
+            RemoveUnknownOrInvalidEntities = false;
+        }
 
         #region Helpers
 
@@ -407,6 +414,7 @@ namespace HDoc
             if (reader == null) throw new ArgumentNullException("reader");
             // Create the parser
             var parser = new HParser(reader);
+            parser.RemoveUnknownOrInvalidEntities = this.RemoveUnknownOrInvalidEntities;
             var token = ParseNext(parser, errorHandler);
             Stack<HElement> opened = new Stack<HElement>();
             HXmlDeclaration currentXDecl = null;
@@ -417,7 +425,7 @@ namespace HDoc
                 switch (token.TokenType)
                 {
                     case ParsedTokenType.Text:
-                        var htxt = new HText(HEntity.HtmlDecode(((ParsedText)token).Text));
+                        var htxt = new HText(HEntity.HtmlDecode(((ParsedText)token).Text, RemoveUnknownOrInvalidEntities));
                         if (opened.Count > 0)
                             ProtectAddOnPeek(opened, htxt, errorHandler);
                         else
@@ -431,7 +439,7 @@ namespace HDoc
                             tokenToReturns = hcd;
                         break;
                     case ParsedTokenType.Comment:
-                        var hcom = new HComment(HEntity.HtmlDecode(((ParsedComment)token).Text));
+                        var hcom = new HComment(HEntity.HtmlDecode(((ParsedComment)token).Text, RemoveUnknownOrInvalidEntities));
                         if (opened.Count > 0)
                             ProtectAddOnPeek(opened, hcom, errorHandler);
                         else
@@ -569,6 +577,11 @@ namespace HDoc
             get { return _DefaultSerializer ?? (_DefaultSerializer = new HSerializer()); }
         }
         static HSerializer _DefaultSerializer;
+
+        /// <summary>
+        /// Get or set flag to remove the entities when there are unknowns or invalids.
+        /// </summary>
+        public bool RemoveUnknownOrInvalidEntities { get; set; }
 
     }
 
